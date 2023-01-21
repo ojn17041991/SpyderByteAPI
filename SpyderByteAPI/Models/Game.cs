@@ -10,9 +10,9 @@ namespace SpyderByteAPI.Models
         public int? Id { get; set; }
 
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } = string.Empty;
 
         [Required]
-        public DateTime PublishDate { get; set; }
+        public DateTime? PublishDate { get; set; } = DateTime.Now;
     }
 }

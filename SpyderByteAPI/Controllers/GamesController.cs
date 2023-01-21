@@ -125,6 +125,33 @@ namespace SpyderByteAPI.Controllers
             }
         }
 
+        [HttpPatch("{id}")]
+        public IActionResult Patch(int id, [FromBody] PatchableGame game)
+        {
+            IDataResponse<Game?> response = gameAccessor.Patch(id, game);
+
+            if (response.Result == ModelResult.OK)
+            {
+                // 200
+                return Ok(response.Data);
+            }
+            else if (response.Result == ModelResult.IDFoundInPatch)
+            {
+                // 400
+                return BadRequest(modelResources.GetResource(ModelResult.IDFoundInPatch));
+            }
+            else if (response.Result == ModelResult.NotFound)
+            {
+                // 404
+                return NotFound();
+            }
+            else
+            {
+                // 500
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
         // DELETE api/<GamesController>/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)

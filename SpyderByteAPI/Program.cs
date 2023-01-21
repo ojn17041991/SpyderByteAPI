@@ -10,8 +10,8 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(s =>
-    s.EnableAnnotations()
+builder.Services.AddSwaggerGen(services =>
+    services.EnableAnnotations()
 );
 
 builder.Services.AddTransient<IDataAccessor<Game>, GamesAccessor>();

@@ -1,4 +1,6 @@
-﻿namespace SpyderByteAPI.DataAccess.Abstract
+﻿using SpyderByteAPI.Models.Abstract;
+
+namespace SpyderByteAPI.DataAccess.Abstract
 {
     public interface IDataAccessor<T>
     {
@@ -10,9 +12,9 @@
 
         IDataResponse<T?> Put(int id, T updateObject);
 
-        IDataResponse<T?> Delete(int id);
+        IDataResponse<T?> Patch(int id, IPatchable patchObject);
 
-        //IDataResponse<T?> Patch(int id, T updateObject);
+        IDataResponse<T?> Delete(int id);
 
         //IDataResponse<T?> Option(int id);
 

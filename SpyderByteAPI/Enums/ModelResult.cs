@@ -8,6 +8,7 @@
         Error = 2000,
         NotFound = 2001,
         IDGivenForIdentityField = 2002,
-        IDMismatchInPut = 2003
+        IDMismatchInPut = 2003,
+        IDFoundInPatch = 2004
     }
 }

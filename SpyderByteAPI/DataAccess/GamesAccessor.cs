@@ -2,6 +2,8 @@
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models;
+using SpyderByteAPI.Models.Abstract;
+using System.Reflection;
 
 namespace SpyderByteAPI.DataAccess
 {
@@ -92,6 +94,40 @@ namespace SpyderByteAPI.DataAccess
 
             // The object was updated.
             return new DataResponse<Game?>(updateObject, ModelResult.OK);
+        }
+
+        public IDataResponse<Game?> Patch(int id, IPatchable patchObject)
+        {
+            PatchableGame? patchGame = patchObject as PatchableGame;
+
+            if (patchGame?.Id != null)
+            {
+                // The patchable object includes an ID.
+                return new DataResponse<Game?>(null, ModelResult.IDFoundInPatch);
+            }
+
+            Game? game = context.Games.SingleOrDefault(g => g.Id == id);
+            if (game == null)
+            {
+                // Couldn't find an item of this ID.
+                return new DataResponse<Game?>(game, ModelResult.NotFound);
+            }
+
+            // Go through each property, find those provided by the patch object, and update them.
+            foreach (PropertyInfo property in typeof(PatchableGame).GetProperties())
+            {
+                object? propertyValue = property.GetValue(patchGame, null);
+                if (propertyValue != null)
+                {
+                    game?.GetType()?.GetProperty(property.Name)?.SetValue(game, propertyValue);
+                }
+            }
+
+            // Perform the patch operation.
+            context.SaveChanges();
+
+            // The object was patched.
+            return new DataResponse<Game?>(null, ModelResult.OK);
         }
 
         /// <summary>
