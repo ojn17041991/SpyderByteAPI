@@ -11,7 +11,7 @@ namespace SpyderByteAPI.Resources
             { ModelResult.Error, "A server error occurred while processing the request." },
             { ModelResult.NotFound, "Could not locate the resource specified." },
             { ModelResult.IDGivenForIdentityField, "This type of request cannot include an ID value." },
-            { ModelResult.IDMismatchInPut, "Cannot update the ID field of an existing object." }
+            { ModelResult.IDMismatchInPut, "The ID in the header does not match the ID in the body." }
         };
 
         public string GetResource(ModelResult modelResult)

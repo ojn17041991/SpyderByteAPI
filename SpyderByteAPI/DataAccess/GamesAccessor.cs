@@ -1,4 +1,5 @@
-﻿using SpyderByteAPI.DataAccess.Abstract;
+﻿using Microsoft.EntityFrameworkCore;
+using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models;
 
@@ -79,13 +80,18 @@ namespace SpyderByteAPI.DataAccess
                 return new DataResponse<Game?>(game, ModelResult.NotFound);
             }
 
+            if (updateObject.Id == null)
+            {
+                // The ID is optional, but we need to provide it for EF if it wasn't provided by the client.
+                updateObject.Id = id;
+            }
+
             // Perform the put operation.
-            game.Name = updateObject.Name;
-            game.PublishDate = updateObject.PublishDate;
+            context.Entry(game).CurrentValues.SetValues(updateObject);
             context.SaveChanges();
 
             // The object was updated.
-            return new DataResponse<Game?>(game, ModelResult.OK);
+            return new DataResponse<Game?>(updateObject, ModelResult.OK);
         }
 
         /// <summary>
