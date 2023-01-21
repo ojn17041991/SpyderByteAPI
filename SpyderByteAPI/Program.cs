@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
@@ -10,9 +11,16 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressMapClientErrors = true);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(services =>
-    services.EnableAnnotations()
-);
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "SpyderByte API",
+        Description = "An repository API for game information developed by SpyderByteStudios.",
+        Version = "1.0.3.1"
+    });
+});
 
 builder.Services.AddTransient<IDataAccessor<Game>, GamesAccessor>();
 builder.Services.AddTransient<IStringResources<ModelResult>, ModelStringResources>();

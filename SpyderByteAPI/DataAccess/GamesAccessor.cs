@@ -127,7 +127,7 @@ namespace SpyderByteAPI.DataAccess
             context.SaveChanges();
 
             // The object was patched.
-            return new DataResponse<Game?>(null, ModelResult.OK);
+            return new DataResponse<Game?>(game, ModelResult.OK);
         }
 
         /// <summary>
