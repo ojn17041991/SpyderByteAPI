@@ -126,6 +126,10 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Patch(int id, [FromBody] PatchableGame game)
         {
             IDataResponse<Game?> response = gameAccessor.Patch(id, game);
@@ -154,6 +158,9 @@ namespace SpyderByteAPI.Controllers
 
         // DELETE api/<GamesController>/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Delete(int id)
         {
             IDataResponse<Game?> response = gameAccessor.Delete(id);

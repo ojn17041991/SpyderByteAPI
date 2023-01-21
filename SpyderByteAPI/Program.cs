@@ -8,7 +8,7 @@ using SpyderByteAPI.Resources.Abstract;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressMapClientErrors = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(services =>
     services.EnableAnnotations()
