@@ -11,9 +11,9 @@ namespace SpyderByteAPI.Controllers
     public class GamesController : ControllerBase
     {
         private readonly IDataAccessor<Game> gameAccessor;
-        private readonly IStringResources<ModelResult> modelResources;
+        private readonly IStringLookup<ModelResult> modelResources;
 
-        public GamesController(IDataAccessor<Game> gameAccessor, IStringResources<ModelResult> modelResources)
+        public GamesController(IDataAccessor<Game> gameAccessor, IStringLookup<ModelResult> modelResources)
         {
             this.gameAccessor = gameAccessor;
             this.modelResources = modelResources;

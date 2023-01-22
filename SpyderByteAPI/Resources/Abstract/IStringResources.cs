@@ -1,7 +1,6 @@
 ﻿namespace SpyderByteAPI.Resources.Abstract
 {
-    public interface IStringResources<T>
+    public interface IStringResources
     {
-        string GetResource(T type);
     }
 }

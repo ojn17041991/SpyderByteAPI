@@ -11,19 +11,21 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressMapClientErrors = true);
 builder.Services.AddEndpointsApiExplorer();
+
+APIResources apiResources = new APIResources();
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "SpyderByte API",
-        Description = "An repository API for game information developed by SpyderByteStudios.",
+        Title = apiResources.Title,
+        Description = apiResources.Description,
         Version = "1.0.3.1"
     });
 });
 
 builder.Services.AddTransient<IDataAccessor<Game>, GamesAccessor>();
-builder.Services.AddTransient<IStringResources<ModelResult>, ModelStringResources>();
+builder.Services.AddTransient<IStringLookup<ModelResult>, ModelResources>();
 
 // Replace the SQLite data directory with a relative path.
 string? connectionString = builder.Configuration.GetConnectionString("Games");

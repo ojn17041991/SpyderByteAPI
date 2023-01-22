@@ -3,7 +3,7 @@ using SpyderByteAPI.Resources.Abstract;
 
 namespace SpyderByteAPI.Resources
 {
-    public class ModelStringResources : IStringResources<ModelResult>
+    public class ModelResources : IStringLookup<ModelResult>
     {
         private IDictionary<ModelResult, string> languageResources = new Dictionary<ModelResult, string>()
         {
