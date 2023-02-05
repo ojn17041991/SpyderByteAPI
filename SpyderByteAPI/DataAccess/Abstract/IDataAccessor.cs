@@ -12,12 +12,8 @@ namespace SpyderByteAPI.DataAccess.Abstract
 
         IDataResponse<T?> Put(int id, T updateObject);
 
-        IDataResponse<T?> Patch(int id, IPatchable patchObject);
+        IDataResponse<T?> Patch(int id, T patchObject);
 
         IDataResponse<T?> Delete(int id);
-
-        //IDataResponse<T?> Option(int id);
-
-        //Head
     }
 }

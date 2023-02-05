@@ -1,6 +1,5 @@
-﻿using Swashbuckle.AspNetCore.Annotations;
-using System.ComponentModel.DataAnnotations;
-using SpyderByteAPI.Models.Abstract;
+﻿using SpyderByteAPI.Models.Abstract;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SpyderByteAPI.Models
 {
@@ -9,10 +8,8 @@ namespace SpyderByteAPI.Models
         [SwaggerSchema(ReadOnly = true)]
         public int? Id { get; set; }
 
-        [Required]
-        public string? Name { get; set; } = string.Empty;
+        public string? Name { get; set; }
 
-        [Required]
-        public DateTime? PublishDate { get; set; } = DateTime.Now;
+        public DateTime? PublishDate { get; set; }
     }
 }

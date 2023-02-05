@@ -2,6 +2,7 @@
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models;
+using SpyderByteAPI.Models.Abstract;
 using SpyderByteAPI.Resources.Abstract;
 
 namespace SpyderByteAPI.Controllers
@@ -10,10 +11,10 @@ namespace SpyderByteAPI.Controllers
     [ApiController]
     public class GamesController : ControllerBase
     {
-        private readonly IDataAccessor<Game> gameAccessor;
+        private readonly BaseGamesAccessor<Game> gameAccessor;
         private readonly IStringLookup<ModelResult> modelResources;
 
-        public GamesController(IDataAccessor<Game> gameAccessor, IStringLookup<ModelResult> modelResources)
+        public GamesController(BaseGamesAccessor<Game> gameAccessor, IStringLookup<ModelResult> modelResources)
         {
             this.gameAccessor = gameAccessor;
             this.modelResources = modelResources;
@@ -27,7 +28,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Get()
         {
-            IDataResponse<IQueryable<Game>> response = gameAccessor.Get();
+            IDataResponse<IQueryable<IGame>> response = gameAccessor.Get();
 
             if (response.Result == ModelResult.OK)
             {
@@ -48,7 +49,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetGame(int id)
         {
-            IDataResponse<Game?> response = gameAccessor.Get(id);
+            IDataResponse<IGame?> response = gameAccessor.Get(id);
 
             if (response.Result == ModelResult.OK)
             {
@@ -74,7 +75,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Post([FromBody] Game game)
         {
-            IDataResponse<Game?> response = gameAccessor.Post(game);
+            IDataResponse<IGame?> response = gameAccessor.Post(game);
 
             if (response.Result == ModelResult.Created)
             {
@@ -101,7 +102,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Put(int id, [FromBody] Game game)
         {
-            IDataResponse<Game?> response = gameAccessor.Put(id, game);
+            IDataResponse<IGame?> response = gameAccessor.Put(id, game);
 
             if (response.Result == ModelResult.OK)
             {
@@ -130,9 +131,9 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult Patch(int id, [FromBody] PatchableGame game)
+        public IActionResult Patch(int id, [FromBody] Game game)
         {
-            IDataResponse<Game?> response = gameAccessor.Patch(id, game);
+            IDataResponse<IGame?> response = gameAccessor.Patch(id, game);
 
             if (response.Result == ModelResult.OK)
             {
@@ -163,7 +164,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Delete(int id)
         {
-            IDataResponse<Game?> response = gameAccessor.Delete(id);
+            IDataResponse<IGame?> response = gameAccessor.Delete(id);
 
             if (response.Result == ModelResult.OK)
             {

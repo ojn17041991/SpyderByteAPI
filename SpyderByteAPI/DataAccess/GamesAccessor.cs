@@ -1,153 +1,39 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
+﻿using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Models;
 using SpyderByteAPI.Models.Abstract;
-using System.Reflection;
 
 namespace SpyderByteAPI.DataAccess
 {
-    public class GamesAccessor : IDataAccessor<Game>
+    public class GamesAccessor : BaseGamesAccessor<Game>
     {
-        private readonly ApplicationDbContext context;
-
-
-
-        public GamesAccessor(ApplicationDbContext context)
+        public GamesAccessor(ApplicationDbContext context) : base(context)
         {
-            this.context = context;
+
         }
 
-
-
-        /// <summary>
-        /// Gets a list of all games.
-        /// </summary>
-        public IDataResponse<IQueryable<Game>> Get()
+        protected override IQueryable<IGame> getAll()
         {
-            return new DataResponse<IQueryable<Game>>(context.Games, ModelResult.OK);
+            return context.Games;
         }
 
-        /// <summary>
-        /// Gets a single game by ID.
-        /// </summary>
-        public IDataResponse<Game?> Get(int id)
+        protected override IGame? getSingle(int id)
         {
-            Game? game = context.Games.SingleOrDefault(g => g.Id == id);
-
-            if (game == null)
-            {
-                // Couldn't find an item of this ID.
-                return new DataResponse<Game?>(game, ModelResult.NotFound);
-            }
-            
-            // Found the requested item.
-            return new DataResponse<Game?>(game, ModelResult.OK);
+            return context.Games.SingleOrDefault(g => g.Id == id);
         }
 
-        /// <summary>
-        /// Inserts a new game.
-        /// </summary>
-        public IDataResponse<Game?> Post(Game insertObject)
+        protected override void addSingle(IGame addedGame)
         {
-            if (insertObject.Id != null)
-            {
-                // ID is an identity field. You are not allowed to set it manually.
-                return new DataResponse<Game?>(null, ModelResult.IDGivenForIdentityField);
-            }
-
-            // Perform the post operation.
-            context.Games.Add(insertObject);
-            context.SaveChanges();
-
-            // The object was created.
-            return new DataResponse<Game?>(insertObject, ModelResult.Created);
+            context.Games.Add((Game)addedGame);
         }
 
-        /// <summary>
-        /// Updates an existing game.
-        /// </summary>
-        public IDataResponse<Game?> Put(int id, Game updateObject)
+        protected override void updateSingle(IGame originalGame, IGame updatedGame)
         {
-            if ((updateObject.Id ?? id) != id)
-            {
-                // The ID doesn't match the ID in the object.
-                return new DataResponse<Game?>(null, ModelResult.IDMismatchInPut);
-            }
-
-            Game? game = context.Games.SingleOrDefault(g => g.Id == id);
-            if (game == null)
-            {
-                // Couldn't find an item of this ID.
-                return new DataResponse<Game?>(game, ModelResult.NotFound);
-            }
-
-            if (updateObject.Id == null)
-            {
-                // The ID is optional, but we need to provide it for EF if it wasn't provided by the client.
-                updateObject.Id = id;
-            }
-
-            // Perform the put operation.
-            context.Entry(game).CurrentValues.SetValues(updateObject);
-            context.SaveChanges();
-
-            // The object was updated.
-            return new DataResponse<Game?>(updateObject, ModelResult.OK);
+            context.Entry(originalGame).CurrentValues.SetValues(updatedGame);
         }
 
-        public IDataResponse<Game?> Patch(int id, IPatchable patchObject)
+        protected override void deleteSingle(IGame deletedGame)
         {
-            PatchableGame? patchGame = patchObject as PatchableGame;
-
-            if (patchGame?.Id != null)
-            {
-                // The patchable object includes an ID.
-                return new DataResponse<Game?>(null, ModelResult.IDFoundInPatch);
-            }
-
-            Game? game = context.Games.SingleOrDefault(g => g.Id == id);
-            if (game == null)
-            {
-                // Couldn't find an item of this ID.
-                return new DataResponse<Game?>(game, ModelResult.NotFound);
-            }
-
-            // Go through each property, find those provided by the patch object, and update them.
-            foreach (PropertyInfo property in typeof(PatchableGame).GetProperties())
-            {
-                object? propertyValue = property.GetValue(patchGame, null);
-                if (propertyValue != null)
-                {
-                    game?.GetType()?.GetProperty(property.Name)?.SetValue(game, propertyValue);
-                }
-            }
-
-            // Perform the patch operation.
-            context.SaveChanges();
-
-            // The object was patched.
-            return new DataResponse<Game?>(game, ModelResult.OK);
-        }
-
-        /// <summary>
-        /// Deletes an existing game.
-        /// </summary>
-        public IDataResponse<Game?> Delete(int id)
-        {
-            Game? game = context.Games.SingleOrDefault(g => g.Id == id);
-            if (game == null)
-            {
-                // Couldn't find an item of this ID.
-                return new DataResponse<Game?>(game, ModelResult.NotFound);
-            }
-
-            // Perform the delete operation.
-            context.Games.Remove(game);
-            context.SaveChanges();
-
-            // The object was deleted.
-            return new DataResponse<Game?>(game, ModelResult.OK);
+            context.Games.Remove((Game)deletedGame);
         }
     }
 }

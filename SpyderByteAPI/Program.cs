@@ -24,7 +24,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddTransient<IDataAccessor<Game>, GamesAccessor>();
+//builder.Services.AddTransient<IDataAccessor<Game>, BaseGamesAccessor>();
+builder.Services.AddTransient<BaseGamesAccessor<Game>, GamesAccessor>();
+builder.Services.AddTransient<BaseGamesAccessor<WebGame>, WebGamesAccessor>();
 builder.Services.AddTransient<IStringLookup<ModelResult>, ModelResources>();
 
 // Replace the SQLite data directory with a relative path.
