@@ -1,11 +1,19 @@
-﻿using SpyderByteAPI.Resources.Abstract;
+﻿using SpyderByteAPI.Enums;
+using SpyderByteAPI.Resources.Abstract;
 
 namespace SpyderByteAPI.Resources
 {
-    public class APIResources : IStringResources
+    public class APIResources : IStringLookup<string>
     {
-        public string Title = "SpyderByte API";
+        private IDictionary<string, string> resources = new Dictionary<string, string>()
+        {
+            { "Title", "SpyderByte API" },
+            { "Description", "A private API for games and related resources developed by SpyderByteStudios." }
+        };
 
-        public string Description = "An API for a repository of games developed by SpyderByteStudios.";
+        public string GetResource(string key)
+        {
+            return resources?[key] ?? string.Empty;
+        }
     }
 }

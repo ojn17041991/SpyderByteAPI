@@ -11,6 +11,5 @@ namespace SpyderByteAPI.DataAccess
         }
 
         public DbSet<Game> Games { get; set; }
-        //public DbSet<WebGame> WebGames { get; set; }
     }
 }

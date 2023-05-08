@@ -1,9 +1,8 @@
-﻿using SpyderByteAPI.Models.Abstract;
-using Swashbuckle.AspNetCore.Annotations;
+﻿using Swashbuckle.AspNetCore.Annotations;
 
 namespace SpyderByteAPI.Models
 {
-    public class Game : IGame
+    public class Game
     {
         [SwaggerSchema(ReadOnly = true)]
         public int? Id { get; set; }

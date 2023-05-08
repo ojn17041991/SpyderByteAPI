@@ -18,16 +18,14 @@ builder.Services.AddSwaggerGen(c =>
     c.EnableAnnotations();
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = apiResources.Title,
-        Description = apiResources.Description,
+        Title = apiResources.GetResource("Title"),
+        Description = apiResources.GetResource("Description"),
         Version = "1.0.3.1"
     });
 });
 
-//builder.Services.AddTransient<IDataAccessor<Game>, BaseGamesAccessor>();
-builder.Services.AddTransient<BaseGamesAccessor<Game>, GamesAccessor>();
-builder.Services.AddTransient<BaseGamesAccessor<WebGame>, WebGamesAccessor>();
-builder.Services.AddTransient<IStringLookup<ModelResult>, ModelResources>();
+builder.Services.AddScoped<IGamesAccessor, GamesAccessor>();
+builder.Services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
 
 // Replace the SQLite data directory with a relative path.
 string? connectionString = builder.Configuration.GetConnectionString("Games");
