@@ -3,7 +3,6 @@ using Microsoft.OpenApi.Models;
 using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models;
 using SpyderByteAPI.Resources;
 using SpyderByteAPI.Resources.Abstract;
 using System.Reflection;
@@ -25,6 +24,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddScoped<IGamesAccessor, GamesAccessor>();
+builder.Services.AddScoped<ILeaderboardAccessor, LeaderboardAccessor>();
 builder.Services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
 
 // Replace the SQLite data directory with a relative path.
@@ -39,6 +39,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         connectionString
     )
 );
+
+builder.Services.AddLogging();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
