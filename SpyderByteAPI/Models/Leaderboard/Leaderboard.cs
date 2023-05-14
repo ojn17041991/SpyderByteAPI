@@ -1,8 +1,8 @@
 ﻿using Swashbuckle.AspNetCore.Annotations;
 
-namespace SpyderByteAPI.Models
+namespace SpyderByteAPI.Models.Leaderboard
 {
-    public class Game
+    public class Leaderboard
     {
         [SwaggerSchema(ReadOnly = true)]
         public int? Id { get; set; }

@@ -2,6 +2,7 @@
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models;
+using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Resources.Abstract;
 
 namespace SpyderByteAPI.Controllers
@@ -18,6 +19,11 @@ namespace SpyderByteAPI.Controllers
             this.gamesAccessor = gamesAccessor;
             this.modelResources = modelResources;
         }
+
+
+        // This is being stubbed out, because I want to test EF/SQLite with a dummy API first.
+        //  If costs are low, then this can be exposed (with credentials).
+
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -67,7 +73,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post([FromBody] Game game)
+        public async Task<IActionResult> Post([FromBody] PostGame game)
         {
             IDataResponse<Game?> response = await gamesAccessor.PostAsync(game);
 
@@ -88,14 +94,14 @@ namespace SpyderByteAPI.Controllers
             }
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Patch(int id, [FromBody] Game game)
+        public async Task<IActionResult> Patch([FromBody] PatchGame game)
         {
-            IDataResponse<Game?> response = await gamesAccessor.PatchAsync(id, game);
+            IDataResponse<Game?> response = await gamesAccessor.PatchAsync(game);
 
             if (response.Result == ModelResult.OK)
             {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models;
+using SpyderByteAPI.Models.Games;
 
 namespace SpyderByteAPI.DataAccess
 {
@@ -44,20 +44,26 @@ namespace SpyderByteAPI.DataAccess
             }
         }
 
-        public async Task<IDataResponse<Game?>> PostAsync(Game game)
+        public async Task<IDataResponse<Game?>> PostAsync(PostGame game)
         {
             try
             {
-                Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Id == game.Id);
+                Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Name.ToLower() == game.Name.ToLower());
                 if (storedGame != null)
                 {
                     return new DataResponse<Game?>(storedGame, ModelResult.AlreadyExists);
                 }
 
-                await context.Games.AddAsync(game);
+                Game mappedGame = new Game
+                {
+                    Name = game.Name,
+                    PublishDate = game.PublishDate
+                };
+
+                await context.Games.AddAsync(mappedGame);
                 await context.SaveChangesAsync();
 
-                return new DataResponse<Game?>(game, ModelResult.Created);
+                return new DataResponse<Game?>(mappedGame, ModelResult.Created);
             }
             catch (Exception e)
             {
@@ -66,18 +72,26 @@ namespace SpyderByteAPI.DataAccess
             }
         }
 
-        public async Task<IDataResponse<Game?>> PatchAsync(int id, Game patchedGame)
+        public async Task<IDataResponse<Game?>> PatchAsync(PatchGame patchedGame)
         {
             try
             {
-                Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Id == id);
+                Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Id == patchedGame.Id);
                 if (storedGame == null)
                 {
                     return new DataResponse<Game?>(storedGame, ModelResult.NotFound);
                 }
 
-                storedGame.Name = patchedGame.Name;
-                storedGame.PublishDate = patchedGame.PublishDate;
+                if (patchedGame?.Name != null && patchedGame.Name == string.Empty)
+                {
+                    storedGame.Name = patchedGame.Name;
+                }
+
+                if (patchedGame?.PublishDate != null && patchedGame.PublishDate != default(DateTime))
+                {
+                    storedGame.PublishDate = (DateTime)patchedGame.PublishDate;
+                }
+
                 await context.SaveChangesAsync();
 
                 return new DataResponse<Game?>(storedGame, ModelResult.OK);

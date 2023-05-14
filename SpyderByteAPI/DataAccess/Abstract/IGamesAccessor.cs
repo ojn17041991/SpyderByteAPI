@@ -1,4 +1,4 @@
-﻿using SpyderByteAPI.Models;
+﻿using SpyderByteAPI.Models.Games;
 
 namespace SpyderByteAPI.DataAccess.Abstract
 {
@@ -8,9 +8,9 @@ namespace SpyderByteAPI.DataAccess.Abstract
 
         Task<IDataResponse<Game?>> GetSingleAsync(int id);
 
-        Task<IDataResponse<Game?>> PostAsync(Game game);
+        Task<IDataResponse<Game?>> PostAsync(PostGame game);
 
-        Task<IDataResponse<Game?>> PatchAsync(int id, Game patchedGame);
+        Task<IDataResponse<Game?>> PatchAsync(PatchGame patchedGame);
 
         Task<IDataResponse<Game?>> DeleteAsync(int id);
     }

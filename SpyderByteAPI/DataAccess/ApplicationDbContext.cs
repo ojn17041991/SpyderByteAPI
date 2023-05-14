@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SpyderByteAPI.Models;
+using SpyderByteAPI.Models.Games;
 
 namespace SpyderByteAPI.DataAccess
 {
