@@ -28,7 +28,7 @@ namespace SpyderByteAPI.DataAccess
 
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        string data = "var jsonp = " + await response.Content.ReadAsStringAsync() + ";";
+                        string data = "var jsonp = " + await response.Content.ReadAsStringAsync();
                         return new DataResponse<string>(data, ModelResult.OK);
                     }
                     else

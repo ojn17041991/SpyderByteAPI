@@ -42,6 +42,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddLogging();
 builder.Services.AddHttpClient();
+builder.Services.AddCors(p => p.AddPolicy("SpyderByteAPI", builder =>
+{
+    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -53,5 +57,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors("SpyderByteAPI");
 
 app.Run();
