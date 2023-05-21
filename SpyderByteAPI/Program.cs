@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using SpyderByteAPI.Authorisation;
+using SpyderByteAPI.Authorisation.Abstract;
 using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
@@ -26,6 +28,12 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<IGamesAccessor, GamesAccessor>();
 builder.Services.AddScoped<ILeaderboardAccessor, LeaderboardAccessor>();
 builder.Services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
+
+#if DEBUG
+    builder.Services.AddSingleton<ISecretAccessor, UserSecretAccessor>();
+#else
+    builder.Services.AddSingleton<ISecretAccessor, KeyVaultAccessor>();
+#endif
 
 // Replace the SQLite data directory with a relative path.
 string? connectionString = builder.Configuration.GetConnectionString("Games");
