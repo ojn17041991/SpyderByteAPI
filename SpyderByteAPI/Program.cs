@@ -1,13 +1,11 @@
+using Azure.Identity; // Required for Release.
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using SpyderByteAPI.Authorisation;
-using SpyderByteAPI.Authorisation.Abstract;
 using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Resources;
 using SpyderByteAPI.Resources.Abstract;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressMapClientErrors = true);
@@ -29,19 +27,7 @@ builder.Services.AddScoped<IGamesAccessor, GamesAccessor>();
 builder.Services.AddScoped<ILeaderboardAccessor, LeaderboardAccessor>();
 builder.Services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
 
-#if DEBUG
-    builder.Services.AddSingleton<ISecretAccessor, UserSecretAccessor>();
-#else
-    builder.Services.AddSingleton<ISecretAccessor, KeyVaultAccessor>();
-#endif
-
-// Replace the SQLite data directory with a relative path.
 string? connectionString = builder.Configuration.GetConnectionString("Games");
-string? assemblyLocation = Assembly.GetExecutingAssembly().Location;
-string? dataDirectory = Path.GetDirectoryName(assemblyLocation);
-connectionString = connectionString?.Replace("|DataDirectory|", dataDirectory) ?? string.Empty;
-
-// Send the updated connection string to the DB Context.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(
         connectionString
@@ -55,6 +41,13 @@ builder.Services.AddCors(p => p.AddPolicy("SpyderByteAPI", builder =>
     builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
 }));
 
+#if !DEBUG
+builder.Configuration.AddAzureKeyVault(
+    new Uri("https://spyderbyteglobalkeyvault.vault.azure.net/"),
+    new DefaultAzureCredential()
+);
+#endif
+
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
@@ -66,5 +59,17 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.UseCors("SpyderByteAPI");
+
+using (var serviceScope = app.Services?.GetService<IServiceScopeFactory>()?.CreateScope())
+{
+    if (serviceScope != null)
+    {
+        var dbContext = serviceScope.ServiceProvider?.GetService<ApplicationDbContext>();
+        if (dbContext != null)
+        {
+            dbContext.Database?.Migrate();
+        }
+    }
+}
 
 app.Run();

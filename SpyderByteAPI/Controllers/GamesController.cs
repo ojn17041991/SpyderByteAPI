@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SpyderByteAPI.Authorisation.Abstract;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models.Games;
@@ -14,14 +13,12 @@ namespace SpyderByteAPI.Controllers
         private readonly IGamesAccessor gamesAccessor;
         private readonly IStringLookup<ModelResult> modelResources;
         private readonly IConfiguration configuration;
-        private readonly ISecretAccessor keyVault;
 
-        public GamesController(IGamesAccessor gamesAccessor, IStringLookup<ModelResult> modelResources, IConfiguration configuration, ISecretAccessor keyVault)
+        public GamesController(IGamesAccessor gamesAccessor, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
         {
             this.gamesAccessor = gamesAccessor;
             this.modelResources = modelResources;
             this.configuration = configuration;
-            this.keyVault = keyVault;
         }
 
         [HttpGet]
@@ -75,7 +72,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] PostGame game, [FromHeader] string sbApiKey)
         {
-            if (keyVault.ApiKey != sbApiKey)
+            if (configuration["SBAPIKEY"] != sbApiKey)
             {
                 // 401
                 return Unauthorized();
@@ -107,7 +104,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Patch([FromBody] PatchGame game, [FromHeader] string sbApiKey)
         {
-            if (keyVault.ApiKey != sbApiKey)
+            if (configuration["SBAPIKEY"] != sbApiKey)
             {
                 // 401
                 return Unauthorized();
@@ -139,7 +136,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(int id, [FromHeader] string sbApiKey)
         {
-            if (keyVault.ApiKey != sbApiKey)
+            if (configuration["SBAPIKEY"] != sbApiKey)
             {
                 // 401
                 return Unauthorized();

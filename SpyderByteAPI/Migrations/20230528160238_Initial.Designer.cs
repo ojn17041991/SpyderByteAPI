@@ -11,7 +11,7 @@ using SpyderByteAPI.DataAccess;
 namespace SpyderByteAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230121125708_Initial")]
+    [Migration("20230528160238_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace SpyderByteAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.2");
 
-            modelBuilder.Entity("SpyderByteAPI.Models.Game", b =>
+            modelBuilder.Entity("SpyderByteAPI.Models.Games.Game", b =>
                 {
                     b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
