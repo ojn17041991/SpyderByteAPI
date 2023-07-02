@@ -1,8 +1,9 @@
 ﻿using SpyderByteAPI.DataAccess.Abstract;
+using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
 using System.Net;
 
-namespace SpyderByteAPI.DataAccess
+namespace SpyderByteAPI.DataAccess.Accessors
 {
     public class LeaderboardAccessor : ILeaderboardAccessor
     {

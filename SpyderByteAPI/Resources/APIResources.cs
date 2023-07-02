@@ -1,5 +1,4 @@
-﻿using SpyderByteAPI.Enums;
-using SpyderByteAPI.Resources.Abstract;
+﻿using SpyderByteAPI.Resources.Abstract;
 
 namespace SpyderByteAPI.Resources
 {

@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SpyderByteAPI.DataAccess.Abstract;
+using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models.Games;
 
-namespace SpyderByteAPI.DataAccess
+namespace SpyderByteAPI.DataAccess.Accessors
 {
     public class GamesAccessor : IGamesAccessor
     {

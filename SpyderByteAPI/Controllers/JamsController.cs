@@ -1,23 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
+using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Resources.Abstract;
+using SpyderByteAPI.Models.Jams;
 
 namespace SpyderByteAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class GamesController : ControllerBase
+    public class JamsController : ControllerBase
     {
-        private readonly IGamesAccessor gamesAccessor;
+        private readonly IJamsAccessor jamsAccessor;
         private readonly IStringLookup<ModelResult> modelResources;
         private readonly IConfiguration configuration;
 
-        public GamesController(IGamesAccessor gamesAccessor, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
+        public JamsController(IJamsAccessor jamsAccessor, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
         {
-            this.gamesAccessor = gamesAccessor;
+            this.jamsAccessor = jamsAccessor;
             this.modelResources = modelResources;
             this.configuration = configuration;
         }
@@ -27,7 +28,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get()
         {
-            IDataResponse<IList<Game>?> response = await gamesAccessor.GetAllAsync();
+            IDataResponse<IList<Jam>?> response = await jamsAccessor.GetAllAsync();
 
             if (response.Result == ModelResult.OK)
             {
@@ -45,9 +46,9 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetGame(int id)
+        public async Task<IActionResult> GetJam(int id)
         {
-            IDataResponse<Game?> response = await gamesAccessor.GetSingleAsync(id);
+            IDataResponse<Jam?> response = await jamsAccessor.GetSingleAsync(id);
 
             if (response.Result == ModelResult.OK)
             {
@@ -71,7 +72,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post([FromBody] PostGame game, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Post([FromBody] PostJam jam, [FromHeader] string sbApiKey)
         {
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
@@ -79,12 +80,12 @@ namespace SpyderByteAPI.Controllers
                 return Unauthorized();
             }
 
-            IDataResponse<Game?> response = await gamesAccessor.PostAsync(game);
+            IDataResponse<Jam?> response = await jamsAccessor.PostAsync(jam);
 
             if (response.Result == ModelResult.Created)
             {
                 // 201
-                return CreatedAtAction(nameof(GetGame), new { id = response?.Data?.Id }, response?.Data);
+                return CreatedAtAction(nameof(GetJam), new { id = response?.Data?.Id }, response?.Data);
             }
             else if (response.Result == ModelResult.AlreadyExists)
             {
@@ -103,7 +104,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Patch([FromBody] PatchGame game, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Patch([FromBody] PatchJam jam, [FromHeader] string sbApiKey)
         {
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
@@ -111,7 +112,7 @@ namespace SpyderByteAPI.Controllers
                 return Unauthorized();
             }
 
-            IDataResponse<Game?> response = await gamesAccessor.PatchAsync(game);
+            IDataResponse<Jam?> response = await jamsAccessor.PatchAsync(jam);
 
             if (response.Result == ModelResult.OK)
             {
@@ -143,7 +144,7 @@ namespace SpyderByteAPI.Controllers
                 return Unauthorized();
             }
 
-            IDataResponse<Game?> response = await gamesAccessor.DeleteAsync(id);
+            IDataResponse<Jam?> response = await jamsAccessor.DeleteAsync(id);
 
             if (response.Result == ModelResult.OK)
             {

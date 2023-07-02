@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.DataAccess.Abstract;
+using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
 
 namespace SpyderByteAPI.Controllers

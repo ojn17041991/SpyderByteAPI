@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SpyderByteAPI.Models;
 using SpyderByteAPI.Models.Games;
+using SpyderByteAPI.Models.Jams;
 
 namespace SpyderByteAPI.DataAccess
 {
@@ -12,5 +12,7 @@ namespace SpyderByteAPI.DataAccess
         }
 
         public DbSet<Game> Games { get; set; }
+
+        public DbSet<Jam> Jams { get; set; }
     }
 }

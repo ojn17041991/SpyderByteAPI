@@ -1,4 +1,4 @@
-﻿namespace SpyderByteAPI.DataAccess.Abstract
+﻿namespace SpyderByteAPI.DataAccess.Abstract.Accessors
 {
     public interface ILeaderboardAccessor
     {

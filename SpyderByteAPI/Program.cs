@@ -1,8 +1,10 @@
 using Azure.Identity; // Required for Release.
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.ApplicationInsights; // Required for Release.
 using Microsoft.OpenApi.Models;
 using SpyderByteAPI.DataAccess;
-using SpyderByteAPI.DataAccess.Abstract;
+using SpyderByteAPI.DataAccess.Abstract.Accessors;
+using SpyderByteAPI.DataAccess.Accessors;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Resources;
 using SpyderByteAPI.Resources.Abstract;
@@ -19,22 +21,23 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = apiResources.GetResource("Title"),
         Description = apiResources.GetResource("Description"),
-        Version = "1.0.3.1"
+        Version = "1.0.0.0"
     });
 });
 
-builder.Services.AddScoped<IGamesAccessor, GamesAccessor>();
-builder.Services.AddScoped<ILeaderboardAccessor, LeaderboardAccessor>();
-builder.Services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
+builder.Services.AddSingleton<IGamesAccessor, GamesAccessor>();
+builder.Services.AddSingleton<IJamsAccessor, JamsAccessor>();
+builder.Services.AddSingleton<ILeaderboardAccessor, LeaderboardAccessor>();
+builder.Services.AddSingleton<IStringLookup<ModelResult>, ModelResources>();
 
-string? connectionString = builder.Configuration.GetConnectionString("Games");
+string? connectionString = builder.Configuration.GetConnectionString("SbApi");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(
         connectionString
-    )
+    ),
+    ServiceLifetime.Singleton
 );
 
-builder.Services.AddLogging();
 builder.Services.AddHttpClient();
 builder.Services.AddCors(p => p.AddPolicy("SpyderByteAPI", builder =>
 {
@@ -42,6 +45,9 @@ builder.Services.AddCors(p => p.AddPolicy("SpyderByteAPI", builder =>
 }));
 
 #if !DEBUG
+builder.Services.AddApplicationInsightsTelemetry();
+builder.Services.AddLogging(logBuilder => logBuilder.AddApplicationInsights());
+
 builder.Configuration.AddAzureKeyVault(
     new Uri("https://spyderbyteglobalkeyvault.vault.azure.net/"),
     new DefaultAzureCredential()
