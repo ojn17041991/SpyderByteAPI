@@ -2,7 +2,6 @@
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Resources.Abstract;
 using SpyderByteAPI.Models.Jams;
 
@@ -68,11 +67,11 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post([FromBody] PostJam jam, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Post([FromForm] PostJam jam, [FromHeader] string sbApiKey)
         {
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
@@ -82,15 +81,20 @@ namespace SpyderByteAPI.Controllers
 
             IDataResponse<Jam?> response = await jamsAccessor.PostAsync(jam);
 
-            if (response.Result == ModelResult.Created)
+            if (response.Result == ModelResult.OK)
             {
-                // 201
-                return CreatedAtAction(nameof(GetJam), new { id = response?.Data?.Id }, response?.Data);
+                // 200
+                return Ok(response.Data);
             }
             else if (response.Result == ModelResult.AlreadyExists)
             {
                 // 400
                 return BadRequest(modelResources.GetResource(ModelResult.AlreadyExists));
+            }
+            else if (response.Result == ModelResult.Unauthorized)
+            {
+                // 401
+                return Unauthorized();
             }
             else
             {
@@ -104,7 +108,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Patch([FromBody] PatchJam jam, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Patch([FromForm] PatchJam jam, [FromHeader] string sbApiKey)
         {
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
@@ -159,6 +163,30 @@ namespace SpyderByteAPI.Controllers
             else
             {
                 // 500
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ClearRecords([FromHeader] string sbApiKey)
+        {
+            return NotFound();
+            if (configuration["SBAPIKEY"] != sbApiKey)
+            {
+                // 401
+                return Unauthorized();
+            }
+
+            var response = await jamsAccessor.DeleteAllAsync();
+
+            if (response.Result == ModelResult.OK)
+            {
+                return Ok(response.Data);
+            }
+            else
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

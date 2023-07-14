@@ -57,8 +57,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
 
                 Game mappedGame = new Game
                 {
-                    Name = game.Name,
-                    PublishDate = game.PublishDate
+                    Name = game.Name
                 };
 
                 await context.Games.AddAsync(mappedGame);
@@ -83,14 +82,9 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     return new DataResponse<Game?>(storedGame, ModelResult.NotFound);
                 }
 
-                if (patchedGame?.Name != null && patchedGame.Name == string.Empty)
+                if (patchedGame?.Name != null && patchedGame.Name != string.Empty)
                 {
                     storedGame.Name = patchedGame.Name;
-                }
-
-                if (patchedGame?.PublishDate != null && patchedGame.PublishDate != default(DateTime))
-                {
-                    storedGame.PublishDate = (DateTime)patchedGame.PublishDate;
                 }
 
                 await context.SaveChangesAsync();
@@ -123,6 +117,23 @@ namespace SpyderByteAPI.DataAccess.Accessors
             {
                 logger.LogError("Failed to delete game.", e);
                 return new DataResponse<Game?>(null, ModelResult.Error);
+            }
+        }
+
+        public async Task<IDataResponse<IList<Game>?>> DeleteAllAsync()
+        {
+            try
+            {
+                var games = await context.Games.ToListAsync();
+                context.Games.RemoveRange(games);
+                await context.SaveChangesAsync();
+
+                return new DataResponse<IList<Game>?>(games, ModelResult.OK);
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Failed to clear games.", e);
+                return new DataResponse<IList<Game>?>(null, ModelResult.Error);
             }
         }
     }

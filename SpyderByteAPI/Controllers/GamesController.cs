@@ -27,7 +27,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get()
         {
-            IDataResponse<IList<Game>?> response = await gamesAccessor.GetAllAsync();
+            var response = await gamesAccessor.GetAllAsync();
 
             if (response.Result == ModelResult.OK)
             {
@@ -47,7 +47,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetGame(int id)
         {
-            IDataResponse<Game?> response = await gamesAccessor.GetSingleAsync(id);
+            var response = await gamesAccessor.GetSingleAsync(id);
 
             if (response.Result == ModelResult.OK)
             {
@@ -79,7 +79,7 @@ namespace SpyderByteAPI.Controllers
                 return Unauthorized();
             }
 
-            IDataResponse<Game?> response = await gamesAccessor.PostAsync(game);
+            var response = await gamesAccessor.PostAsync(game);
 
             if (response.Result == ModelResult.Created)
             {
@@ -111,7 +111,7 @@ namespace SpyderByteAPI.Controllers
                 return Unauthorized();
             }
 
-            IDataResponse<Game?> response = await gamesAccessor.PatchAsync(game);
+            var response = await gamesAccessor.PatchAsync(game);
 
             if (response.Result == ModelResult.OK)
             {
@@ -143,7 +143,7 @@ namespace SpyderByteAPI.Controllers
                 return Unauthorized();
             }
 
-            IDataResponse<Game?> response = await gamesAccessor.DeleteAsync(id);
+            var response = await gamesAccessor.DeleteAsync(id);
 
             if (response.Result == ModelResult.OK)
             {
@@ -158,6 +158,30 @@ namespace SpyderByteAPI.Controllers
             else
             {
                 // 500
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ClearRecords([FromHeader] string sbApiKey)
+        {
+            return NotFound();
+            if (configuration["SBAPIKEY"] != sbApiKey)
+            {
+                // 401
+                return Unauthorized();
+            }
+
+            var response = await gamesAccessor.DeleteAllAsync();
+
+            if (response.Result == ModelResult.OK)
+            {
+                return Ok(response.Data);
+            }
+            else
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

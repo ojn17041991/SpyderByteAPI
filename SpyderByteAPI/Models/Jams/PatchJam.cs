@@ -9,7 +9,7 @@ namespace SpyderByteAPI.Models.Jams
 
         public string? Name { get; set; }
 
-        public string? ImgurUrl { get; set; }
+        public IFormFile? Image { get; set; }
 
         public string? ItchUrl { get; set; }
     }

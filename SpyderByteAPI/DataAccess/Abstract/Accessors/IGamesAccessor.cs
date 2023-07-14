@@ -13,5 +13,7 @@ namespace SpyderByteAPI.DataAccess.Abstract.Accessors
         Task<IDataResponse<Game?>> PatchAsync(PatchGame patchedGame);
 
         Task<IDataResponse<Game?>> DeleteAsync(int id);
+
+        Task<IDataResponse<IList<Game>?>> DeleteAllAsync();
     }
 }

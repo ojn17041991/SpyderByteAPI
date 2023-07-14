@@ -7,6 +7,7 @@
 
         Error = 2000,
         NotFound = 2001,
-        AlreadyExists = 2002
+        AlreadyExists = 2002,
+        Unauthorized = 2003
     }
 }

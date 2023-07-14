@@ -1,4 +1,5 @@
-﻿using SpyderByteAPI.Models.Jams;
+﻿using SpyderByteAPI.Models.Games;
+using SpyderByteAPI.Models.Jams;
 
 namespace SpyderByteAPI.DataAccess.Abstract.Accessors
 {
@@ -13,5 +14,7 @@ namespace SpyderByteAPI.DataAccess.Abstract.Accessors
         Task<IDataResponse<Jam?>> PatchAsync(PatchJam patchedJam);
 
         Task<IDataResponse<Jam?>> DeleteAsync(int id);
+
+        Task<IDataResponse<IList<Jam>?>> DeleteAllAsync();
     }
 }
