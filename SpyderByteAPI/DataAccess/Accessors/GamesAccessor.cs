@@ -21,7 +21,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                IList<Game>? data = await context.Games.ToListAsync();
+                IList<Game>? data = await context.Games.OrderBy(g => g.PublishDate).ToListAsync();
                 return new DataResponse<IList<Game>?>(data, ModelResult.OK);
             }
             catch (Exception e)
@@ -57,7 +57,8 @@ namespace SpyderByteAPI.DataAccess.Accessors
 
                 Game mappedGame = new Game
                 {
-                    Name = game.Name
+                    Name = game.Name,
+                    PublishDate = (DateTime)game.PublishDate
                 };
 
                 await context.Games.AddAsync(mappedGame);
@@ -85,6 +86,11 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 if (patchedGame?.Name != null && patchedGame.Name != string.Empty)
                 {
                     storedGame.Name = patchedGame.Name;
+                }
+
+                if (patchedGame?.PublishDate != null)
+                {
+                    storedGame.PublishDate = (DateTime)patchedGame.PublishDate;
                 }
 
                 await context.SaveChangesAsync();

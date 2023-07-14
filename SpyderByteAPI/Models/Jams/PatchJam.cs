@@ -9,8 +9,10 @@ namespace SpyderByteAPI.Models.Jams
 
         public string? Name { get; set; }
 
+        public string? ItchUrl { get; set; }
+
         public IFormFile? Image { get; set; }
 
-        public string? ItchUrl { get; set; }
+        public DateTime? PublishDate { get; set; }
     }
 }

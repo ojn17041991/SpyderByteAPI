@@ -2,8 +2,6 @@
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Migrations;
-using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Models.Jams;
 using SpyderByteAPI.Services.Imgur.Abstract;
 
@@ -28,7 +26,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                IList<Jam>? data = await context.Jams.ToListAsync();
+                IList<Jam>? data = await context.Jams.OrderBy(j => j.PublishDate).ToListAsync();
                 return new DataResponse<IList<Jam>?>(data, ModelResult.OK);
             }
             catch (Exception e)
@@ -73,7 +71,8 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     Name = jam.Name,
                     ImgurUrl = response.Data.Url,
                     ImgurImageId = response.Data.ImageId,
-                    ItchUrl = jam.ItchUrl
+                    ItchUrl = jam.ItchUrl,
+                    PublishDate = (DateTime)jam.PublishDate
                 };
 
                 await context.Jams.AddAsync(mappedJam);
@@ -127,6 +126,11 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 if (patchedJam?.ItchUrl != null && patchedJam.ItchUrl != string.Empty)
                 {
                     storedJam.ItchUrl = patchedJam.ItchUrl;
+                }
+
+                if (patchedJam?.PublishDate != null)
+                {
+                    storedJam.PublishDate = (DateTime)patchedJam.PublishDate;
                 }
 
                 await context.SaveChangesAsync();
