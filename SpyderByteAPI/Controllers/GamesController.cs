@@ -70,7 +70,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post([FromBody] PostGame game, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Post([FromForm] PostGame game, [FromHeader] string sbApiKey)
         {
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
@@ -102,7 +102,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Patch([FromBody] PatchGame game, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Patch([FromForm] PatchGame game, [FromHeader] string sbApiKey)
         {
             if (configuration["SBAPIKEY"] != sbApiKey)
             {

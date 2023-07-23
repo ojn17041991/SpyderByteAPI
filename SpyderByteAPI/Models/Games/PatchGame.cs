@@ -9,6 +9,10 @@ namespace SpyderByteAPI.Models.Games
 
         public string? Name { get; set; }
 
+        public string? HtmlUrl { get; set; }
+
+        public IFormFile? Image { get; set; }
+
         public DateTime? PublishDate { get; set; }
     }
 }

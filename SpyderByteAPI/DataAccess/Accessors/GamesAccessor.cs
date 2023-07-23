@@ -3,6 +3,7 @@ using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models.Games;
+using SpyderByteAPI.Services.Imgur.Abstract;
 
 namespace SpyderByteAPI.DataAccess.Accessors
 {
@@ -10,11 +11,15 @@ namespace SpyderByteAPI.DataAccess.Accessors
     {
         private ApplicationDbContext context;
         private ILogger<GamesAccessor> logger;
+        private IConfiguration configuration;
+        private IImgurService imgurService;
 
-        public GamesAccessor(ApplicationDbContext context, ILogger<GamesAccessor> logger)
+        public GamesAccessor(ApplicationDbContext context, ILogger<GamesAccessor> logger, IConfiguration configuration, IImgurService imgurService)
         {
             this.context = context;
             this.logger = logger;
+            this.configuration = configuration;
+            this.imgurService = imgurService;
         }
 
         public async Task<IDataResponse<IList<Game>?>> GetAllAsync()
@@ -55,9 +60,18 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     return new DataResponse<Game?>(storedGame, ModelResult.AlreadyExists);
                 }
 
+                var response = await imgurService.PostImageAsync(game.Image, configuration["Imgur:GamesAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(game.Image.FileName));
+                if (response.Result != ModelResult.OK)
+                {
+                    return new DataResponse<Game?>(null, response.Result);
+                }
+
                 Game mappedGame = new Game
                 {
                     Name = game.Name,
+                    ImgurUrl = response.Data.Url,
+                    ImgurImageId = response.Data.ImageId,
+                    HtmlUrl = game.HtmlUrl,
                     PublishDate = (DateTime)game.PublishDate
                 };
 
@@ -83,9 +97,35 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     return new DataResponse<Game?>(storedGame, ModelResult.NotFound);
                 }
 
+                // First, check if the image is being updated.
+                if (patchedGame?.Image != null)
+                {
+                    // Delete the old image from Imgur.
+                    var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(storedGame.ImgurImageId);
+                    if (!imgurDeleteSuccessful.Data)
+                    {
+                        logger.LogWarning($"Failed to delete image from Imgur account for game {storedGame.Name}. Continuing to database update.");
+                    }
+
+                    // Post the new image.
+                    var response = await imgurService.PostImageAsync(patchedGame.Image, configuration["Imgur:GamesAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(patchedGame.Image.FileName));
+                    if (response.Result != ModelResult.OK)
+                    {
+                        return new DataResponse<Game?>(null, response.Result);
+                    }
+
+                    storedGame.ImgurUrl = response.Data.Url;
+                    storedGame.ImgurImageId = response.Data.ImageId;
+                }
+
                 if (patchedGame?.Name != null && patchedGame.Name != string.Empty)
                 {
                     storedGame.Name = patchedGame.Name;
+                }
+
+                if (patchedGame?.HtmlUrl != null && patchedGame.HtmlUrl != string.Empty)
+                {
+                    storedGame.HtmlUrl = patchedGame.HtmlUrl;
                 }
 
                 if (patchedGame?.PublishDate != null)
@@ -112,6 +152,12 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 if (game == null)
                 {
                     return new DataResponse<Game?>(game, ModelResult.NotFound);
+                }
+
+                var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(game.ImgurImageId);
+                if (!imgurDeleteSuccessful.Data)
+                {
+                    logger.LogWarning($"Failed to delete image from Imgur account for game {game.Name}. Continuing to database deletion.");
                 }
 
                 context.Games.Remove(game);
