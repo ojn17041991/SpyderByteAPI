@@ -30,12 +30,10 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                // 200
                 return Ok(response.Data);
             }
             else
             {
-                // 500
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -44,23 +42,20 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetGame(int id)
+        public async Task<IActionResult> GetGame(Guid id)
         {
             var response = await gamesAccessor.GetSingleAsync(id);
 
             if (response.Result == ModelResult.OK)
             {
-                // 200
                 return Ok(response.Data);
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                // 404
                 return NotFound();
             }
             else
             {
-                // 500
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -74,7 +69,6 @@ namespace SpyderByteAPI.Controllers
         {
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
-                // 401
                 return Unauthorized();
             }
 
@@ -82,17 +76,18 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.Created)
             {
-                // 201
                 return CreatedAtAction(nameof(GetGame), new { id = response?.Data?.Id }, response?.Data);
             }
             else if (response.Result == ModelResult.AlreadyExists)
             {
-                // 400
                 return BadRequest(modelResources.GetResource(ModelResult.AlreadyExists));
+            }
+            else if (response.Result == ModelResult.RequestDataIncomplete)
+            {
+                return BadRequest(modelResources.GetResource(ModelResult.RequestDataIncomplete));
             }
             else
             {
-                // 500
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -114,17 +109,14 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                // 200
                 return Ok(response.Data);
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                // 404
                 return NotFound();
             }
             else
             {
-                // 500
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -134,11 +126,10 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete(int id, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Delete(Guid id, [FromHeader] string sbApiKey)
         {
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
-                // 401
                 return Unauthorized();
             }
 
@@ -146,17 +137,14 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                // 200
                 return Ok(response.Data);
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                // 404
                 return NotFound();
             }
             else
             {
-                // 500
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -166,10 +154,13 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ClearRecords([FromHeader] string sbApiKey)
         {
-            return NotFound();
+            if (!Convert.ToBoolean(configuration["AllowDataClears"] ?? "false"))
+            {
+                return NotFound();
+            }
+
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
-                // 401
                 return Unauthorized();
             }
 

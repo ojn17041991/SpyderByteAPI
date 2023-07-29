@@ -2,6 +2,7 @@
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
+using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Models.Jams;
 using SpyderByteAPI.Services.Imgur.Abstract;
 
@@ -36,7 +37,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
             }
         }
 
-        public async Task<IDataResponse<Jam?>> GetSingleAsync(int id)
+        public async Task<IDataResponse<Jam?>> GetSingleAsync(Guid id)
         {
             try
             {
@@ -54,6 +55,11 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
+                if (jam.Image == null)
+                {
+                    return new DataResponse<Jam?>(null, ModelResult.RequestDataIncomplete);
+                }
+
                 Jam? storedJam = await context.Jams.SingleOrDefaultAsync(j => j.Name.ToLower() == jam.Name.ToLower());
                 if (storedJam != null)
                 {
@@ -72,7 +78,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     ImgurUrl = response.Data.Url,
                     ImgurImageId = response.Data.ImageId,
                     ItchUrl = jam.ItchUrl,
-                    PublishDate = (DateTime)jam.PublishDate
+                    PublishDate = jam.PublishDate
                 };
 
                 await context.Jams.AddAsync(mappedJam);
@@ -144,7 +150,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
             }
         }
 
-        public async Task<IDataResponse<Jam?>> DeleteAsync(int id)
+        public async Task<IDataResponse<Jam?>> DeleteAsync(Guid id)
         {
             try
             {

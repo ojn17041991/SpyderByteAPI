@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpyderByteAPI.DataAccess;
 
@@ -10,9 +11,11 @@ using SpyderByteAPI.DataAccess;
 namespace SpyderByteAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230729074145_Leaderboard_RemoveDreamlo")]
+    partial class Leaderboard_RemoveDreamlo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.7");
@@ -79,10 +82,6 @@ namespace SpyderByteAPI.Migrations
 
             modelBuilder.Entity("SpyderByteAPI.Models.Leaderboard.LeaderboardRecord", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid>("GameId")
                         .HasColumnType("TEXT");
 
@@ -95,8 +94,6 @@ namespace SpyderByteAPI.Migrations
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
 
                     b.ToTable("LeaderboardRecords");
                 });

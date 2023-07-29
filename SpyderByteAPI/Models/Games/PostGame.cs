@@ -14,6 +14,6 @@ namespace SpyderByteAPI.Models.Games
         public IFormFile? Image { get; set; }
 
         [Required]
-        public DateTime? PublishDate { get; set; }
+        public DateTime PublishDate { get; set; } = DateTime.UtcNow;
     }
 }

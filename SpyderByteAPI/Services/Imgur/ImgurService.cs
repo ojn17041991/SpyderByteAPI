@@ -164,7 +164,7 @@ namespace SpyderByteAPI.Services.Imgur
                 var clientSecretContent = new StringContent(configuration["Imgur:ClientSecret"] ?? string.Empty);
                 requestContent.Add(clientSecretContent, "client_secret");
 
-                // Grant TYpe
+                // Grant Type
                 var grantTypeContent = new StringContent("refresh_token");
                 requestContent.Add(grantTypeContent, "grant_type");
 
@@ -173,8 +173,11 @@ namespace SpyderByteAPI.Services.Imgur
                 {
                     var responseJson = await response.Content.ReadAsStringAsync();
                     var responseObject = JsonConvert.DeserializeObject<IDictionary<string, string>>(responseJson);
-                    tokens[accessTokenPropName] = responseObject["access_token"];
-                    tokens[refreshTokenPropName] = responseObject["refresh_token"];
+                    if (responseObject != null)
+                    {
+                        tokens[accessTokenPropName] = responseObject["access_token"];
+                        tokens[refreshTokenPropName] = responseObject["refresh_token"];
+                    }
                 }
             }
 

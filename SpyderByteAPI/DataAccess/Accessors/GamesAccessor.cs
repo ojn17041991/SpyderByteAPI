@@ -36,7 +36,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
             }
         }
 
-        public async Task<IDataResponse<Game?>> GetSingleAsync(int id)
+        public async Task<IDataResponse<Game?>> GetSingleAsync(Guid id)
         {
             try
             {
@@ -54,6 +54,11 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
+                if (game.Image == null)
+                {
+                    return new DataResponse<Game?>(null, ModelResult.RequestDataIncomplete);
+                }
+
                 Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Name.ToLower() == game.Name.ToLower());
                 if (storedGame != null)
                 {
@@ -72,7 +77,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     ImgurUrl = response.Data.Url,
                     ImgurImageId = response.Data.ImageId,
                     HtmlUrl = game.HtmlUrl,
-                    PublishDate = (DateTime)game.PublishDate
+                    PublishDate = game.PublishDate
                 };
 
                 await context.Games.AddAsync(mappedGame);
@@ -144,7 +149,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
             }
         }
 
-        public async Task<IDataResponse<Game?>> DeleteAsync(int id)
+        public async Task<IDataResponse<Game?>> DeleteAsync(Guid id)
         {
             try
             {
@@ -177,6 +182,16 @@ namespace SpyderByteAPI.DataAccess.Accessors
             try
             {
                 var games = await context.Games.ToListAsync();
+
+                foreach (var game in games)
+                {
+                    var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(game.ImgurImageId);
+                    if (!imgurDeleteSuccessful.Data)
+                    {
+                        logger.LogWarning($"Failed to delete image from Imgur account for game {game.Name}. Continuing to database deletion.");
+                    }
+                }
+
                 context.Games.RemoveRange(games);
                 await context.SaveChangesAsync();
 

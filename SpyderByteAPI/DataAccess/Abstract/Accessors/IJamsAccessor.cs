@@ -7,13 +7,13 @@ namespace SpyderByteAPI.DataAccess.Abstract.Accessors
     {
         Task<IDataResponse<IList<Jam>?>> GetAllAsync();
 
-        Task<IDataResponse<Jam?>> GetSingleAsync(int id);
+        Task<IDataResponse<Jam?>> GetSingleAsync(Guid id);
 
         Task<IDataResponse<Jam?>> PostAsync(PostJam jam);
 
         Task<IDataResponse<Jam?>> PatchAsync(PatchJam patchedJam);
 
-        Task<IDataResponse<Jam?>> DeleteAsync(int id);
+        Task<IDataResponse<Jam?>> DeleteAsync(Guid id);
 
         Task<IDataResponse<IList<Jam>?>> DeleteAllAsync();
     }

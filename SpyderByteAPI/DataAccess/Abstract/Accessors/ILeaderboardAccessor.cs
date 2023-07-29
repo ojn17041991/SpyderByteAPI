@@ -1,9 +1,13 @@
-﻿namespace SpyderByteAPI.DataAccess.Abstract.Accessors
+﻿using SpyderByteAPI.Models.Leaderboard;
+
+namespace SpyderByteAPI.DataAccess.Abstract.Accessors
 {
     public interface ILeaderboardAccessor
     {
-        Task<IDataResponse<string>> GetAsync(string key);
+        Task<IDataResponse<IList<LeaderboardRecord>?>> GetAsync(Guid gameId);
 
-        Task<IDataResponse<string>> PostAsync(string key, string name, int score);
+        Task<IDataResponse<LeaderboardRecord?>> PostAsync(PostLeaderboardRecord leaderboardRecord);
+
+        Task<IDataResponse<LeaderboardRecord?>> DeleteAsync(Guid id);
     }
 }

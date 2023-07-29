@@ -11,7 +11,8 @@ namespace SpyderByteAPI.Resources
             { ModelResult.Created, "The resource was created successfully." },
             { ModelResult.Error, "A server error occurred while processing the request." },
             { ModelResult.NotFound, "Failed to locate resource." },
-            { ModelResult.AlreadyExists, "This resource already exists." }
+            { ModelResult.AlreadyExists, "This resource already exists." },
+            { ModelResult.RequestDataIncomplete, "The request data is incomplete." }
         };
 
         public string GetResource(ModelResult modelResult)

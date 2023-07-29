@@ -11,9 +11,9 @@ namespace SpyderByteAPI.Models.Jams
         public string ItchUrl { get; set; } = string.Empty;
 
         [Required]
-        public IFormFile Image { get; set; }
+        public IFormFile? Image { get; set; }
 
         [Required]
-        public DateTime? PublishDate { get; set; }
+        public DateTime PublishDate { get; set; } = DateTime.UtcNow;
     }
 }

@@ -78,7 +78,7 @@ builder.Services.Configure<IpRateLimitOptions>(options =>
         {
             Endpoint = "POST:*",
             Period = "60s",
-            Limit = 50 // Need this to be able to run the auto-populate program.
+            Limit = 10
         },
         new RateLimitRule
         {
