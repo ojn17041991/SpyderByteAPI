@@ -23,7 +23,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                IList<LeaderboardRecord>? data = await context.LeaderboardRecords.Where(lr => lr.GameId == gameId).ToListAsync();
+                IList<LeaderboardRecord>? data = await context.LeaderboardRecords.Where(lr => lr.GameId == gameId).OrderByDescending(lr => lr.Score).ToListAsync();
                 return new DataResponse<IList<LeaderboardRecord>?>(data, ModelResult.OK);
             }
             catch (Exception e)
