@@ -36,7 +36,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPost("[controller]/Records")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] PostLeaderboardRecord leaderboardRecord)
         {
