@@ -33,5 +33,17 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
                 games.Data.Should().ContainEquivalentOf(game);
             }
         }
+
+        // how can i trigger an exception in this test?
+        [Fact]
+        public async Task This_Is_Meant_To_Fail()
+        {
+            // Arrange
+
+            // Act
+
+            // Assert
+            true.Should().BeFalse();
+        }
     }
 }
