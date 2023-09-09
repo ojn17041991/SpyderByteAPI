@@ -18,20 +18,11 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
         public GamesAccessor Accessor;
 
         private readonly ApplicationDbContext _context;
-        private readonly Fixture _fixture = new Fixture();
+        private readonly Fixture _fixture;
 
-        public GamesAccessorHelper() : this(new Dictionary<string, string?>
-            {
-                {"Imgur:ClientId", "test"},
-                {"Imgur:ClientSecret", "test"},
-                {"Imgur:AlbumId", "test"}
-            })
+        public GamesAccessorHelper()
         {
-            // Make call to overloaded constructor with default configuration.
-        }
-
-        public GamesAccessorHelper(IDictionary<string, string?> configurationContents)
-        {
+            _fixture = new Fixture();
             _fixture.Customize<IFormFile>(f => f.FromFactory(() => new Mock<IFormFile>().Object));
 
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -41,6 +32,7 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
 
             var logger = new Mock<ILogger<GamesAccessor>>();
 
+            var configurationContents = new Dictionary<string, string?>();
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(configurationContents)
                 .Build();

@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
+using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
+using SpyderByteAPI.Models.Games;
 using SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper;
 
 namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
@@ -8,10 +10,12 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
     public class PatchAsyncTests
     {
         private readonly GamesAccessorHelper _helper;
+        private readonly GamesAccessorExceptionHelper _exceptionHelper;
 
         public PatchAsyncTests()
         {
             _helper = new GamesAccessorHelper();
+            _exceptionHelper = new GamesAccessorExceptionHelper();
         }
 
         [Fact]
@@ -94,6 +98,25 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
                 game.Should().NotBeNull();
                 game.Result.Should().Be(ModelResult.NotFound);
                 game.Data.Should().BeNull();
+            }
+        }
+
+        [Fact]
+        public async Task Exceptions_Are_Caught_And_Handled()
+        {
+            // Arrange
+            var patchGame = _helper.GeneratePatchGame();
+
+            // Act
+            Func<Task<IDataResponse<Game?>>> func = () => _exceptionHelper.Accessor.PatchAsync(patchGame);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                var games = await func.Invoke();
+                games?.Should().NotBeNull();
+                games?.Result.Should().Be(ModelResult.Error);
+                games?.Data?.Should().BeNull();
             }
         }
     }

@@ -1,6 +1,8 @@
 using FluentAssertions;
 using FluentAssertions.Execution;
+using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
+using SpyderByteAPI.Models.Games;
 using SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper;
 
 namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
@@ -8,10 +10,12 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
     public class GetAllAsyncTests
     {
         private readonly GamesAccessorHelper _helper;
+        private readonly GamesAccessorExceptionHelper _exceptionHelper;
 
         public GetAllAsyncTests()
         {
             _helper = new GamesAccessorHelper();
+            _exceptionHelper = new GamesAccessorExceptionHelper();
         }
 
         [Fact]
@@ -34,16 +38,22 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             }
         }
 
-        // how can i trigger an exception in this test?
         [Fact]
-        public async Task This_Is_Meant_To_Fail()
+        public async Task Exceptions_Are_Caught_And_Handled()
         {
             // Arrange
 
             // Act
+            Func<Task<IDataResponse<IList<Game>?>>> func = () => _exceptionHelper.Accessor.GetAllAsync();
 
             // Assert
-            true.Should().BeFalse();
+            using (new AssertionScope())
+            {
+                var games = await func.Invoke();
+                games?.Should().NotBeNull();
+                games?.Result.Should().Be(ModelResult.Error);
+                games?.Data?.Should().BeNull();
+            }
         }
     }
 }
