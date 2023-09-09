@@ -26,13 +26,13 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/SpyderByteAPI
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/SpyderByteAPI.csproj
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/SpyderByteAPI
+          path: ${{env.DOTNET_ROOT}}/SpyderByteAPI.csproj
 
   deploy:
     runs-on: windows-latest
