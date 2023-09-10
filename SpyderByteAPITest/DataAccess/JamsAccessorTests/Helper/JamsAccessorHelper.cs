@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SpyderByteAPITest.DataAccess.JamsAccessorTests.Helper
+﻿namespace SpyderByteAPITest.DataAccess.JamsAccessorTests.Helper
 {
-    internal class JamsAccessorHelper
+    public class JamsAccessorHelper
     {
+        public JamsAccessorHelper()
+        {
+        }
     }
 }
