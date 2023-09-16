@@ -67,8 +67,6 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromForm] PostGame game, [FromHeader] string sbApiKey)
         {
-            throw new Exception();
-
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
                 return Unauthorized();
@@ -130,6 +128,8 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(Guid id, [FromHeader] string sbApiKey)
         {
+            throw new Exception();
+
             if (configuration["SBAPIKEY"] != sbApiKey)
             {
                 return Unauthorized();
