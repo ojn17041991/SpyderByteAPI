@@ -3,6 +3,7 @@ using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Resources.Abstract;
+using System.Security.Cryptography.Xml;
 
 namespace SpyderByteAPI.Controllers
 {
@@ -27,6 +28,7 @@ namespace SpyderByteAPI.Controllers
         public async Task<IActionResult> Get()
         {
             throw new Exception();
+
             var response = await gamesAccessor.GetAllAsync();
 
             if (response.Result == ModelResult.OK)
