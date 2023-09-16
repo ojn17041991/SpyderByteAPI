@@ -26,6 +26,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get()
         {
+            throw new Exception();
             var response = await gamesAccessor.GetAllAsync();
 
             if (response.Result == ModelResult.OK)
