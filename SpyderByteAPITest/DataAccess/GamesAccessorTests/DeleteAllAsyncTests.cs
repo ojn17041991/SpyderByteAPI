@@ -18,7 +18,6 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             _exceptionHelper = new GamesAccessorExceptionHelper();
         }
 
-        // can delete all games in accessor
         [Fact]
         public async Task Can_Delete_All_Games_In_Accessor()
         {

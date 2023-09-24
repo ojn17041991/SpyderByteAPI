@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace SpyderByteAPI.Models.Leaderboard
+﻿namespace SpyderByteAPI.Models.Leaderboard
 {
     public class LeaderboardRecord
     {

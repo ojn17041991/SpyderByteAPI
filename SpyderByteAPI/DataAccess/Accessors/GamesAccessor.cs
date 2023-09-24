@@ -56,18 +56,21 @@ namespace SpyderByteAPI.DataAccess.Accessors
             {
                 if (game.Image == null)
                 {
+                    logger.LogInformation("Unable to post game. Image is null.");
                     return new DataResponse<Game?>(null, ModelResult.RequestDataIncomplete);
                 }
 
                 Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Name.ToLower() == game.Name.ToLower());
                 if (storedGame != null)
                 {
+                    logger.LogInformation($"Unable to post game. A game of name \"{game.Name}\" already exists.");
                     return new DataResponse<Game?>(storedGame, ModelResult.AlreadyExists);
                 }
 
                 var response = await imgurService.PostImageAsync(game.Image, configuration["Imgur:GamesAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(game.Image.FileName));
                 if (response.Result != ModelResult.OK)
                 {
+                    logger.LogInformation("Unable to post game. Failed to upload image to Imgur.");
                     return new DataResponse<Game?>(null, response.Result);
                 }
 
@@ -99,6 +102,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Id == patchedGame.Id);
                 if (storedGame == null)
                 {
+                    logger.LogInformation($"Unable to patch game. Could not find a game of ID {patchedGame.Id}.");
                     return new DataResponse<Game?>(storedGame, ModelResult.NotFound);
                 }
 
@@ -109,13 +113,14 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(storedGame.ImgurImageId);
                     if (!imgurDeleteSuccessful.Data)
                     {
-                        logger.LogWarning($"Failed to delete image from Imgur account for game {storedGame.Name}. Continuing to database update.");
+                        logger.LogInformation($"Failed to delete image from Imgur during game patch. Continuing to database update.");
                     }
 
                     // Post the new image.
                     var response = await imgurService.PostImageAsync(patchedGame.Image, configuration["Imgur:GamesAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(patchedGame.Image.FileName));
                     if (response.Result != ModelResult.OK)
                     {
+                        logger.LogInformation($"Unable to patch game. Failed to add image to Imgur.");
                         return new DataResponse<Game?>(null, response.Result);
                     }
 
@@ -156,13 +161,14 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 Game? game = await context.Games.SingleOrDefaultAsync(g => g.Id == id);
                 if (game == null)
                 {
+                    logger.LogInformation($"Unable to delete game. Could not find a game of ID {id}.");
                     return new DataResponse<Game?>(game, ModelResult.NotFound);
                 }
 
                 var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(game.ImgurImageId);
                 if (!imgurDeleteSuccessful.Data)
                 {
-                    logger.LogWarning($"Failed to delete image from Imgur account for game {game.Name}. Continuing to database deletion.");
+                    logger.LogInformation($"Failed to delete image from Imgur during game delete. Continuing to database update.");
                 }
 
                 context.Games.Remove(game);
@@ -188,7 +194,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(game.ImgurImageId);
                     if (!imgurDeleteSuccessful.Data)
                     {
-                        logger.LogWarning($"Failed to delete image from Imgur account for game {game.Name}. Continuing to database deletion.");
+                        logger.LogInformation($"Failed to delete image from Imgur during game delete all. Continuing to database update.");
                     }
                 }
 

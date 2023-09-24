@@ -18,7 +18,6 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             _exceptionHelper = new GamesAccessorExceptionHelper();
         }
 
-        // can delete game in accessor
         [Fact]
         public async Task Can_Delete_Game_In_Accessor()
         {
@@ -43,7 +42,6 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             }
         }
 
-        // can not delete game that does not exist in accessor
         [Fact]
         public async Task Can_Not_Delete_Game_That_Does_Not_Exist_In_Accessor()
         {

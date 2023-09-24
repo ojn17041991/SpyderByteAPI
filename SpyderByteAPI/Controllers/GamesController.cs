@@ -3,7 +3,6 @@ using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Resources.Abstract;
-using System.Security.Cryptography.Xml;
 
 namespace SpyderByteAPI.Controllers
 {
