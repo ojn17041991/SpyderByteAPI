@@ -75,7 +75,7 @@ namespace SpyderByteAPI.Controllers
 
             IDataResponse<Jam?> response = await jamsAccessor.PostAsync(jam);
 
-            if (response.Result == ModelResult.OK)
+            if (response.Result == ModelResult.Created)
             {
                 return Ok(response.Data);
             }

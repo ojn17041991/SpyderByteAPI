@@ -11,9 +11,9 @@ namespace SpyderByteAPI.DataAccess.Accessors
     public class LeaderboardAccessor : ILeaderboardAccessor
     {
         private ApplicationDbContext context;
-        private ILogger<GamesAccessor> logger;
+        private ILogger<LeaderboardAccessor> logger;
 
-        public LeaderboardAccessor(ApplicationDbContext context, ILogger<GamesAccessor> logger)
+        public LeaderboardAccessor(ApplicationDbContext context, ILogger<LeaderboardAccessor> logger)
         {
             this.context = context;
             this.logger = logger;
@@ -43,6 +43,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     Jam? jam = await context.Jams.SingleOrDefaultAsync(j => j.Id == leaderboardRecord.GameId);
                     if (jam == null)
                     {
+                        logger.LogInformation($"Unable to post leaderboard entry. Could not find a game/jam of ID {leaderboardRecord.GameId}.");
                         return new DataResponse<LeaderboardRecord?>(null, ModelResult.NotFound);
                     }
                 }
@@ -74,6 +75,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 LeaderboardRecord? leaderboardRecord = await context.LeaderboardRecords.SingleOrDefaultAsync(lr => lr.Id == id);
                 if (leaderboardRecord == null)
                 {
+                    logger.LogInformation($"Unable to delete leaderboard entry. Could not find a leaderboard entry of ID {id}.");
                     return new DataResponse<LeaderboardRecord?>(null, ModelResult.NotFound);
                 }
 

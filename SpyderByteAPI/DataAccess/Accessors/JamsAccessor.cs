@@ -2,7 +2,6 @@
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Models.Jams;
 using SpyderByteAPI.Services.Imgur.Abstract;
 
@@ -57,18 +56,21 @@ namespace SpyderByteAPI.DataAccess.Accessors
             {
                 if (jam.Image == null)
                 {
+                    logger.LogInformation("Unable to post jam. Image is null.");
                     return new DataResponse<Jam?>(null, ModelResult.RequestDataIncomplete);
                 }
 
                 Jam? storedJam = await context.Jams.SingleOrDefaultAsync(j => j.Name.ToLower() == jam.Name.ToLower());
                 if (storedJam != null)
                 {
+                    logger.LogInformation($"Unable to post jam. A jam of name \"{jam.Name}\" already exists.");
                     return new DataResponse<Jam?>(storedJam, ModelResult.AlreadyExists);
                 }
 
                 var response = await imgurService.PostImageAsync(jam.Image, configuration["Imgur:JamsAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(jam.Image.FileName));
                 if (response.Result != ModelResult.OK)
                 {
+                    logger.LogInformation("Unable to post jam. Failed to upload image to Imgur.");
                     return new DataResponse<Jam?>(null, response.Result);
                 }
 
@@ -84,7 +86,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 await context.Jams.AddAsync(mappedJam);
                 await context.SaveChangesAsync();
 
-                return new DataResponse<Jam?>(mappedJam, ModelResult.OK);
+                return new DataResponse<Jam?>(mappedJam, ModelResult.Created);
             }
             catch (Exception e)
             {
@@ -100,6 +102,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 Jam? storedJam = await context.Jams.SingleOrDefaultAsync(j => j.Id == patchedJam.Id);
                 if (storedJam == null)
                 {
+                    logger.LogInformation($"Unable to patch jam. Could not find a jam of ID {patchedJam.Id}.");
                     return new DataResponse<Jam?>(storedJam, ModelResult.NotFound);
                 }
 
@@ -110,13 +113,14 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(storedJam.ImgurImageId);
                     if (!imgurDeleteSuccessful.Data)
                     {
-                        logger.LogWarning($"Failed to delete image from Imgur account for jam {storedJam.Name}. Continuing to database update.");
+                        logger.LogInformation($"Failed to delete image from Imgur during jam patch. Continuing to database update.");
                     }
 
                     // Post the new image.
                     var response = await imgurService.PostImageAsync(patchedJam.Image, configuration["Imgur:JamsAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(patchedJam.Image.FileName));
                     if (response.Result != ModelResult.OK)
                     {
+                        logger.LogInformation($"Unable to patch jam. Failed to add image to Imgur.");
                         return new DataResponse<Jam?>(null, response.Result);
                     }
 
@@ -157,13 +161,14 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 Jam? jam = await context.Jams.SingleOrDefaultAsync(j => j.Id == id);
                 if (jam == null)
                 {
+                    logger.LogInformation($"Unable to delete jam. Could not find a jam of ID {id}.");
                     return new DataResponse<Jam?>(jam, ModelResult.NotFound);
                 }
 
                 var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(jam.ImgurImageId);
                 if (!imgurDeleteSuccessful.Data)
                 {
-                    logger.LogWarning($"Failed to delete image from Imgur account for jam {jam.Name}. Continuing to database deletion.");
+                    logger.LogInformation($"Failed to delete image from Imgur during jam delete. Continuing to database update.");
                 }
 
                 context.Jams.Remove(jam);
@@ -189,7 +194,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(jam.ImgurImageId);
                     if (!imgurDeleteSuccessful.Data)
                     {
-                        logger.LogWarning($"Failed to delete image from Imgur account for jam {jam.Name}. Continuing to database deletion.");
+                        logger.LogInformation($"Failed to delete image from Imgur during jam delete all. Continuing to database update.");
                     }
                 }
 
