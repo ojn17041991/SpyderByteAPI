@@ -1,5 +1,6 @@
 using AspNetCoreRateLimit;
 using Azure.Identity; // Required for Release.
+using Microsoft.ApplicationInsights.Extensibility; // Required for Release.
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.ApplicationInsights; // Required for Release.
 using Microsoft.OpenApi.Models;
@@ -7,6 +8,7 @@ using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.DataAccess.Accessors;
 using SpyderByteAPI.Enums;
+using SpyderByteAPI.Logging; // Required for Release.
 using SpyderByteAPI.Resources;
 using SpyderByteAPI.Resources.Abstract;
 using SpyderByteAPI.Services.Imgur;
@@ -53,6 +55,9 @@ builder.Services.AddCors(p => p.AddPolicy("SpyderByteAPI", builder =>
 #if !DEBUG
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddLogging(logBuilder => logBuilder.AddApplicationInsights());
+
+builder.Services.AddSingleton<ITelemetryInitializer, RequestBodyTelemetryInitializer>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Configuration.AddAzureKeyVault(
     new Uri("https://spyderbyteglobalkeyvault.vault.azure.net/"),
