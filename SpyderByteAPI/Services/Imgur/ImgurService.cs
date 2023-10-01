@@ -6,7 +6,6 @@ using SpyderByteAPI.Enums;
 using SpyderByteAPI.Extensions;
 using SpyderByteAPI.Models.Imgur;
 using SpyderByteAPI.Services.Imgur.Abstract;
-using System.Net;
 using System.Net.Http.Headers;
 
 namespace SpyderByteAPI.Services.Imgur
@@ -16,57 +15,37 @@ namespace SpyderByteAPI.Services.Imgur
         private readonly IConfiguration configuration;
         private IHttpClientFactory httpClientFactory;
 
-        private const string imgurJsonFileName = "imgur.json";
-        private const string accessTokenPropName = "AccessToken";
-        private const string refreshTokenPropName = "RefreshToken";
-
-        private string imgurJsonFilePath;
-
         private string url;
         private string version;
         private string imageEndpoint = "image";
         private string authEndpoint = "oauth2/token";
+
+        private string accessToken;
+        private string refreshToken;
 
         public ImgurService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             this.configuration = configuration;
             this.httpClientFactory = httpClientFactory;
 
-            imgurJsonFilePath = Path.Combine(Environment.CurrentDirectory, imgurJsonFileName);
-
             url = configuration["Imgur:Url"] ?? string.Empty;
             version = configuration["Imgur:Version"] ?? string.Empty;
+
+            accessToken = string.Empty;
+            refreshToken = configuration["Imgur:RefreshToken"] ?? string.Empty;
         }
 
         public async Task<IDataResponse<PostImageResponse>> PostImageAsync(IFormFile file, string albumHash, string title)
         {
-            // Get the access and refresh tokens. If neither are available, we can't proceed.
-            var tokens = getTokens();
-            if (tokens == null || tokens.Count == 0)
+            // Get the access token. If neither are available, we can't proceed.
+            var currentAccessToken = await getAccessToken();
+            if (string.IsNullOrEmpty(currentAccessToken))
             {
                 return new DataResponse<PostImageResponse>(new PostImageResponse(), ModelResult.Unauthorized);
             }
 
             // Make a request using the current access token.
-            var response = await postImage(file, albumHash, title, tokens[accessTokenPropName]);
-
-            // If the current access token has expired, generate a new one using the refresh token.
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                var newTokens = await generateTokens(tokens[refreshTokenPropName]);
-                var updateSuccessful = updateTokens(newTokens);
-                if (!updateSuccessful)
-                {
-                    return new DataResponse<PostImageResponse>(new PostImageResponse(), ModelResult.Unauthorized);
-                }
-
-                // Try the request again with the updated tokens.
-                response = await postImage(file, albumHash, title, newTokens[accessTokenPropName]);
-                if (response.StatusCode == HttpStatusCode.Forbidden)
-                {
-                    return new DataResponse<PostImageResponse>(new PostImageResponse(), ModelResult.Unauthorized);
-                }
-            }
+            var response = await postImage(file, albumHash, title, currentAccessToken);
 
             // Make sure the POST was successful before processing the response.
             if (!response.IsSuccessStatusCode)
@@ -96,32 +75,14 @@ namespace SpyderByteAPI.Services.Imgur
         public async Task<IDataResponse<bool>> DeleteImageAsync(string imageId)
         {
             // Get the access and refresh tokens. If neither are available, we can't proceed.
-            var tokens = getTokens();
-            if (tokens == null || tokens.Count == 0)
+            var currentAccessToken = await getAccessToken();
+            if (string.IsNullOrEmpty(currentAccessToken))
             {
                 return new DataResponse<bool>(false, ModelResult.Unauthorized);
             }
 
             // Make a request using the current access token.
-            var response = await deleteImage(imageId, tokens[accessTokenPropName]);
-
-            // If the current access token has expired, generate a new one using the refresh token.
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                var newTokens = await generateTokens(tokens[refreshTokenPropName]);
-                var updateSuccessful = updateTokens(newTokens);
-                if (!updateSuccessful)
-                {
-                    return new DataResponse<bool>(false, ModelResult.Unauthorized);
-                }
-
-                // Try the request again with the updated tokens.
-                response = await deleteImage(imageId, newTokens[accessTokenPropName]);
-                if (response.StatusCode == HttpStatusCode.Forbidden)
-                {
-                    return new DataResponse<bool>(false, ModelResult.Unauthorized);
-                }
-            }
+            var response = await deleteImage(imageId, currentAccessToken);
 
             // Make sure the DELETE was successful.
             if (response.IsSuccessStatusCode)
@@ -134,19 +95,24 @@ namespace SpyderByteAPI.Services.Imgur
             }
         }
 
-        private IDictionary<string, string> getTokens()
+        private async Task<string> getAccessToken()
         {
-            using (StreamReader reader = new StreamReader(imgurJsonFilePath))
+            if (string.IsNullOrEmpty(accessToken))
             {
-                string json = reader.ReadToEnd();
-                var tokens = JsonConvert.DeserializeObject<IDictionary<string, string>>(json);
-                return tokens ?? new Dictionary<string, string>();
+                var newAccessToken = await generateAccessToken(refreshToken);
+                if (!string.IsNullOrEmpty(newAccessToken))
+                {
+                    accessToken = newAccessToken;
+                }
             }
+
+            return accessToken;
         }
 
-        private async Task<IDictionary<string, string>> generateTokens(string refreshToken)
+        private async Task<string> generateAccessToken(string refreshToken)
         {
-            var tokens = new Dictionary<string, string>();
+            // We can't generate an access token without the refresh token.
+            if (string.IsNullOrEmpty(refreshToken)) return string.Empty;
 
             using (var httpClient = httpClientFactory.CreateClient())
             {
@@ -175,25 +141,12 @@ namespace SpyderByteAPI.Services.Imgur
                     var responseObject = JsonConvert.DeserializeObject<IDictionary<string, string>>(responseJson);
                     if (responseObject != null)
                     {
-                        tokens[accessTokenPropName] = responseObject["access_token"];
-                        tokens[refreshTokenPropName] = responseObject["refresh_token"];
+                        return responseObject["access_token"];
                     }
                 }
             }
 
-            return tokens;
-        }
-
-        private bool updateTokens(IDictionary<string, string> tokens)
-        {
-            if (tokens == null || tokens.Count == 0)
-            {
-                return false;
-            }
-
-            var json = JsonConvert.SerializeObject(tokens);
-            File.WriteAllText(imgurJsonFilePath, json);
-            return true;
+            return string.Empty;
         }
 
         private async Task<HttpResponseMessage> postImage(IFormFile image, string albumHash, string title, string accessToken)
