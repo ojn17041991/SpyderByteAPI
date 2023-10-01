@@ -34,7 +34,6 @@
     <Folder Include="Controllers\GamesControllerTests\" />
     <Folder Include="Controllers\JamsControllerTests\" />
     <Folder Include="Controllers\LeaderboardControllerTests\" />
-    <Folder Include="Services\ImgurServiceTests\" />
   </ItemGroup>
 
 </Project>
