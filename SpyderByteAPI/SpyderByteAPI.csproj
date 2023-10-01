@@ -27,12 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="imgur.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Databases\sbapi.db">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
