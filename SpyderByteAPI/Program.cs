@@ -1,14 +1,12 @@
 using AspNetCoreRateLimit;
 using Azure.Identity; // Required for Release.
-using Microsoft.ApplicationInsights.Extensibility; // Required for Release.
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.ApplicationInsights; // Required for Release.
 using Microsoft.OpenApi.Models;
 using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.DataAccess.Accessors;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Logging; // Required for Release.
+using SpyderByteAPI.Middleware; // Required for Release.
 using SpyderByteAPI.Resources;
 using SpyderByteAPI.Resources.Abstract;
 using SpyderByteAPI.Services.Imgur;
@@ -34,7 +32,7 @@ builder.Services.AddScoped<IGamesAccessor, GamesAccessor>();
 builder.Services.AddScoped<IJamsAccessor, JamsAccessor>();
 builder.Services.AddScoped<ILeaderboardAccessor, LeaderboardAccessor>();
 
-builder.Services.AddScoped<IImgurService, ImgurService>();
+builder.Services.AddSingleton<IImgurService, ImgurService>();
 
 builder.Services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
 
@@ -47,17 +45,22 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 builder.Services.AddHttpClient();
-builder.Services.AddCors(p => p.AddPolicy("SpyderByteAPI", builder =>
-{
-    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-}));
+builder.Services.AddCors(options =>
+    options.AddPolicy("SpyderByteAPIOrigins", builder =>
+    {
+        builder
+            .WithOrigins("https://spyderbytestudios.itch.io/*",
+                         "https://www.spyderbyte.co.uk")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    })
+);
 
 #if !DEBUG
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddLogging(logBuilder => logBuilder.AddApplicationInsights());
 
-builder.Services.AddSingleton<ITelemetryInitializer, RequestBodyTelemetryInitializer>();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddTransient<RequestBodyToInsightMiddleware>();
 
 builder.Configuration.AddAzureKeyVault(
     new Uri("https://spyderbyteglobalkeyvault.vault.azure.net/"),
@@ -117,6 +120,10 @@ app.UseAuthorization();
 app.MapControllers();
 app.UseCors("SpyderByteAPI");
 app.UseIpRateLimiting();
+
+#if !DEBUG
+    app.UseMiddleware<RequestBodyToInsightMiddleware>();
+#endif
 
 using (var serviceScope = app.Services?.GetService<IServiceScopeFactory>()?.CreateScope())
 {
