@@ -47,10 +47,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 builder.Services.AddHttpClient();
-builder.Services.AddCors(p => p.AddPolicy("SpyderByteAPI", builder =>
-{
-    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-}));
+builder.Services.AddCors(options =>
+    options.AddPolicy("SpyderByteAPIOrigins", builder =>
+    {
+        builder
+            .WithOrigins("https://spyderbytestudios.itch.io/*",
+                         "https://www.spyderbyte.co.uk")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    })
+);
 
 #if !DEBUG
 builder.Services.AddApplicationInsightsTelemetry();
