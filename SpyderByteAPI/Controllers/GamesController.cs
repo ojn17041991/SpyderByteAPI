@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
+using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Resources.Abstract;
 
@@ -24,6 +25,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(PolicyType.ReadGames)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -42,6 +44,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(PolicyType.ReadGames)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -65,17 +68,13 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(PolicyType.WriteGames)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post([FromForm] PostGame game, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Post([FromForm] PostGame game)
         {
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                return Unauthorized();
-            }
-
             var response = await gamesAccessor.PostAsync(game);
 
             if (response.Result == ModelResult.Created)
@@ -97,18 +96,13 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPatch]
+        [Authorize(PolicyType.WriteGames)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Patch([FromForm] PatchGame game, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Patch([FromForm] PatchGame game)
         {
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                // 401
-                return Unauthorized();
-            }
-
             var response = await gamesAccessor.PatchAsync(game);
 
             if (response.Result == ModelResult.OK)
@@ -126,17 +120,13 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(PolicyType.WriteGames)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete(Guid id, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                return Unauthorized();
-            }
-
             var response = await gamesAccessor.DeleteAsync(id);
 
             if (response.Result == ModelResult.OK)
@@ -154,19 +144,15 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpDelete]
+        [Authorize(PolicyType.WriteGames)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ClearRecords([FromHeader] string sbApiKey)
+        public async Task<IActionResult> ClearRecords()
         {
             if (!Convert.ToBoolean(configuration["AllowDataClears"] ?? "false"))
             {
                 return NotFound();
-            }
-
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                return Unauthorized();
             }
 
             var response = await gamesAccessor.DeleteAllAsync();

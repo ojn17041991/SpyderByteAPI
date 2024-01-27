@@ -9,7 +9,8 @@ using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.DataAccess.Accessors;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Helpers;
+using SpyderByteAPI.Extensions;
+using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Middleware; // Required for Release.
 using SpyderByteAPI.Resources;
 using SpyderByteAPI.Resources.Abstract;
@@ -141,16 +142,58 @@ builder.Services.AddAuthentication(options =>
 builder.Services.Configure<AuthorizationOptions>(options =>
 {
     options.DefaultPolicy = new AuthorizationPolicyBuilder()
-    .RequireAuthenticatedUser()
-    .RequireAssertion(context =>
-    {
-        var token = AuthenticationHelper.GetTokenFromHttpContext(context.Resource as HttpContext);
-        if (token.IsNullOrEmpty()) return false;
+        .RequireAuthenticatedUser()
+        .RequireAssertion(context =>
+        {
+            var token = TokenExtractor.GetTokenFromHttpContext(context.Resource as HttpContext);
+            if (token.IsNullOrEmpty()) return false;
 
-        var isTokenBlacklisted = AuthenticationHelper.IsTokenBlacklisted(token);
-        return !isTokenBlacklisted;
-    })
-    .Build();
+            var isTokenBlacklisted = TokenBlacklister.IsTokenBlacklisted(token);
+            return !isTokenBlacklisted;
+        })
+        .Build();
+
+    options.AddPolicy(PolicyType.ReadGames,
+        new AuthorizationPolicyBuilder()
+        .RequireClaim(ClaimType.ReadGames.ToDescription())
+        .Build()
+    );
+
+    options.AddPolicy(PolicyType.WriteGames,
+        new AuthorizationPolicyBuilder()
+        .RequireClaim(ClaimType.WriteGames.ToDescription())
+        .Build()
+    );
+
+    options.AddPolicy(PolicyType.ReadJams,
+        new AuthorizationPolicyBuilder()
+        .RequireClaim(ClaimType.ReadJams.ToDescription())
+        .Build()
+    );
+
+    options.AddPolicy(PolicyType.WriteJams,
+        new AuthorizationPolicyBuilder()
+        .RequireClaim(ClaimType.WriteJams.ToDescription())
+        .Build()
+    );
+
+    options.AddPolicy(PolicyType.ReadLeaderboards,
+        new AuthorizationPolicyBuilder()
+        .RequireClaim(ClaimType.ReadLeaderboards.ToDescription())
+        .Build()
+    );
+
+    options.AddPolicy(PolicyType.WriteLeaderboards,
+        new AuthorizationPolicyBuilder()
+        .RequireClaim(ClaimType.WriteLeaderboards.ToDescription())
+        .Build()
+    );
+
+    options.AddPolicy(PolicyType.DeleteLeaderboards,
+        new AuthorizationPolicyBuilder()
+        .RequireClaim(ClaimType.DeleteLeaderboards.ToDescription())
+        .Build()
+    );
 });
 
 var app = builder.Build();

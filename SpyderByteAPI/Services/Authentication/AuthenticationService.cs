@@ -2,7 +2,8 @@
 using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Helpers;
+using SpyderByteAPI.Extensions;
+using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Models.Auth;
 using SpyderByteAPI.Services.Auth.Abstract;
 using System.IdentityModel.Tokens.Jwt;
@@ -51,16 +52,16 @@ namespace SpyderByteAPI.Services.Auth
         {
             // OJN: Bool is returned for no reason. I just need something as T
 
-            var token = AuthenticationHelper.GetTokenFromHttpContext(context);
+            var token = TokenExtractor.GetTokenFromHttpContext(context);
             if (token.IsNullOrEmpty()) return new DataResponse<bool>(false, ModelResult.Error); // OJN: Is Error correct here?
 
-            AuthenticationHelper.AddTokenToBlacklist(token);
+            TokenBlacklister.AddTokenToBlacklist(token);
             return new DataResponse<bool>(true, ModelResult.OK);
         }
 
         public IDataResponse<string> Refresh(HttpContext context)
         {
-            var token = AuthenticationHelper.GetTokenFromHttpContext(context);
+            var token = TokenExtractor.GetTokenFromHttpContext(context);
             if (token.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error); // OJN: Is Error correct here?
 
             var claims = decode(token);
@@ -69,7 +70,7 @@ namespace SpyderByteAPI.Services.Auth
             var refreshToken = encode(claims);
             if (refreshToken.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error); // OJN: Is Error correct here?
 
-            AuthenticationHelper.AddTokenToBlacklist(token);
+            TokenBlacklister.AddTokenToBlacklist(token);
             return new DataResponse<string>(refreshToken, ModelResult.OK);
         }
 
@@ -104,12 +105,13 @@ namespace SpyderByteAPI.Services.Auth
         {
             return new List<Claim>
             {
-                new Claim("ReadGames", true.ToString()),
-                new Claim("WriteGames", true.ToString()),
-                new Claim("ReadJams", true.ToString()),
-                new Claim("WriteJams", true.ToString()),
-                new Claim("ReadLeadboards", true.ToString()),
-                new Claim("WriteLeaderboards", true.ToString())
+                new Claim(ClaimType.ReadGames.ToDescription(), true.ToString()),
+                new Claim(ClaimType.WriteGames.ToDescription(), true.ToString()),
+                new Claim(ClaimType.ReadJams.ToDescription(), true.ToString()),
+                new Claim(ClaimType.WriteJams.ToDescription(), true.ToString()),
+                new Claim(ClaimType.ReadLeaderboards.ToDescription(), true.ToString()),
+                new Claim(ClaimType.WriteLeaderboards.ToDescription(), true.ToString()),
+                new Claim(ClaimType.DeleteLeaderboards.ToDescription(), true.ToString())
             };
         }
 
@@ -118,10 +120,10 @@ namespace SpyderByteAPI.Services.Auth
             return new List<Claim>
             {
                 // OJN: Later on this will need to be limited to a specific game or possibly set of games.
-                new Claim("ReadGames", true.ToString()),
-                new Claim("ReadJams", true.ToString()),
-                new Claim("ReadLeadboards", true.ToString()),
-                new Claim("WriteLeaderboards", true.ToString())
+                new Claim(ClaimType.ReadGames.ToDescription(), true.ToString()),
+                new Claim(ClaimType.ReadJams.ToDescription(), true.ToString()),
+                new Claim(ClaimType.ReadLeaderboards.ToDescription(), true.ToString()),
+                new Claim(ClaimType.WriteLeaderboards.ToDescription(), true.ToString())
             };
         }
     }

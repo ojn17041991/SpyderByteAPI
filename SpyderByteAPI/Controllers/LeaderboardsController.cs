@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
+using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Models.Leaderboard;
 
 namespace SpyderByteAPI.Controllers
 {
     [Route("[controller]")]
-    [ApiController]
     [Authorize]
+    [ApiController]
     public class LeaderboardsController : ControllerBase
     {
         private readonly ILeaderboardAccessor leaderboardAccessor;
@@ -22,6 +23,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpGet("Games/{id}")]
+        [Authorize(PolicyType.ReadLeaderboards)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -40,6 +42,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPost("Records")]
+        [Authorize(PolicyType.WriteLeaderboards)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -62,17 +65,13 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpDelete("Records/{id}")]
+        [Authorize(PolicyType.DeleteLeaderboards)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete(Guid id, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                return Unauthorized();
-            }
-
             IDataResponse<LeaderboardRecord?> response = await leaderboardAccessor.DeleteAsync(id);
 
             if (response.Result == ModelResult.OK)
