@@ -11,8 +11,6 @@ namespace SpyderByteAPI.DataAccess
             Result = result;
         }
 
-
-
         public T Data { get; }
 
         public ModelResult Result { get; }
