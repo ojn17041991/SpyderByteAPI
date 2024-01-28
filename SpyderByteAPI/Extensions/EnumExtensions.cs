@@ -1,5 +1,5 @@
-﻿using System.ComponentModel;
-using System.Reflection;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel;
 
 namespace SpyderByteAPI.Extensions
 {
@@ -7,14 +7,19 @@ namespace SpyderByteAPI.Extensions
     {
         public static string ToDescription(this Enum value)
         {
-            // OJN: This needs cleaning up.
-            FieldInfo fi = value.GetType().GetField(value.ToString());
-            DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            var fieldInfo = value.GetType().GetField(value.ToString());
+            if (fieldInfo == null)
+            {
+                return string.Empty;
+            }
 
-            if (attributes.Length > 0)
-                return attributes[0].Description;
-            else
-                return value.ToString();
+            var attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            if (attributes.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+
+            return attributes.First().Description;
         }
     }
 }

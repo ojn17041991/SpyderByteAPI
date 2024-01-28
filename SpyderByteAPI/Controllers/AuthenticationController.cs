@@ -11,10 +11,12 @@ namespace SpyderByteAPI.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService authenticationService;
+        private readonly IConfiguration configuration;
 
-        public AuthenticationController(IAuthenticationService authenticationService)
+        public AuthenticationController(IAuthenticationService authenticationService, IConfiguration configuration)
         {
             this.authenticationService = authenticationService;
+            this.configuration = configuration;
         }
 
         [HttpPost]
@@ -46,6 +48,11 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Refresh()
         {
+            if (!Convert.ToBoolean(configuration["AllowAuthenticationRefresh"] ?? "false"))
+            {
+                return NotFound();
+            }
+
             var response = authenticationService.Refresh(HttpContext);
 
             if (response.Result == ModelResult.OK)
@@ -64,7 +71,7 @@ namespace SpyderByteAPI.Controllers
 
         [HttpDelete]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult Delete()
@@ -73,7 +80,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                return NoContent();
+                return Ok(response.Data);
             }
             else
             {

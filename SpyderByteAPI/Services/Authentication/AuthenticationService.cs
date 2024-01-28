@@ -21,13 +21,9 @@ namespace SpyderByteAPI.Services.Auth
             this.configuration = configuration;
         }
 
-        // OJN: This whole thing probably needs rethinking.
-        // Users should be stored in the database, but the database is tied to the Web App. It should be independent...
-        // Also, should there be a user per game to limit the amount of damage they can do?
-
         public IDataResponse<string> Authenticate(Authentication login)
         {
-            IEnumerable<Claim> claims = new List<Claim>();
+            IEnumerable<Claim> claims;
 
             if (login.UserName == configuration["Authentication:Administrator:UserName"] &&
                 login.Secret == configuration["Authentication:Administrator:Secret"])
@@ -48,27 +44,25 @@ namespace SpyderByteAPI.Services.Auth
             return new DataResponse<string>(token, ModelResult.OK);
         }
 
-        public IDataResponse<bool> Deauthenticate(HttpContext context)
+        public IDataResponse<string> Deauthenticate(HttpContext context)
         {
-            // OJN: Bool is returned for no reason. I just need something as T
-
             var token = TokenExtractor.GetTokenFromHttpContext(context);
-            if (token.IsNullOrEmpty()) return new DataResponse<bool>(false, ModelResult.Error); // OJN: Is Error correct here?
+            if (token.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error);
 
             TokenBlacklister.AddTokenToBlacklist(token);
-            return new DataResponse<bool>(true, ModelResult.OK);
+            return new DataResponse<string>(token, ModelResult.OK);
         }
 
         public IDataResponse<string> Refresh(HttpContext context)
         {
             var token = TokenExtractor.GetTokenFromHttpContext(context);
-            if (token.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error); // OJN: Is Error correct here?
+            if (token.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error);
 
             var claims = decode(token);
-            if (claims.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error); // OJN: Is Error correct here?
+            if (claims.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error);
 
             var refreshToken = encode(claims);
-            if (refreshToken.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error); // OJN: Is Error correct here?
+            if (refreshToken.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error);
 
             TokenBlacklister.AddTokenToBlacklist(token);
             return new DataResponse<string>(refreshToken, ModelResult.OK);
@@ -105,11 +99,8 @@ namespace SpyderByteAPI.Services.Auth
         {
             return new List<Claim>
             {
-                new Claim(ClaimType.ReadGames.ToDescription(), true.ToString()),
                 new Claim(ClaimType.WriteGames.ToDescription(), true.ToString()),
-                new Claim(ClaimType.ReadJams.ToDescription(), true.ToString()),
                 new Claim(ClaimType.WriteJams.ToDescription(), true.ToString()),
-                new Claim(ClaimType.ReadLeaderboards.ToDescription(), true.ToString()),
                 new Claim(ClaimType.WriteLeaderboards.ToDescription(), true.ToString()),
                 new Claim(ClaimType.DeleteLeaderboards.ToDescription(), true.ToString())
             };
@@ -119,10 +110,6 @@ namespace SpyderByteAPI.Services.Auth
         {
             return new List<Claim>
             {
-                // OJN: Later on this will need to be limited to a specific game or possibly set of games.
-                new Claim(ClaimType.ReadGames.ToDescription(), true.ToString()),
-                new Claim(ClaimType.ReadJams.ToDescription(), true.ToString()),
-                new Claim(ClaimType.ReadLeaderboards.ToDescription(), true.ToString()),
                 new Claim(ClaimType.WriteLeaderboards.ToDescription(), true.ToString())
             };
         }

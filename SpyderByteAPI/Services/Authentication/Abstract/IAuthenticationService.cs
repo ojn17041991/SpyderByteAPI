@@ -9,6 +9,6 @@ namespace SpyderByteAPI.Services.Auth.Abstract
 
         IDataResponse<string> Refresh(HttpContext context);
 
-        IDataResponse<bool> Deauthenticate(HttpContext context);
+        IDataResponse<string> Deauthenticate(HttpContext context);
     }
 }

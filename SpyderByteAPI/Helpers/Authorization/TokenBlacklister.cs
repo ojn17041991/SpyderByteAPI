@@ -2,16 +2,16 @@
 {
     public class TokenBlacklister
     {
-        // OJN: Could have faster lookups with HashSet.
-
         private static int MAX_TOKENS_STORED = 100;
-        private static string[] blacklist = new string[MAX_TOKENS_STORED];
-        private static int blacklistIndex = 0;
+        private static HashSet<string> blacklist = new HashSet<string>();
 
         public static void AddTokenToBlacklist(string token)
         {
-            blacklist[blacklistIndex] = token;
-            blacklistIndex = ++blacklistIndex % MAX_TOKENS_STORED;
+            blacklist.Add(token);
+            if (blacklist.Count > MAX_TOKENS_STORED)
+            {
+                blacklist.Remove(blacklist.First());
+            }
         }
 
         public static bool IsTokenBlacklisted(string token)
