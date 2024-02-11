@@ -3,6 +3,7 @@ using SpyderByteAPI.Enums;
 
 namespace SpyderByteAPI.DataAccess
 {
+    // OJN: Doesn't really make sense for this to be in DataAccess.
     public class DataResponse<T> : IDataResponse<T>
     {
         public DataResponse(T data, ModelResult result)

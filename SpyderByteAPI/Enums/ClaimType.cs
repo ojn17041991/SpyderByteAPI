@@ -14,6 +14,9 @@ namespace SpyderByteAPI.Enums
         WriteLeaderboards,
 
         [Description("DeleteLeaderboards")]
-        DeleteLeaderboards
+        DeleteLeaderboards,
+
+        [Description("DataBackup")]
+        DataBackup
     }
 }

@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace SpyderByteAPI.Middleware
 {
-    public class RequestBodyToInsightMiddleware : IMiddleware
+    public class RequestBodyLogger : IMiddleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {

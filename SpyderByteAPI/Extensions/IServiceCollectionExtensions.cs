@@ -16,6 +16,11 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using SpyderByteAPI.Helpers.Authorization;
 using Microsoft.OpenApi.Models;
+using SpyderByteAPI.Helpers.Authentication;
+using SpyderByteAPI.Services.Storage.Abstract;
+using SpyderByteAPI.Services.Storage;
+using SpyderByteAPI.Services.Data.Abstract;
+using SpyderByteAPI.Services.Data;
 
 namespace SpyderByteAPI.Extensions
 {
@@ -26,10 +31,13 @@ namespace SpyderByteAPI.Extensions
             services.AddScoped<IGamesAccessor, GamesAccessor>();
             services.AddScoped<IJamsAccessor, JamsAccessor>();
             services.AddScoped<ILeaderboardAccessor, LeaderboardAccessor>();
-            
-            services.AddSingleton<IImgurService, ImgurService>();
+
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-            
+            services.AddScoped<IDataService, DataService>();
+            services.AddSingleton<IStorageService, StorageService>();
+            services.AddSingleton<IImgurService, ImgurService>();
+
+            services.AddScoped<TokenEncoder, TokenEncoder>();
             services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
         }
 
@@ -51,7 +59,7 @@ namespace SpyderByteAPI.Extensions
                 {
                     builder
                         .WithOrigins("https://spyderbytestudios.itch.io/*",
-                                     "https://www.spyderbyte.co.uk")
+                                     "https://www.spyderbyte.co.uk/*")
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 })
@@ -127,10 +135,11 @@ namespace SpyderByteAPI.Extensions
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidateAudience = false,
+                    ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Authentication:Issuer"],
+                    ValidAudience = configuration["Authentication:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:EncodingKey"] ?? string.Empty)),
                     ClockSkew = TimeSpan.Zero
                 };
@@ -139,7 +148,6 @@ namespace SpyderByteAPI.Extensions
 
         public static void AddProjectAuthorization(this IServiceCollection services)
         {
-            // OJN: Can you get this to return 401, not 403?
             services.Configure<AuthorizationOptions>(options =>
             {
                 options.DefaultPolicy = new AuthorizationPolicyBuilder()
@@ -175,6 +183,12 @@ namespace SpyderByteAPI.Extensions
                 options.AddPolicy(PolicyType.DeleteLeaderboards,
                     new AuthorizationPolicyBuilder()
                     .RequireClaim(ClaimType.DeleteLeaderboards.ToDescription())
+                    .Build()
+                );
+
+                options.AddPolicy(PolicyType.DataBackup,
+                    new AuthorizationPolicyBuilder()
+                    .RequireClaim(ClaimType.DataBackup.ToDescription())
                     .Build()
                 );
             });

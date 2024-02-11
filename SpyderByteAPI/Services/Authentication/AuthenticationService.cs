@@ -2,23 +2,23 @@
 using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Extensions;
+using SpyderByteAPI.Helpers.Authentication;
 using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Models.Auth;
 using SpyderByteAPI.Services.Auth.Abstract;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace SpyderByteAPI.Services.Auth
 {
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IConfiguration configuration;
+        private readonly TokenEncoder tokenEncoder;
 
-        public AuthenticationService(IConfiguration configuration)
+        public AuthenticationService(IConfiguration configuration, TokenEncoder tokenEncoder)
         {
             this.configuration = configuration;
+            this.tokenEncoder = tokenEncoder;
         }
 
         public IDataResponse<string> Authenticate(Authentication login)
@@ -28,19 +28,24 @@ namespace SpyderByteAPI.Services.Auth
             if (login.UserName == configuration["Authentication:Administrator:UserName"] &&
                 login.Secret == configuration["Authentication:Administrator:Secret"])
             {
-                claims = getAdministratorClaims();
+                claims = ClaimProfile.AdministratorClaims();
             }
             else if (login.UserName == configuration["Authentication:Restricted:UserName"] &&
                      login.Secret == configuration["Authentication:Restricted:Secret"])
             {
-                claims = getRestrictedClaims();
+                claims = ClaimProfile.RestrictedClaims();
+            }
+            else if (login.UserName == configuration["Authentication:Utility:UserName"] &&
+                     login.Secret == configuration["Authentication:Utility:Secret"])
+            {
+                claims = ClaimProfile.UtilityClaims();
             }
             else
             {
                 return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
             }
 
-            var token = encode(claims);
+            var token = tokenEncoder.Encode(claims);
             return new DataResponse<string>(token, ModelResult.OK);
         }
 
@@ -58,60 +63,14 @@ namespace SpyderByteAPI.Services.Auth
             var token = TokenExtractor.GetTokenFromHttpContext(context);
             if (token.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error);
 
-            var claims = decode(token);
+            var claims = tokenEncoder.Decode(token);
             if (claims.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error);
 
-            var refreshToken = encode(claims);
+            var refreshToken = tokenEncoder.Encode(claims);
             if (refreshToken.IsNullOrEmpty()) return new DataResponse<string>(string.Empty, ModelResult.Error);
 
             TokenBlacklister.AddTokenToBlacklist(token);
             return new DataResponse<string>(refreshToken, ModelResult.OK);
-        }
-
-        private string encode(IEnumerable<Claim> claims)
-        {
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:EncodingKey"] ?? string.Empty));
-            var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(Convert.ToInt32(configuration["Authentication:TimeoutMinutes"])),
-                Issuer = configuration["Authentication:Issuer"],
-                SigningCredentials = signingCredentials
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-            return tokenString;
-        }
-
-        private IEnumerable<Claim> decode(string token)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            var claims = jwtToken.Claims;
-            return claims.ToList();
-        }
-
-        private IEnumerable<Claim> getAdministratorClaims()
-        {
-            return new List<Claim>
-            {
-                new Claim(ClaimType.WriteGames.ToDescription(), true.ToString()),
-                new Claim(ClaimType.WriteJams.ToDescription(), true.ToString()),
-                new Claim(ClaimType.WriteLeaderboards.ToDescription(), true.ToString()),
-                new Claim(ClaimType.DeleteLeaderboards.ToDescription(), true.ToString())
-            };
-        }
-
-        private IEnumerable<Claim> getRestrictedClaims()
-        {
-            return new List<Claim>
-            {
-                new Claim(ClaimType.WriteLeaderboards.ToDescription(), true.ToString())
-            };
         }
     }
 }
