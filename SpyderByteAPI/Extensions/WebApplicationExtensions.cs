@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SpyderByteAPI.DataAccess;
+using SpyderByteAPI.Middleware; // Required for release.
 
 namespace SpyderByteAPI.Extensions
 {
@@ -8,7 +9,7 @@ namespace SpyderByteAPI.Extensions
         public static void AddProjectMiddleware(this WebApplication webApplication)
         {
             #if !DEBUG
-                app.UseMiddleware<RequestBodyToInsightMiddleware>();
+                app.UseMiddleware<RequestBodyLogger>();
             #endif
         }
 

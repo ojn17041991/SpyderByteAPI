@@ -21,6 +21,8 @@ using SpyderByteAPI.Services.Storage.Abstract;
 using SpyderByteAPI.Services.Storage;
 using SpyderByteAPI.Services.Data.Abstract;
 using SpyderByteAPI.Services.Data;
+using SpyderByteAPI.Middleware; // Required for release.
+using Azure.Identity; // Required for release.
 
 namespace SpyderByteAPI.Extensions
 {
@@ -66,15 +68,15 @@ namespace SpyderByteAPI.Extensions
             );
         }
 
-        public static void AddProjectAzureServices(this IServiceCollection services)
+        public static void AddProjectAzureServices(this IServiceCollection services, ConfigurationManager configuration)
         {
             #if !DEBUG
-                builder.Services.AddApplicationInsightsTelemetry();
-                builder.Services.AddLogging(logBuilder => logBuilder.AddApplicationInsights());
+                services.AddApplicationInsightsTelemetry();
+                services.AddLogging(logBuilder => logBuilder.AddApplicationInsights());
 
-                builder.Services.AddTransient<RequestBodyToInsightMiddleware>();
+                services.AddTransient<RequestBodyLogger>();
 
-                builder.Configuration.AddAzureKeyVault(
+                configuration.AddAzureKeyVault(
                     new Uri("https://spyderbyteglobalkeyvault.vault.azure.net/"),
                     new DefaultAzureCredential()
                 );
