@@ -9,7 +9,7 @@ namespace SpyderByteAPI.Extensions
         public static void AddProjectMiddleware(this WebApplication webApplication)
         {
             #if !DEBUG
-                app.UseMiddleware<RequestBodyLogger>();
+                webApplication.UseMiddleware<RequestBodyLogger>();
             #endif
         }
 
