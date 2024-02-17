@@ -25,14 +25,6 @@ namespace SpyderByteAPI.Services.Data
 
         public async Task<IDataResponse<bool>> Backup()
         {
-            // Get the backup file name from the configuration.
-            var zipFileName = configuration["Database:BackupZipFileName"];
-            if (zipFileName.IsNullOrEmpty())
-            {
-                logger.LogError($"Failed to find database backup file name in configuration.");
-                return new DataResponse<bool>(false, ModelResult.Error);
-            }
-
             // Get the backup file extension from the configuration.
             var backupFileExtension = configuration["Database:BackupFileExtension"];
             if (backupFileExtension.IsNullOrEmpty())
@@ -78,13 +70,12 @@ namespace SpyderByteAPI.Services.Data
                     {
                         foreach (var file in files)
                         {
-                            var archiveEntry = archive.CreateEntryFromFile($"{file}{backupFileExtension}", Path.GetFileName(file));
-                            // OJN: Error check this.
+                            _ = archive.CreateEntryFromFile($"{file}{backupFileExtension}", Path.GetFileName(file));
                         }
                     }
 
                     // Upload the ZIP to storage.
-                    var response = await storageService.Upload(zipFileName!, memoryStream);
+                    var response = await storageService.Upload($"{DateTime.UtcNow.ToString("yyyy-MM-ddThh:mm:ss.fffZ")}.zip", memoryStream);
                     if (response.Result != ModelResult.OK)
                     {
                         logger.LogError($"Failed to upload ZIP file.");
