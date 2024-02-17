@@ -5,7 +5,12 @@ VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpyderByteAPI", "SpyderByteAPI\SpyderByteAPI.csproj", "{43E1B50C-FB61-427F-A2FA-9CAF076033C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpyderByteAPITest", "SpyderByteAPITest\SpyderByteAPITest.csproj", "{BE2FD4B7-E1C1-4B73-B98E-D0E0BF84325B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpyderByteAPITest", "SpyderByteAPITest\SpyderByteAPITest.csproj", "{BE2FD4B7-E1C1-4B73-B98E-D0E0BF84325B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9687BF52-41BB-4F98-9B63-7B923742ACE2}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

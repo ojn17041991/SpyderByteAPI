@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
+using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Models.Leaderboard;
 
 namespace SpyderByteAPI.Controllers
 {
+    [Route("[controller]")]
     [ApiController]
     public class LeaderboardsController : ControllerBase
     {
@@ -18,8 +21,9 @@ namespace SpyderByteAPI.Controllers
             this.configuration = configuration;
         }
 
-        [HttpGet("[controller]/Games/{id}")]
+        [HttpGet("Games/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -35,8 +39,11 @@ namespace SpyderByteAPI.Controllers
             }
         }
 
-        [HttpPost("[controller]/Records")]
+        [HttpPost("Records")]
+        [Authorize]
+        [Authorize(PolicyType.WriteLeaderboards)]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] PostLeaderboardRecord leaderboardRecord)
         {
@@ -56,18 +63,15 @@ namespace SpyderByteAPI.Controllers
             }
         }
 
-        [HttpDelete("[controller]/Records/{id}")]
+        [HttpDelete("Records/{id}")]
+        [Authorize]
+        [Authorize(PolicyType.DeleteLeaderboards)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete(Guid id, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                return Unauthorized();
-            }
-
             IDataResponse<LeaderboardRecord?> response = await leaderboardAccessor.DeleteAsync(id);
 
             if (response.Result == ModelResult.OK)

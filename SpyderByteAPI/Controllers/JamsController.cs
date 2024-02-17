@@ -4,6 +4,8 @@ using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Resources.Abstract;
 using SpyderByteAPI.Models.Jams;
+using Microsoft.AspNetCore.Authorization;
+using SpyderByteAPI.Helpers.Authorization;
 
 namespace SpyderByteAPI.Controllers
 {
@@ -24,6 +26,7 @@ namespace SpyderByteAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get()
         {
@@ -41,6 +44,7 @@ namespace SpyderByteAPI.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetJam(Guid id)
@@ -62,17 +66,14 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
+        [Authorize(PolicyType.WriteJams)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post([FromForm] PostJam jam, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Post([FromForm] PostJam jam)
         {
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                return Unauthorized();
-            }
-
             IDataResponse<Jam?> response = await jamsAccessor.PostAsync(jam);
 
             if (response.Result == ModelResult.Created)
@@ -94,17 +95,14 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPatch]
+        [Authorize]
+        [Authorize(PolicyType.WriteJams)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Patch([FromForm] PatchJam jam, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Patch([FromForm] PatchJam jam)
         {
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                return Unauthorized();
-            }
-
             IDataResponse<Jam?> response = await jamsAccessor.PatchAsync(jam);
 
             if (response.Result == ModelResult.OK)
@@ -122,17 +120,14 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
+        [Authorize(PolicyType.WriteJams)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete(Guid id, [FromHeader] string sbApiKey)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                return Unauthorized();
-            }
-
             IDataResponse<Jam?> response = await jamsAccessor.DeleteAsync(id);
 
             if (response.Result == ModelResult.OK)
@@ -150,18 +145,16 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpDelete]
+        [Authorize]
+        [Authorize(PolicyType.WriteJams)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ClearRecords([FromHeader] string sbApiKey)
+        public async Task<IActionResult> ClearRecords()
         {
             if (!Convert.ToBoolean(configuration["AllowDataClears"] ?? "false"))
             {
                 return NotFound();
-            }
-
-            if (configuration["SBAPIKEY"] != sbApiKey)
-            {
-                return Unauthorized();
             }
 
             var response = await jamsAccessor.DeleteAllAsync();
