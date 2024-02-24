@@ -9,8 +9,8 @@ using SpyderByteAPI.Services.User.Abstract;
 namespace SpyderByteAPI.Controllers
 {
     [Route("[controller]")]
-    //[Authorize]
-    //[Authorize(PolicyType.WriteUsers)]
+    [Authorize]
+    [Authorize(PolicyType.WriteUsers)]
     [ApiController]
     public class UsersController : ControllerBase
     {
