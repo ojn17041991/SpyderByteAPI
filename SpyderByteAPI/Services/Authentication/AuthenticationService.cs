@@ -1,10 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Abstract;
+using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Helpers.Authentication;
 using SpyderByteAPI.Helpers.Authorization;
-using SpyderByteAPI.Models.Auth;
+using SpyderByteAPI.Models.Authentication;
 using SpyderByteAPI.Services.Auth.Abstract;
 using System.Security.Claims;
 
@@ -12,41 +13,38 @@ namespace SpyderByteAPI.Services.Auth
 {
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly IUsersAccessor usersAccessor;
         private readonly ILogger<AuthenticationService> logger;
-        private readonly IConfiguration configuration;
         private readonly TokenEncoder tokenEncoder;
+        private readonly PasswordHasher passwordHasher;
 
-        public AuthenticationService(ILogger<AuthenticationService> logger, IConfiguration configuration, TokenEncoder tokenEncoder)
+        public AuthenticationService(IUsersAccessor usersAccessor, ILogger<AuthenticationService> logger, TokenEncoder tokenEncoder, PasswordHasher passwordHasher)
         {
+            this.usersAccessor = usersAccessor;
             this.logger = logger;
-            this.configuration = configuration;
             this.tokenEncoder = tokenEncoder;
+            this.passwordHasher = passwordHasher;
         }
 
-        public IDataResponse<string> Authenticate(Authentication login)
+        public async Task<IDataResponse<string>> AuthenticateAsync(Login login)
         {
             IEnumerable<Claim> claims;
 
-            if (login.UserName == configuration["Authentication:Administrator:UserName"] &&
-                login.Secret == configuration["Authentication:Administrator:Secret"])
+            var userResponse = await usersAccessor.GetAsync(login.UserName);
+            var user = userResponse.Data!;
+
+            var passwordVerification = new PasswordVerification
             {
+                Password = login.Password,
+                Hash = user.Hash,
+                Salt = user.Salt
+            };
+
+            bool passwordIsValid = passwordHasher.IsPasswordValid(passwordVerification);
+            if (passwordIsValid == false) { return new DataResponse<string>(string.Empty, ModelResult.Unauthorized); }
+
+            // OJN: Get claims based on UserType.
                 claims = ClaimProfile.AdministratorClaims();
-            }
-            else if (login.UserName == configuration["Authentication:Restricted:UserName"] &&
-                     login.Secret == configuration["Authentication:Restricted:Secret"])
-            {
-                claims = ClaimProfile.RestrictedClaims();
-            }
-            else if (login.UserName == configuration["Authentication:Utility:UserName"] &&
-                     login.Secret == configuration["Authentication:Utility:Secret"])
-            {
-                claims = ClaimProfile.UtilityClaims();
-            }
-            else
-            {
-                logger.LogError($"Failed to authenticate {login.UserName} user. Invalid credentials.");
-                return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
-            }
 
             var token = tokenEncoder.Encode(claims);
             if (token.IsNullOrEmpty())

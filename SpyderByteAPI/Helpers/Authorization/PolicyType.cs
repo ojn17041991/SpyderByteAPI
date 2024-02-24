@@ -2,6 +2,8 @@
 {
     public class PolicyType
     {
+        public const string WriteUsers = "WriteUsers";
+
         public const string WriteGames = "WriteGames";
         public const string WriteJams = "WriteJams";
         public const string WriteLeaderboards = "WriteLeaderboards";

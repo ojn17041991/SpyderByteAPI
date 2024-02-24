@@ -12,6 +12,7 @@ namespace SpyderByteAPI.Helpers.Authentication
         {
             return new List<Claim>
             {
+                new Claim(ClaimType.WriteUsers.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteGames.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteJams.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteLeaderboards.ToDescription(), claimEnabled),
