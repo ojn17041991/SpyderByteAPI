@@ -21,7 +21,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                User? user = await context.Users.SingleOrDefaultAsync(g => g.Id == id);
+                User? user = await context.Users.SingleOrDefaultAsync(u => u.Id == id);
                 return new DataResponse<User?>(user, user == null ? ModelResult.NotFound : ModelResult.OK);
             }
             catch (Exception e)
@@ -75,10 +75,6 @@ namespace SpyderByteAPI.DataAccess.Accessors
 
                 context.Users.Remove(user);
                 await context.SaveChangesAsync();
-
-                // Remove the hash and salt before returning the entity.
-                user.Hash = string.Empty;
-                user.Salt = string.Empty;
 
                 return new DataResponse<User?>(user, ModelResult.OK);
             }

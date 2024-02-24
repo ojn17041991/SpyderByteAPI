@@ -23,8 +23,8 @@ using SpyderByteAPI.Services.Data.Abstract;
 using SpyderByteAPI.Services.Data;
 using SpyderByteAPI.Middleware; // Required for release.
 using Azure.Identity; // Required for release.
-using SpyderByteAPI.Services.User.Abstract;
-using SpyderByteAPI.Services.User;
+using SpyderByteAPI.Services.Users.Abstract;
+using SpyderByteAPI.Services.Users;
 
 namespace SpyderByteAPI.Extensions
 {
