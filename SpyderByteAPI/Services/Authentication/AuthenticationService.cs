@@ -30,9 +30,16 @@ namespace SpyderByteAPI.Services.Auth
         {
             IEnumerable<Claim> claims;
 
-            var userResponse = await usersAccessor.GetAsync(login.UserName);
-            var user = userResponse.Data!;
+            // Make sure the user exists before attempting to authenticate.
+            var response = await usersAccessor.GetAsync(login.UserName);
+            if (response.Result != ModelResult.OK)
+            {
+                logger.LogError($"Failed to authenticate user {login.UserName}. Could not find user in database.");
+                return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
+            }
 
+            // Build the password verification object from the database record.
+            var user = response.Data!;
             var passwordVerification = new PasswordVerification
             {
                 Password = login.Password,
@@ -40,12 +47,32 @@ namespace SpyderByteAPI.Services.Auth
                 Salt = user.Salt
             };
 
+            // Check if the password is correct for the user.
             bool passwordIsValid = passwordHasher.IsPasswordValid(passwordVerification);
-            if (passwordIsValid == false) { return new DataResponse<string>(string.Empty, ModelResult.Unauthorized); }
+            if (passwordIsValid == false)
+            {
+                logger.LogError($"Failed to authenticate user {login.UserName}. Password incorrect.");
+                return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
+            }
 
-            // OJN: Get claims based on UserType.
-                claims = ClaimProfile.AdministratorClaims();
+            // Get the user claims based on user type.
+            switch (user.UserType)
+            {
+                case UserType.Admin:
+                    claims = ClaimProfile.AdministratorClaims();
+                    break;
+                case UserType.Restricted:
+                    claims = ClaimProfile.RestrictedClaims();
+                    break;
+                case UserType.Utility:
+                    claims = ClaimProfile.UtilityClaims();
+                    break;
+                default:
+                    logger.LogError($"Failed to authenticate user. User Type {(int)user.UserType} not recognised.");
+                    return new DataResponse<string>(string.Empty, ModelResult.Error);
+            }
 
+            // Encode the claims to produce the token.
             var token = tokenEncoder.Encode(claims);
             if (token.IsNullOrEmpty())
             {
@@ -53,6 +80,7 @@ namespace SpyderByteAPI.Services.Auth
                 return new DataResponse<string>(string.Empty, ModelResult.Error);
             }
 
+            // Login successful. Return token.
             logger.LogInformation($"Authenticated {login.UserName} user.");
             return new DataResponse<string>(token, ModelResult.OK);
         }

@@ -4,7 +4,7 @@ using SpyderByteAPI.Enums;
 using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Models.Users;
 using SpyderByteAPI.Resources.Abstract;
-using SpyderByteAPI.Services.User.Abstract;
+using SpyderByteAPI.Services.Users.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
@@ -36,9 +36,9 @@ namespace SpyderByteAPI.Controllers
             {
                 return BadRequest(modelResources.GetResource(ModelResult.AlreadyExists));
             }
-            else if (response.Result == ModelResult.RequestDataIncomplete)
+            else if (response.Result == ModelResult.RequestInvalid)
             {
-                return BadRequest(modelResources.GetResource(ModelResult.RequestDataIncomplete));
+                return BadRequest(modelResources.GetResource(ModelResult.RequestInvalid));
             }
             else
             {
@@ -53,11 +53,15 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                return Ok(response.Data);
+                return NoContent();
             }
             else if (response.Result == ModelResult.NotFound)
             {
                 return NotFound();
+            }
+            else if (response.Result == ModelResult.RequestInvalid)
+            {
+                return BadRequest(modelResources.GetResource(ModelResult.RequestInvalid));
             }
             else
             {

@@ -11,6 +11,7 @@
         Error,
         NotFound,
         AlreadyExists,
-        RequestDataIncomplete
+        RequestDataIncomplete,
+        RequestInvalid
     }
 }
