@@ -1,11 +1,11 @@
 ﻿using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Models.Auth;
+using SpyderByteAPI.Models.Authentication;
 
 namespace SpyderByteAPI.Services.Auth.Abstract
 {
     public interface IAuthenticationService
     {
-        IDataResponse<string> Authenticate(Authentication login);
+        Task<IDataResponse<string>> AuthenticateAsync(Login login);
 
         IDataResponse<string> Refresh(HttpContext context);
 

@@ -1,7 +1,5 @@
 using AspNetCoreRateLimit;
-using Azure.Identity; // Required for Release.
 using SpyderByteAPI.Extensions;
-using SpyderByteAPI.Middleware; // Required for Release.
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressMapClientErrors = true);

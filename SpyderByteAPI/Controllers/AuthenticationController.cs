@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Auth;
+using SpyderByteAPI.Models.Authentication;
 using SpyderByteAPI.Services.Auth.Abstract;
 
 namespace SpyderByteAPI.Controllers
@@ -23,9 +23,9 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult Post(Authentication authentication)
+        public async Task<IActionResult> Post(Login login)
         {
-            var response = authenticationService.Authenticate(authentication);
+            var response = await authenticationService.AuthenticateAsync(login);
 
             if (response.Result == ModelResult.OK)
             {

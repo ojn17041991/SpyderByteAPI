@@ -23,6 +23,8 @@ using SpyderByteAPI.Services.Data.Abstract;
 using SpyderByteAPI.Services.Data;
 using SpyderByteAPI.Middleware; // Required for release.
 using Azure.Identity; // Required for release.
+using SpyderByteAPI.Services.User.Abstract;
+using SpyderByteAPI.Services.User;
 
 namespace SpyderByteAPI.Extensions
 {
@@ -33,13 +35,16 @@ namespace SpyderByteAPI.Extensions
             services.AddScoped<IGamesAccessor, GamesAccessor>();
             services.AddScoped<IJamsAccessor, JamsAccessor>();
             services.AddScoped<ILeaderboardAccessor, LeaderboardAccessor>();
+            services.AddScoped<IUsersAccessor, UsersAccessor>();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IDataService, DataService>();
+            services.AddScoped<IUsersService, UserService>();
             services.AddSingleton<IStorageService, StorageService>();
             services.AddSingleton<IImgurService, ImgurService>();
 
             services.AddScoped<TokenEncoder, TokenEncoder>();
+            services.AddScoped<PasswordHasher, PasswordHasher>();
             services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
         }
 
@@ -163,6 +168,12 @@ namespace SpyderByteAPI.Extensions
                         return !isTokenBlacklisted;
                     })
                     .Build();
+
+                options.AddPolicy(PolicyType.WriteUsers,
+                    new AuthorizationPolicyBuilder()
+                    .RequireClaim(ClaimType.WriteUsers.ToDescription())
+                    .Build()
+                );
 
                 options.AddPolicy(PolicyType.WriteGames,
                     new AuthorizationPolicyBuilder()

@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SpyderByteAPI.Models.Auth
+namespace SpyderByteAPI.Models.Authentication
 {
-    public class Authentication
+    public class Login
     {
         [Required]
         public string UserName { get; set; } = string.Empty;
 
         [Required]
-        public string Secret { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }
