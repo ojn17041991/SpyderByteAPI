@@ -47,6 +47,10 @@ namespace SpyderByteAPI.Services.Auth
                 Salt = user.Salt
             };
 
+            // Force the thread to sleep to prevent timing-based attacks.
+            int sleepTime = new Random().Next(500) + 500;
+            Thread.Sleep(sleepTime);
+
             // Check if the password is correct for the user.
             bool passwordIsValid = passwordHasher.IsPasswordValid(passwordVerification);
             if (passwordIsValid == false)
