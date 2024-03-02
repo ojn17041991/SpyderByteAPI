@@ -1,4 +1,6 @@
-﻿namespace SpyderByteAPI.Models.Jams
+﻿using SpyderByteAPI.Models.Users;
+
+namespace SpyderByteAPI.Models.Jams
 {
     public class Jam
     {
@@ -13,5 +15,7 @@
         public string ImgurImageId { get; set; } = string.Empty;
 
         public DateTime PublishDate { get; set; } = DateTime.MinValue;
+
+        public UserJam? UserJam { get; set; }
     }
 }
