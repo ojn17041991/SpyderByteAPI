@@ -30,21 +30,14 @@ namespace SpyderByteAPI.Services.Users
                 return new DataResponse<User?>(null, ModelResult.RequestInvalid);
             }
 
-            // Make sure the user doesn't exist.
-            var response = await usersAccessor.GetAsync(user.Id);
-            if (response.Result == ModelResult.OK)
-            {
-                logger.LogError($"Failed to post user {user.Id}. A user of this ID already exists.");
-                return new DataResponse<User?>(null, ModelResult.AlreadyExists);
-            }
-
             // Generate the hash data for the user.
             var hashData = passwordHasher.GenerateNewHash(user.Password);
             var hashedUser = new PostHashedUser
             {
                 Id = user.Id,
                 HashData = hashData,
-                UserType = user.UserType
+                UserType = user.UserType,
+                JamId = user.JamId
             };
 
             // Save the user with hash data to the database.

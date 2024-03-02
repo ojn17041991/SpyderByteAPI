@@ -138,6 +138,10 @@ namespace SpyderByteAPI.Controllers
             {
                 return NotFound();
             }
+            else if (response.Result == ModelResult.RelationshipViolation)
+            {
+                return BadRequest(modelResources.GetResource(ModelResult.RelationshipViolation));
+            }
             else
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);

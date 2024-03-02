@@ -21,7 +21,10 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                User? user = await context.Users.SingleOrDefaultAsync(u => u.Id == id);
+                User? user = await context.Users
+                    .Include(u => u.UserJam)
+                        .ThenInclude(uj => uj!.Jam)
+                    .SingleOrDefaultAsync(u => u.Id == id);
                 return new DataResponse<User?>(user, user == null ? ModelResult.NotFound : ModelResult.OK);
             }
             catch (Exception e)
@@ -50,7 +53,35 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     UserType = user.UserType
                 };
 
+                if (user.JamId != null)
+                {
+                    var jam = await context.Jams.SingleOrDefaultAsync(j => j.Id == user.JamId);
+                    if (jam == null)
+                    {
+                        logger.LogInformation($"Unable to post user {user.Id}. There is no jam for the ID {user.JamId}.");
+                        return new DataResponse<User?>(null, ModelResult.NotFound);
+                    }
+
+                    var userJam = await context.UserJams.SingleOrDefaultAsync(uj => uj.JamId == jam.Id);
+                    if (userJam != null)
+                    {
+                        logger.LogInformation($"Unable to post user {user.Id}. The jam ID {jam.Id} is already assigned to another user.");
+                        return new DataResponse<User?>(null, ModelResult.AlreadyExists);
+                    }
+
+                    var mappedUserJam = new UserJam
+                    {
+                        JamId = jam.Id,
+                        Jam = jam,
+                        UserId = mappedUser.Id,
+                        User = mappedUser
+                    };
+
+                    await context.UserJams.AddAsync(mappedUserJam);
+                }
+
                 await context.Users.AddAsync(mappedUser);
+
                 await context.SaveChangesAsync();
 
                 return new DataResponse<User?>(mappedUser, ModelResult.Created);
@@ -66,14 +97,23 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                User? user = await context.Users.SingleOrDefaultAsync(u => u.Id == id);
+                User? user = await context.Users
+                    .Include(u => u.UserJam)
+                    .SingleOrDefaultAsync(u => u.Id == id);
                 if (user == null)
                 {
                     logger.LogInformation($"Unable to delete user. Could not find a user of ID {id}.");
                     return new DataResponse<User?>(user, ModelResult.NotFound);
                 }
 
+                // If the user has a user-jam relationship, we need to delete that too.
+                if (user.UserJam != null)
+                {
+                    context.UserJams.Remove(user.UserJam);
+                }
+
                 context.Users.Remove(user);
+
                 await context.SaveChangesAsync();
 
                 return new DataResponse<User?>(user, ModelResult.OK);

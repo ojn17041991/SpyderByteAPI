@@ -1,4 +1,5 @@
 ﻿using SpyderByteAPI.Models.Users;
+using System.Text.Json.Serialization;
 
 namespace SpyderByteAPI.Models.Jams
 {
@@ -16,6 +17,7 @@ namespace SpyderByteAPI.Models.Jams
 
         public DateTime PublishDate { get; set; } = DateTime.MinValue;
 
+        [JsonIgnore]
         public UserJam? UserJam { get; set; }
     }
 }

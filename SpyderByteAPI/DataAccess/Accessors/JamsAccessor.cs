@@ -26,7 +26,10 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                IList<Jam>? data = await context.Jams.OrderBy(j => j.PublishDate).ToListAsync();
+                IList<Jam>? data = await context.Jams
+                    .Include(j => j.UserJam)
+                        .ThenInclude(uj => uj!.User)
+                    .OrderBy(j => j.PublishDate).ToListAsync();
                 return new DataResponse<IList<Jam>?>(data, ModelResult.OK);
             }
             catch (Exception e)
@@ -40,7 +43,10 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                Jam? jam = await context.Jams.SingleOrDefaultAsync(j => j.Id == id);
+                Jam? jam = await context.Jams
+                    .Include(j => j.UserJam)
+                        .ThenInclude(uj => uj!.User)
+                    .SingleOrDefaultAsync(j => j.Id == id);
                 return new DataResponse<Jam?>(jam, jam == null ? ModelResult.NotFound : ModelResult.OK);
             }
             catch (Exception e)
@@ -158,11 +164,20 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                Jam? jam = await context.Jams.SingleOrDefaultAsync(j => j.Id == id);
+                Jam? jam = await context.Jams
+                    .Include(j => j.UserJam)
+                    .SingleOrDefaultAsync(j => j.Id == id);
+
                 if (jam == null)
                 {
                     logger.LogInformation($"Unable to delete jam. Could not find a jam of ID {id}.");
                     return new DataResponse<Jam?>(jam, ModelResult.NotFound);
+                }
+
+                if (jam.UserJam != null)
+                {
+                    logger.LogInformation($"Unable to delete jam. User {jam.UserJam.UserId} is dependent on jam ID {jam.Id}.");
+                    return new DataResponse<Jam?>(jam, ModelResult.RelationshipViolation);
                 }
 
                 var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(jam.ImgurImageId);
@@ -172,6 +187,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 }
 
                 context.Jams.Remove(jam);
+                
                 await context.SaveChangesAsync();
 
                 return new DataResponse<Jam?>(jam, ModelResult.OK);
@@ -187,6 +203,8 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
+                // OJN: Is this still needed? There are no checks for User-Jam relationships so 500 can be triggered.
+
                 var jams = await context.Jams.ToListAsync();
 
                 foreach (var jam in jams)

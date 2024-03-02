@@ -12,6 +12,7 @@
         NotFound,
         AlreadyExists,
         RequestDataIncomplete,
-        RequestInvalid
+        RequestInvalid,
+        RelationshipViolation
     }
 }

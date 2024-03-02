@@ -10,5 +10,7 @@ namespace SpyderByteAPI.Models.Users
         public HashData HashData { get; set; } = new HashData();
 
         public UserType UserType{ get; set; }
+
+        public Guid? JamId { get; set; }
     }
 }

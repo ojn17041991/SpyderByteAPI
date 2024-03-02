@@ -13,7 +13,8 @@ namespace SpyderByteAPI.Resources
             { ModelResult.NotFound, "Failed to locate resource." },
             { ModelResult.AlreadyExists, "This resource already exists." },
             { ModelResult.RequestDataIncomplete, "The request data is incomplete." },
-            { ModelResult.RequestInvalid, "The request is invalid." }
+            { ModelResult.RequestInvalid, "The request is invalid." },
+            { ModelResult.RelationshipViolation, "The request would break a relationship." }
         };
 
         public string GetResource(ModelResult modelResult)

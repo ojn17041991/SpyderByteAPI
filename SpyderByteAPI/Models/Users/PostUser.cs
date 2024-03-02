@@ -13,5 +13,7 @@ namespace SpyderByteAPI.Models.Users
 
         [Required]
         public UserType UserType { get; set; } = UserType.Restricted;
+
+        public Guid? JamId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SpyderByteAPI.Enums;
+using System.Text.Json.Serialization;
 
 namespace SpyderByteAPI.Models.Users
 {
@@ -12,6 +13,7 @@ namespace SpyderByteAPI.Models.Users
 
         public UserType UserType { get; set; } = UserType.Restricted;
 
+        [JsonIgnore]
         public UserJam? UserJam { get; set; }
     }
 }
