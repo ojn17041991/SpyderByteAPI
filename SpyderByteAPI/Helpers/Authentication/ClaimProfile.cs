@@ -1,5 +1,6 @@
 ﻿using SpyderByteAPI.Enums;
 using SpyderByteAPI.Extensions;
+using SpyderByteAPI.Models.Users;
 using System.Security.Claims;
 
 namespace SpyderByteAPI.Helpers.Authentication
@@ -7,6 +8,7 @@ namespace SpyderByteAPI.Helpers.Authentication
     public class ClaimProfile
     {
         private const string claimEnabled = "true";
+        private const string globalAccess = "*";
 
         public static IEnumerable<Claim> AdministratorClaims()
         {
@@ -16,16 +18,24 @@ namespace SpyderByteAPI.Helpers.Authentication
                 new Claim(ClaimType.WriteGames.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteJams.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteLeaderboards.ToDescription(), claimEnabled),
-                new Claim(ClaimType.DeleteLeaderboards.ToDescription(), claimEnabled)
+                new Claim(ClaimType.DeleteLeaderboards.ToDescription(), claimEnabled),
+                new Claim(ClaimType.AssignedGame.ToDescription(), globalAccess)
             };
         }
 
-        public static IEnumerable<Claim> RestrictedClaims()
+        public static IEnumerable<Claim> RestrictedClaims(User user)
         {
-            return new List<Claim>
+            var claims =  new List<Claim>
             {
                 new Claim(ClaimType.WriteLeaderboards.ToDescription(), claimEnabled)
             };
+
+            if (user.UserGame != null)
+            {
+                claims.Add(new Claim(ClaimType.AssignedGame.ToDescription(), user.UserGame.GameId.ToString()));
+            }
+
+            return claims;
         }
 
         public static IEnumerable<Claim> UtilityClaims()

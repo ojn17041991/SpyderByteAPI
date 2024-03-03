@@ -3,7 +3,6 @@ using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models.Games;
-using SpyderByteAPI.Models.Jams;
 using SpyderByteAPI.Models.Leaderboard;
 
 namespace SpyderByteAPI.DataAccess.Accessors
@@ -19,38 +18,83 @@ namespace SpyderByteAPI.DataAccess.Accessors
             this.logger = logger;
         }
 
-        public async Task<IDataResponse<IList<LeaderboardRecord>?>> GetAsync(Guid gameId)
+        public async Task<IDataResponse<Leaderboard?>> GetAsync(Guid gameId)
         {
             try
             {
-                IList<LeaderboardRecord>? data = await context.LeaderboardRecords.Where(lr => lr.GameId == gameId).OrderByDescending(lr => lr.Score).ToListAsync();
-                return new DataResponse<IList<LeaderboardRecord>?>(data, ModelResult.OK);
+                Leaderboard? data = await context.Leaderboards
+                    .Include(l => l.LeaderboardGame)
+                    .Include(l => l.LeaderboardRecords)
+                    .Where(l => l.LeaderboardGame.GameId == gameId)
+                    .SingleOrDefaultAsync();
+                return new DataResponse<Leaderboard?>(data, data == null ? ModelResult.NotFound : ModelResult.OK);
             }
             catch (Exception e)
             {
                 logger.LogError($"Failed to get leaderboard records for game ID {gameId}.", e);
-                return new DataResponse<IList<LeaderboardRecord>?>(null, ModelResult.Error);
+                return new DataResponse<Leaderboard?>(null, ModelResult.Error);
             }
         }
 
-        public async Task<IDataResponse<LeaderboardRecord?>> PostAsync(PostLeaderboardRecord leaderboardRecord)
+        public async Task<IDataResponse<Leaderboard?>> PostAsync(PostLeaderboard leaderboard)
         {
             try
             {
-                Game? game = await context.Games.SingleOrDefaultAsync(g => g.Id == leaderboardRecord.GameId);
+                Game? game = await context.Games
+                    .Include(g => g.LeaderboardGame)
+                    .SingleOrDefaultAsync(g => g.Id == leaderboard.GameId);
+
                 if (game == null)
                 {
-                    Jam? jam = await context.Jams.SingleOrDefaultAsync(j => j.Id == leaderboardRecord.GameId);
-                    if (jam == null)
-                    {
-                        logger.LogInformation($"Unable to post leaderboard entry. Could not find a game/jam of ID {leaderboardRecord.GameId}.");
-                        return new DataResponse<LeaderboardRecord?>(null, ModelResult.NotFound);
-                    }
+                    logger.LogInformation($"Unable to post leaderboard. Could not find a game of ID {leaderboard.GameId}.");
+                    return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                }
+
+                if (game.LeaderboardGame != null)
+                {
+                    logger.LogInformation($"Unable to post leaderboard. A leaderboard is already assigned to game of ID {leaderboard.GameId}.");
+                    return new DataResponse<Leaderboard?>(null, ModelResult.AlreadyExists);
+                }
+
+                Leaderboard mappedLeaderboard = new Leaderboard();
+
+                await context.Leaderboards.AddAsync(mappedLeaderboard);
+
+                LeaderboardGame mappedLeaderboardGame = new LeaderboardGame
+                {
+                    LeaderboardId = mappedLeaderboard.Id,
+                    Leaderboard = mappedLeaderboard,
+                    GameId = game.Id,
+                    Game = game
+                };
+
+                await context.LeaderboardGames.AddAsync(mappedLeaderboardGame);
+
+                await context.SaveChangesAsync();
+
+                return new DataResponse<Leaderboard?>(mappedLeaderboard, ModelResult.Created);
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Failed to post leaderboard record.", e);
+                return new DataResponse<Leaderboard?>(null, ModelResult.Error);
+            }
+        }
+
+        public async Task<IDataResponse<LeaderboardRecord?>> PostRecordAsync(PostLeaderboardRecord leaderboardRecord)
+        {
+            try
+            {
+                Leaderboard? leaderboard = await context.Leaderboards.SingleOrDefaultAsync(l => l.Id == leaderboardRecord.LeaderboardId);
+                if (leaderboard == null)
+                {
+                    logger.LogInformation($"Unable to post leaderboard entry. Could not find a leaderboard of ID {leaderboardRecord.LeaderboardId}.");
+                    return new DataResponse<LeaderboardRecord?>(null, ModelResult.NotFound);
                 }
 
                 LeaderboardRecord mappedLeaderboardRecord = new LeaderboardRecord
                 {
-                    GameId = leaderboardRecord.GameId,
+                    Leaderboard = leaderboard,
                     Player = leaderboardRecord.Player,
                     Score = leaderboardRecord.Score,
                     Timestamp = leaderboardRecord.Timestamp ?? DateTime.UtcNow
@@ -68,7 +112,9 @@ namespace SpyderByteAPI.DataAccess.Accessors
             }
         }
 
-        public async Task<IDataResponse<LeaderboardRecord?>> DeleteAsync(Guid id)
+        // OJN: Will want delete leaderboard later on... and more granularity on the claim types. DeleteRecord, PostRecord, etc.
+
+        public async Task<IDataResponse<LeaderboardRecord?>> DeleteRecordAsync(Guid id)
         {
             try
             {

@@ -66,7 +66,7 @@ namespace SpyderByteAPI.Services.Auth
                     claims = ClaimProfile.AdministratorClaims();
                     break;
                 case UserType.Restricted:
-                    claims = ClaimProfile.RestrictedClaims();
+                    claims = ClaimProfile.RestrictedClaims(user);
                     break;
                 case UserType.Utility:
                     claims = ClaimProfile.UtilityClaims();

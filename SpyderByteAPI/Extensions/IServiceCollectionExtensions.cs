@@ -33,7 +33,6 @@ namespace SpyderByteAPI.Extensions
         public static void AddProjectDependencies(this IServiceCollection services)
         {
             services.AddScoped<IGamesAccessor, GamesAccessor>();
-            services.AddScoped<IJamsAccessor, JamsAccessor>();
             services.AddScoped<ILeaderboardAccessor, LeaderboardAccessor>();
             services.AddScoped<IUsersAccessor, UsersAccessor>();
 

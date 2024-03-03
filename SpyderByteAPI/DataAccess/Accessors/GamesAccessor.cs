@@ -2,6 +2,7 @@
 using SpyderByteAPI.DataAccess.Abstract;
 using SpyderByteAPI.DataAccess.Abstract.Accessors;
 using SpyderByteAPI.Enums;
+using SpyderByteAPI.Migrations;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Services.Imgur.Abstract;
 
@@ -26,7 +27,10 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                IList<Game>? data = await context.Games.OrderBy(g => g.PublishDate).ToListAsync();
+                IList<Game>? data = await context.Games
+                    .Include(j => j.UserGame)
+                        .ThenInclude(uj => uj!.User)
+                    .OrderBy(j => j.PublishDate).ToListAsync();
                 return new DataResponse<IList<Game>?>(data, ModelResult.OK);
             }
             catch (Exception e)
@@ -40,7 +44,10 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                Game? game = await context.Games.SingleOrDefaultAsync(g => g.Id == id);
+                Game? game = await context.Games
+                    .Include(j => j.UserGame)
+                        .ThenInclude(uj => uj!.User)
+                    .SingleOrDefaultAsync(j => j.Id == id);
                 return new DataResponse<Game?>(game, game == null ? ModelResult.NotFound : ModelResult.OK);
             }
             catch (Exception e)
@@ -158,11 +165,20 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
-                Game? game = await context.Games.SingleOrDefaultAsync(g => g.Id == id);
+                Game? game = await context.Games
+                    .Include(g => g.UserGame)
+                    .SingleOrDefaultAsync(g => g.Id == id);
+
                 if (game == null)
                 {
                     logger.LogInformation($"Unable to delete game. Could not find a game of ID {id}.");
                     return new DataResponse<Game?>(game, ModelResult.NotFound);
+                }
+
+                if (game.UserGame != null)
+                {
+                    logger.LogInformation($"Unable to delete game. User {game.UserGame.UserId} is dependent on jam ID {game.Id}.");
+                    return new DataResponse<Game?>(game, ModelResult.RelationshipViolation);
                 }
 
                 var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(game.ImgurImageId);
@@ -187,6 +203,8 @@ namespace SpyderByteAPI.DataAccess.Accessors
         {
             try
             {
+                // OJN: Can this be removed?
+
                 var games = await context.Games.ToListAsync();
 
                 foreach (var game in games)

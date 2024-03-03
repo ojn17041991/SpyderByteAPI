@@ -5,7 +5,6 @@ using Moq;
 using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.DataAccess.Accessors;
 using SpyderByteAPI.Models.Games;
-using SpyderByteAPI.Models.Jams;
 using SpyderByteAPI.Models.Leaderboard;
 
 namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper
@@ -62,20 +61,20 @@ namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper
             return game;
         }
 
-        public async Task<Jam> AddJam()
-        {
-            var jam = _fixture.Create<Jam>();
-            _context.Jams.Add(jam);
-            await _context.SaveChangesAsync();
-            return jam;
-        }
+        //public async Task<Jam> AddJam()
+        //{
+        //    var jam = _fixture.Create<Jam>();
+        //    _context.Jams.Add(jam);
+        //    await _context.SaveChangesAsync();
+        //    return jam;
+        //}
 
         private LeaderboardRecord DeepClone(LeaderboardRecord leaderboardRecord)
         {
             return new LeaderboardRecord
             {
                 Id = leaderboardRecord.Id,
-                GameId = leaderboardRecord.GameId,
+                Leaderboard = leaderboardRecord.Leaderboard,
                 Player = leaderboardRecord.Player,
                 Score = leaderboardRecord.Score,
                 Timestamp = leaderboardRecord.Timestamp

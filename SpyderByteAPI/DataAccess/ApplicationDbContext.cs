@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SpyderByteAPI.Models.Games;
-using SpyderByteAPI.Models.Jams;
 using SpyderByteAPI.Models.Leaderboard;
 using SpyderByteAPI.Models.Users;
 
@@ -15,31 +14,61 @@ namespace SpyderByteAPI.DataAccess
 
         public DbSet<Game> Games { get; set; }
 
-        public DbSet<Jam> Jams { get; set; }
+        public DbSet<LeaderboardGame> LeaderboardGames { get; set; }
+
+        public DbSet<Leaderboard> Leaderboards { get; set; }
 
         public DbSet<LeaderboardRecord> LeaderboardRecords { get; set; }
 
         public DbSet<User> Users { get; set; }
 
-        public DbSet<UserJam> UserJams { get; set; }
+        public DbSet<UserGame> UserGames { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserJam>(entity =>
+            modelBuilder.Entity<UserGame>(entity =>
             {
-                entity.HasKey(e => e.Id).HasName("PK_UserJam_Id");
+                entity.HasKey(e => e.Id).HasName("PK_UserGame_Id");
 
                 entity.HasOne(e => e.User)
-                    .WithOne(e => e.UserJam)
-                    .HasForeignKey<UserJam>(e => e.UserId)
+                    .WithOne(e => e.UserGame)
+                    .HasForeignKey<UserGame>(e => e.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserJam_User");
+                    .HasConstraintName("FK_UserGame_User");
 
-                entity.HasOne(e => e.Jam)
-                    .WithOne(e => e.UserJam)
-                    .HasForeignKey<UserJam>(e => e.JamId)
+                entity.HasOne(e => e.Game)
+                    .WithOne(e => e.UserGame)
+                    .HasForeignKey<UserGame>(e => e.GameId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserJam_Jam");
+                    .HasConstraintName("FK_UserGame_Game");
+            });
+
+            modelBuilder.Entity<LeaderboardGame>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK_LeaderboardGame_Id");
+
+                entity.HasOne(e => e.Game)
+                    .WithOne(e => e.LeaderboardGame)
+                    .HasForeignKey<LeaderboardGame>(e => e.GameId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LeaderboardGame_User");
+
+                entity.HasOne(e => e.Leaderboard)
+                    .WithOne(e => e.LeaderboardGame)
+                    .HasForeignKey<LeaderboardGame>(e => e.LeaderboardId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LeaderboardGame_Leaderboard");
+            });
+
+            modelBuilder.Entity<LeaderboardRecord>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK_LeaderboardRecord_Id");
+
+                entity.HasOne(e => e.Leaderboard)
+                    .WithMany(e => e.LeaderboardRecords)
+                    .HasForeignKey(e => e.LeaderboardId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LeaderboardRecord_Leaderboard");
             });
         }
     }

@@ -4,7 +4,9 @@
     {
         public Guid Id { get; set; }
 
-        public Guid GameId { get; set; }
+        public Guid LeaderboardId { get; set; }
+
+        public Leaderboard Leaderboard { get; set; } = new Leaderboard();
 
         public string Player { get; set; } = string.Empty;
 

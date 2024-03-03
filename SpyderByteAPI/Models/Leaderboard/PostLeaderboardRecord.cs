@@ -5,7 +5,7 @@ namespace SpyderByteAPI.Models.Leaderboard
     public class PostLeaderboardRecord
     {
         [Required]
-        public Guid GameId { get; set; }
+        public Guid LeaderboardId { get; set; }
 
         [Required]
         public string Player { get; set; } = string.Empty;

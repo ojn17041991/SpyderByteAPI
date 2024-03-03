@@ -133,6 +133,10 @@ namespace SpyderByteAPI.Controllers
             {
                 return Ok(response.Data);
             }
+            else if (response.Result == ModelResult.RelationshipViolation)
+            {
+                return BadRequest(modelResources.GetResource(ModelResult.RelationshipViolation));
+            }
             else if (response.Result == ModelResult.NotFound)
             {
                 return NotFound();

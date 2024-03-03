@@ -21,17 +21,41 @@ namespace SpyderByteAPI.Controllers
             this.configuration = configuration;
         }
 
-        [HttpGet("Games/{id}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(Guid id)
         {
-            IDataResponse<IList<LeaderboardRecord>?> response = await leaderboardAccessor.GetAsync(id);
+            IDataResponse<Leaderboard?> response = await leaderboardAccessor.GetAsync(id);
 
             if (response.Result == ModelResult.OK)
             {
                 return Ok(response.Data);
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Authorize(PolicyType.WriteLeaderboards)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Post([FromBody] PostLeaderboard leaderboard)
+        {
+            IDataResponse<Leaderboard?> response = await leaderboardAccessor.PostAsync(leaderboard);
+
+            if (response.Result == ModelResult.Created)
+            {
+                return CreatedAtAction(nameof(Get), new { id = response?.Data?.Id }, response?.Data);
+            }
+            else if (response.Result == ModelResult.NotFound)
+            {
+                return NotFound();
             }
             else
             {
@@ -47,11 +71,11 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] PostLeaderboardRecord leaderboardRecord)
         {
-            IDataResponse<LeaderboardRecord?> response = await leaderboardAccessor.PostAsync(leaderboardRecord);
+            IDataResponse<LeaderboardRecord?> response = await leaderboardAccessor.PostRecordAsync(leaderboardRecord);
 
             if (response.Result == ModelResult.Created)
             {
-                return CreatedAtAction(nameof(Get), new { id = response?.Data?.GameId }, response?.Data);
+                return CreatedAtAction(nameof(Get), new { id = response?.Data?.Id }, response?.Data);
             }
             else if (response.Result == ModelResult.NotFound)
             {
@@ -72,7 +96,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(Guid id)
         {
-            IDataResponse<LeaderboardRecord?> response = await leaderboardAccessor.DeleteAsync(id);
+            IDataResponse<LeaderboardRecord?> response = await leaderboardAccessor.DeleteRecordAsync(id);
 
             if (response.Result == ModelResult.OK)
             {

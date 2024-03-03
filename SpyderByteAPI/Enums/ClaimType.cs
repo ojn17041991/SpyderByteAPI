@@ -20,6 +20,9 @@ namespace SpyderByteAPI.Enums
         DeleteLeaderboards,
 
         [Description("DataBackup")]
-        DataBackup
+        DataBackup,
+
+        [Description("AssignedGame")]
+        AssignedGame
     }
 }

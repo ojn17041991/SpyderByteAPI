@@ -4,10 +4,12 @@ namespace SpyderByteAPI.DataAccess.Abstract.Accessors
 {
     public interface ILeaderboardAccessor
     {
-        Task<IDataResponse<IList<LeaderboardRecord>?>> GetAsync(Guid gameId);
+        Task<IDataResponse<Leaderboard?>> GetAsync(Guid leaderboardId);
 
-        Task<IDataResponse<LeaderboardRecord?>> PostAsync(PostLeaderboardRecord leaderboardRecord);
+        Task<IDataResponse<Leaderboard?>> PostAsync(PostLeaderboard leaderboard);
 
-        Task<IDataResponse<LeaderboardRecord?>> DeleteAsync(Guid id);
+        Task<IDataResponse<LeaderboardRecord?>> PostRecordAsync(PostLeaderboardRecord leaderboardRecord);
+
+        Task<IDataResponse<LeaderboardRecord?>> DeleteRecordAsync(Guid id);
     }
 }

@@ -5,7 +5,9 @@ namespace SpyderByteAPI.Models.Users
 {
     public class User
     {
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
+
+        public string UserName { get; set; } = string.Empty;
 
         public string Hash { get; set; } = string.Empty;
 
@@ -14,6 +16,6 @@ namespace SpyderByteAPI.Models.Users
         public UserType UserType { get; set; } = UserType.Restricted;
 
         [JsonIgnore]
-        public UserJam? UserJam { get; set; }
+        public UserGame? UserGame { get; set; }
     }
 }
