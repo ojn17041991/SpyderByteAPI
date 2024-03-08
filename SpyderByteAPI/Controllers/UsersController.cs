@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SpyderByteAPI.DataAccess.Accessors;
 using SpyderByteAPI.Enums;
 using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Models.Users;
@@ -10,7 +11,6 @@ namespace SpyderByteAPI.Controllers
 {
     [Route("[controller]")]
     [Authorize]
-    [Authorize(PolicyType.WriteUsers)]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -23,14 +23,35 @@ namespace SpyderByteAPI.Controllers
             this.modelResources = modelResources;
         }
 
+        [HttpGet("{id}")]
+        [Authorize(PolicyType.ReadUsers)]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var response = await usersService.GetAsync(id);
+
+            if (response.Result == ModelResult.OK)
+            {
+                return Ok(response.Data);
+            }
+            else if (response.Result == ModelResult.NotFound)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
         [HttpPost]
+        [Authorize(PolicyType.WriteUsers)]
         public async Task<IActionResult> Post(PostUser user)
         {
             var response = await usersService.PostAsync(user);
 
             if (response.Result == ModelResult.Created)
             {
-                return StatusCode(StatusCodes.Status201Created);
+                return Created(string.Empty, response.Data);
             }
             else if (response.Result == ModelResult.AlreadyExists)
             {
@@ -51,6 +72,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPatch]
+        [Authorize(PolicyType.WriteUsers)]
         public async Task<IActionResult> Patch(PatchUser user)
         {
             var response = await usersService.PatchAsync(user);
@@ -74,6 +96,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(PolicyType.WriteUsers)]
         public async Task<IActionResult> Delete(Guid id)
         {
             var response = await usersService.DeleteAsync(id);

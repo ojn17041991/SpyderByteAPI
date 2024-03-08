@@ -8,24 +8,29 @@ using SpyderByteAPI.Services.Users.Abstract;
 
 namespace SpyderByteAPI.Services.Users
 {
-    public class UserService : IUsersService
+    public class UsersService : IUsersService
     {
         private readonly IUsersAccessor usersAccessor;
-        private readonly ILogger<UserService> logger;
+        private readonly ILogger<UsersService> logger;
         private readonly PasswordHasher passwordHasher;
 
-        public UserService(IUsersAccessor usersAccessor, ILogger<UserService> logger, PasswordHasher passwordHasher)
+        public UsersService(IUsersAccessor usersAccessor, ILogger<UsersService> logger, PasswordHasher passwordHasher)
         {
             this.usersAccessor = usersAccessor;
             this.logger = logger;
             this.passwordHasher = passwordHasher;
         }
 
+        public async Task<IDataResponse<User?>> GetAsync(Guid id)
+        {
+            return await usersAccessor.GetAsync(id);
+        }
+
         public async Task<IDataResponse<User?>> PostAsync(PostUser user)
         {
             // Make sure the user doesn't exist.
             var response = await usersAccessor.GetByUserNameAsync(user.UserName);
-            if (response.Result != ModelResult.OK)
+            if (response.Result != ModelResult.NotFound)
             {
                 logger.LogError($"Failed to post user {user.UserName}. A user of this user name already exists.");
                 return new DataResponse<User?>(null, ModelResult.AlreadyExists);

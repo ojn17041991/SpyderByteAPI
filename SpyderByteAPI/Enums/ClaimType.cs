@@ -4,6 +4,9 @@ namespace SpyderByteAPI.Enums
 {
     public enum ClaimType
     {
+        [Description("ReadUsers")]
+        ReadUsers,
+
         [Description("WriteUsers")]
         WriteUsers,
 

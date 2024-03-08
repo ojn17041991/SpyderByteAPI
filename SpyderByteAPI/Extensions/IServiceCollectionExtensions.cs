@@ -38,7 +38,7 @@ namespace SpyderByteAPI.Extensions
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IDataService, DataService>();
-            services.AddScoped<IUsersService, UserService>();
+            services.AddScoped<IUsersService, UsersService>();
             services.AddSingleton<IStorageService, StorageService>();
             services.AddSingleton<IImgurService, ImgurService>();
 
@@ -167,6 +167,12 @@ namespace SpyderByteAPI.Extensions
                         return !isTokenBlacklisted;
                     })
                     .Build();
+
+                options.AddPolicy(PolicyType.ReadUsers,
+                    new AuthorizationPolicyBuilder()
+                    .RequireClaim(ClaimType.ReadUsers.ToDescription())
+                    .Build()
+                );
 
                 options.AddPolicy(PolicyType.WriteUsers,
                     new AuthorizationPolicyBuilder()

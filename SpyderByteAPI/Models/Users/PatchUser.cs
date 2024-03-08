@@ -1,6 +1,4 @@
-﻿using SpyderByteAPI.Enums;
-
-namespace SpyderByteAPI.Models.Users
+﻿namespace SpyderByteAPI.Models.Users
 {
     public class PatchUser
     {
