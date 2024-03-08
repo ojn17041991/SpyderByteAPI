@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SpyderByteAPI.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace SpyderByteAPI.Models.Games
 {
@@ -6,6 +7,9 @@ namespace SpyderByteAPI.Models.Games
     {
         [Required]
         public string Name { get; set; } = string.Empty;
+
+        [Required]
+        public GameType Type { get; set; }
 
         [Required]
         public string HtmlUrl { get; set; } = string.Empty;

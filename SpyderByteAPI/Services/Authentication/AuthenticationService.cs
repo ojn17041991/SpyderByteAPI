@@ -31,7 +31,7 @@ namespace SpyderByteAPI.Services.Auth
             IEnumerable<Claim> claims;
 
             // Make sure the user exists before attempting to authenticate.
-            var response = await usersAccessor.GetAsync(login.UserName);
+            var response = await usersAccessor.GetByUserNameAsync(login.UserName);
             if (response.Result != ModelResult.OK)
             {
                 logger.LogError($"Failed to authenticate user {login.UserName}. Could not find user in database.");

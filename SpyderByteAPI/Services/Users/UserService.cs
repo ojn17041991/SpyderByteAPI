@@ -23,6 +23,14 @@ namespace SpyderByteAPI.Services.Users
 
         public async Task<IDataResponse<User?>> PostAsync(PostUser user)
         {
+            // Make sure the user doesn't exist.
+            var response = await usersAccessor.GetByUserNameAsync(user.UserName);
+            if (response.Result != ModelResult.OK)
+            {
+                logger.LogError($"Failed to post user {user.UserName}. A user of this user name already exists.");
+                return new DataResponse<User?>(null, ModelResult.AlreadyExists);
+            }
+
             // Don't allow any user to create new Admin or Utility user types.
             if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
             {
@@ -44,9 +52,31 @@ namespace SpyderByteAPI.Services.Users
             return await usersAccessor.PostAsync(hashedUser);
         }
 
-        public async Task<IDataResponse<User?>> DeleteAsync(string id)
+        public async Task<IDataResponse<User?>> PatchAsync(PatchUser user)
         {
-            // Make sure the user doesn't exist.
+            // Make sure the user exists.
+            var response = await usersAccessor.GetAsync(user.Id);
+            if (response.Result != ModelResult.OK)
+            {
+                logger.LogError($"Failed to patch user {user.Id}. A user of this ID does not exist.");
+                return new DataResponse<User?>(null, ModelResult.NotFound);
+            }
+
+            // Don't allow any user to patch Admin or Utility user types.
+            var storedUser = response.Data!;
+            if (storedUser.UserType == UserType.Admin || storedUser.UserType == UserType.Utility)
+            {
+                logger.LogError($"Failed to patch user {storedUser.UserName}. A user of type Admin or Utility cannot be patched.");
+                return new DataResponse<User?>(null, ModelResult.RequestInvalid);
+            }
+
+            // Return the patched user.
+            return await usersAccessor.PatchAsync(user);
+        }
+
+        public async Task<IDataResponse<User?>> DeleteAsync(Guid id)
+        {
+            // Make sure the user exists.
             var response = await usersAccessor.GetAsync(id);
             if (response.Result != ModelResult.OK)
             {
@@ -63,7 +93,7 @@ namespace SpyderByteAPI.Services.Users
             }
 
             // Return the deleted user.
-            return await usersAccessor.DeleteAsync(user.UserName);
+            return await usersAccessor.DeleteAsync(id);
         }
     }
 }

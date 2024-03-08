@@ -17,19 +17,36 @@ namespace SpyderByteAPI.DataAccess.Accessors
             this.logger = logger;
         }
 
-        public async Task<IDataResponse<User?>> GetAsync(string id)
+        public async Task<IDataResponse<User?>> GetAsync(Guid id)
         {
             try
             {
                 User? user = await context.Users
                     .Include(u => u.UserGame)
                         .ThenInclude(uj => uj!.Game)
-                    .SingleOrDefaultAsync(u => u.UserName == id);
+                    .SingleOrDefaultAsync(u => u.Id == id);
                 return new DataResponse<User?>(user, user == null ? ModelResult.NotFound : ModelResult.OK);
             }
             catch (Exception e)
             {
                 logger.LogError($"Failed to get user {id}.", e);
+                return new DataResponse<User?>(null, ModelResult.Error);
+            }
+        }
+
+        public async Task<IDataResponse<User?>> GetByUserNameAsync(string userName)
+        {
+            try
+            {
+                User? user = await context.Users
+                    .Include(u => u.UserGame)
+                        .ThenInclude(uj => uj!.Game)
+                    .SingleOrDefaultAsync(u => u.UserName == userName);
+                return new DataResponse<User?>(user, user == null ? ModelResult.NotFound : ModelResult.OK);
+            }
+            catch (Exception e)
+            {
+                logger.LogError($"Failed to get user {userName}.", e);
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -93,18 +110,60 @@ namespace SpyderByteAPI.DataAccess.Accessors
             }
         }
 
-        public async Task<IDataResponse<User?>> DeleteAsync(string id)
+        public async Task<IDataResponse<User?>> PatchAsync(PatchUser user)
+        {
+            User? storedUser = await context.Users
+                .Include(u => u.UserGame)
+                .SingleOrDefaultAsync(u => u.Id == user.Id);
+
+            if (storedUser == null)
+            {
+                logger.LogInformation($"Unable to patch user. Could not find a user of ID {user.Id}.");
+                return new DataResponse<User?>(null, ModelResult.NotFound);
+            }
+
+            var gameExists = await context.Games.AnyAsync(g => g.Id == user.GameId);
+            if (gameExists == false)
+            {
+                logger.LogInformation($"Unable to patch user. Could not find a game of ID {user.GameId}.");
+                return new DataResponse<User?>(null, ModelResult.NotFound);
+            }
+
+            UserGame userGame = new UserGame
+            {
+                UserId = user.Id,
+                GameId = user.GameId
+            };
+
+            if (storedUser.UserGame == null)
+            {
+                // Assign the game to the user as a new record.
+                await context.UserGames.AddAsync(userGame);
+            }
+            else
+            {
+                // Update the existing record.
+                var storedUserGame = await context.UserGames.SingleAsync(ug => ug.UserId == storedUser.UserGame.UserId && ug.GameId == storedUser.UserGame.GameId);
+                storedUserGame.GameId = user.GameId;
+            }
+
+            await context.SaveChangesAsync();
+
+            return new DataResponse<User?>(storedUser, ModelResult.OK);
+        }
+
+        public async Task<IDataResponse<User?>> DeleteAsync(Guid id)
         {
             try
             {
                 User? user = await context.Users
                     .Include(u => u.UserGame)
-                    .SingleOrDefaultAsync(u => u.UserName == id);
+                    .SingleOrDefaultAsync(u => u.Id == id);
 
                 if (user == null)
                 {
                     logger.LogInformation($"Unable to delete user. Could not find a user of ID {id}.");
-                    return new DataResponse<User?>(user, ModelResult.NotFound);
+                    return new DataResponse<User?>(null, ModelResult.NotFound);
                 }
 
                 // If the user has a user-game relationship, we need to delete that too.

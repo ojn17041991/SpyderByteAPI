@@ -50,8 +50,31 @@ namespace SpyderByteAPI.Controllers
             }
         }
 
+        [HttpPatch]
+        public async Task<IActionResult> Patch(PatchUser user)
+        {
+            var response = await usersService.PatchAsync(user);
+
+            if (response.Result == ModelResult.OK)
+            {
+                return Ok();
+            }
+            else if (response.Result == ModelResult.NotFound)
+            {
+                return NotFound();
+            }
+            else if (response.Result == ModelResult.RequestInvalid)
+            {
+                return BadRequest(modelResources.GetResource(ModelResult.RequestInvalid));
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var response = await usersService.DeleteAsync(id);
 

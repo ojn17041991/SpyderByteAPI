@@ -1,4 +1,5 @@
-﻿using SpyderByteAPI.Models.Leaderboard;
+﻿using SpyderByteAPI.Enums;
+using SpyderByteAPI.Models.Leaderboard;
 using SpyderByteAPI.Models.Users;
 using System.Text.Json.Serialization;
 
@@ -9,6 +10,8 @@ namespace SpyderByteAPI.Models.Games
         public Guid Id { get; set; }
 
         public string Name { get; set; } = string.Empty;
+
+        public GameType Type { get; set; }
 
         public string HtmlUrl { get; set; } = string.Empty;
 

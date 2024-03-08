@@ -84,6 +84,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
                 Game mappedGame = new Game
                 {
                     Name = game.Name,
+                    Type = game.Type,
                     ImgurUrl = response.Data.Url,
                     ImgurImageId = response.Data.ImageId,
                     HtmlUrl = game.HtmlUrl,
@@ -140,6 +141,11 @@ namespace SpyderByteAPI.DataAccess.Accessors
                     storedGame.Name = patchedGame.Name;
                 }
 
+                if (patchedGame?.Type != null)
+                {
+                    storedGame.Type = patchedGame.Type.Value;
+                }
+
                 if (patchedGame?.HtmlUrl != null && patchedGame.HtmlUrl != string.Empty)
                 {
                     storedGame.HtmlUrl = patchedGame.HtmlUrl;
@@ -147,7 +153,7 @@ namespace SpyderByteAPI.DataAccess.Accessors
 
                 if (patchedGame?.PublishDate != null)
                 {
-                    storedGame.PublishDate = (DateTime)patchedGame.PublishDate;
+                    storedGame.PublishDate = patchedGame.PublishDate.Value;
                 }
 
                 await context.SaveChangesAsync();
