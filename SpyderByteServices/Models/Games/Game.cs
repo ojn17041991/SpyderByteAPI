@@ -20,8 +20,8 @@ namespace SpyderByteServices.Models.Games
 
         public DateTime PublishDate { get; set; } = DateTime.MinValue;
 
-        public LeaderboardGame? LeaderboardGame { get; set; }
+        public LeaderboardGame? LeaderboardGame { get; set; } = null!;
 
-        public UserGame? UserGame { get; set; }
+        public UserGame? UserGame { get; set; } = null!;
     }
 }

@@ -21,6 +21,13 @@ namespace SpyderByteServices.Mappers
             CreateMap<SpyderByteServices.Models.Users.PostUser, SpyderByteDataAccess.Models.Users.PostUser>();
             CreateMap<SpyderByteServices.Models.Users.PatchUser, SpyderByteDataAccess.Models.Users.PatchUser>();
             CreateMap<SpyderByteDataAccess.Models.Users.UserGame, SpyderByteServices.Models.Users.UserGame>();
+
+            CreateMap<SpyderByteDataAccess.Models.Leaderboards.Leaderboard, SpyderByteServices.Models.Leaderboards.Leaderboard>();
+            CreateMap<SpyderByteDataAccess.Models.Leaderboards.LeaderboardRecord, SpyderByteServices.Models.Leaderboards.LeaderboardRecord>();
+            CreateMap<SpyderByteDataAccess.Models.Leaderboards.LeaderboardGame, SpyderByteServices.Models.Leaderboards.LeaderboardGame>();
+            CreateMap<SpyderByteServices.Models.Leaderboards.PostLeaderboard, SpyderByteDataAccess.Models.Leaderboards.PostLeaderboard>();
+            CreateMap<SpyderByteServices.Models.Leaderboards.PostLeaderboardRecord, SpyderByteDataAccess.Models.Leaderboards.PostLeaderboardRecord>();
+            CreateMap<SpyderByteServices.Models.Leaderboards.PatchLeaderboard, SpyderByteDataAccess.Models.Leaderboards.PatchLeaderboard>();
         }
     }
 }

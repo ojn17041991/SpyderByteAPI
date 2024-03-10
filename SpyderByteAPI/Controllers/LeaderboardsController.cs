@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.Models.Leaderboards;
+using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Helpers.Authorization;
-using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Services.Leaderboards.Abstract;
 
 namespace SpyderByteAPI.Controllers
@@ -15,12 +15,14 @@ namespace SpyderByteAPI.Controllers
     {
         private readonly ILeaderboardsService leaderboardsService;
         private readonly IMapper mapper;
+        private readonly IStringLookup<ModelResult> modelResources;
         private readonly IConfiguration configuration;
 
-        public LeaderboardsController(ILeaderboardsService leaderboardsService, IMapper mapper, IConfiguration configuration)
+        public LeaderboardsController(ILeaderboardsService leaderboardsService, IMapper mapper, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
         {
             this.leaderboardsService = leaderboardsService;
             this.mapper = mapper;
+            this.modelResources = modelResources;
             this.configuration = configuration;
         }
 
@@ -34,9 +36,12 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                // OJN: This hasn't been tested yet...
                 var data = mapper.Map<SpyderByteAPI.Models.Leaderboards.Leaderboard>(response.Data);
                 return Ok(data);
+            }
+            else if (response.Result == ModelResult.NotFound)
+            {
+                return NotFound();
             }
             else
             {
@@ -50,7 +55,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post([FromBody] PostLeaderboard leaderboard)
+        public async Task<IActionResult> PostLeaderboard([FromBody] PostLeaderboard leaderboard)
         {
             var response = await leaderboardsService.PostAsync(mapper.Map<SpyderByteServices.Models.Leaderboards.PostLeaderboard>(leaderboard));
 
@@ -62,6 +67,10 @@ namespace SpyderByteAPI.Controllers
             else if (response.Result == ModelResult.NotFound)
             {
                 return NotFound();
+            }
+            else if (response.Result == ModelResult.AlreadyExists)
+            {
+                return BadRequest(modelResources.GetResource(ModelResult.AlreadyExists));
             }
             else
             {
@@ -75,7 +84,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post([FromBody] PostLeaderboardRecord leaderboardRecord)
+        public async Task<IActionResult> PostRecord([FromBody] PostLeaderboardRecord leaderboardRecord)
         {
             var response = await leaderboardsService.PostRecordAsync(mapper.Map<SpyderByteServices.Models.Leaderboards.PostLeaderboardRecord>(leaderboardRecord));
 
@@ -94,6 +103,57 @@ namespace SpyderByteAPI.Controllers
             }
         }
 
+        [HttpPatch]
+        [Authorize]
+        [Authorize(PolicyType.WriteLeaderboards)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PatchLeaderboard([FromBody] PatchLeaderboard leaderboard)
+        {
+            var response = await leaderboardsService.PatchAsync(mapper.Map<SpyderByteServices.Models.Leaderboards.PatchLeaderboard>(leaderboard));
+
+            if (response.Result == ModelResult.OK)
+            {
+                var data = mapper.Map<SpyderByteAPI.Models.Leaderboards.Leaderboard>(response.Data);
+                return Ok(data);
+            }
+            else if (response.Result == ModelResult.NotFound)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        [Authorize(PolicyType.DeleteLeaderboards)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteLeaderboard(Guid id)
+        {
+            var response = await leaderboardsService.DeleteAsync(id);
+
+            if (response.Result == ModelResult.OK)
+            {
+                var data = mapper.Map<SpyderByteAPI.Models.Leaderboards.Leaderboard>(response.Data);
+                return Ok(data);
+            }
+            else if (response.Result == ModelResult.NotFound)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
         [HttpDelete("Records/{id}")]
         [Authorize]
         [Authorize(PolicyType.DeleteLeaderboards)]
@@ -101,7 +161,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteRecord(Guid id)
         {
             var response = await leaderboardsService.DeleteRecordAsync(id);
 

@@ -7,7 +7,7 @@ namespace SpyderByteDataAccess.Models.Users
     {
         public string UserName { get; set; } = string.Empty;
 
-        public HashData HashData { get; set; } = new HashData();
+        public HashData HashData { get; set; } = null!;
 
         public UserType UserType { get; set; }
 

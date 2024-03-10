@@ -8,10 +8,10 @@ namespace SpyderByteDataAccess.Models.Users
 
         public Guid UserId { get; set; }
 
-        public User User { get; set; } = new User();
+        public User User { get; set; } = null!;
 
         public Guid GameId { get; set; }
 
-        public Game Game { get; set; } = new Game();
+        public Game Game { get; set; } = null!;
     }
 }

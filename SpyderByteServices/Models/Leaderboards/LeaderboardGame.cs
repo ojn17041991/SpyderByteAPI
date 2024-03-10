@@ -12,6 +12,6 @@ namespace SpyderByteServices.Models.Leaderboards
 
         public Guid LeaderboardId { get; set; }
 
-        public Leaderboard Leaderboard { get; set; } = new Leaderboard();
+        public Leaderboard Leaderboard { get; set; } = null!;
     }
 }

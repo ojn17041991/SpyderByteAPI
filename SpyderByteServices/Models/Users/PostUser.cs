@@ -9,7 +9,7 @@ namespace SpyderByteServices.Models.Users
 
         public string Password { get; set; } = string.Empty;
 
-        public HashData HashData { get; set; } = new HashData();
+        public HashData HashData { get; set; } = null!;
 
         public UserType UserType { get; set; } = UserType.Restricted;
 

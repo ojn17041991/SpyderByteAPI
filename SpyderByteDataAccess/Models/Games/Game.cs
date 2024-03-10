@@ -1,7 +1,6 @@
 ﻿using SpyderByteDataAccess.Models.Leaderboards;
 using SpyderByteDataAccess.Models.Users;
 using SpyderByteResources.Enums;
-using System.Text.Json.Serialization;
 
 namespace SpyderByteDataAccess.Models.Games
 {
@@ -21,10 +20,8 @@ namespace SpyderByteDataAccess.Models.Games
 
         public DateTime PublishDate { get; set; } = DateTime.MinValue;
 
-        [JsonIgnore]
-        public LeaderboardGame? LeaderboardGame { get; set; }
+        public LeaderboardGame? LeaderboardGame { get; set; } = null!;
 
-        [JsonIgnore]
-        public UserGame? UserGame { get; set; }
+        public UserGame? UserGame { get; set; } = null!;
     }
 }

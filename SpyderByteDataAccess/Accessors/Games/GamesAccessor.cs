@@ -29,9 +29,11 @@ namespace SpyderByteDataAccess.Accessors.Games
             try
             {
                 IList<Game>? data = await context.Games
-                    .Include(j => j.UserGame)
-                        .ThenInclude(uj => uj!.User)
-                    .OrderBy(j => j.PublishDate).ToListAsync();
+                    .Include(g => g.UserGame)
+                        .ThenInclude(ug => ug!.User)
+                    .Include(g => g.LeaderboardGame)
+                        .ThenInclude(lg => lg.Leaderboard)
+                    .OrderBy(g => g.PublishDate).ToListAsync();
                 return new DataResponse<IList<Game>?>(data, ModelResult.OK);
             }
             catch (Exception e)

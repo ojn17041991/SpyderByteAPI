@@ -14,6 +14,6 @@ namespace SpyderByteServices.Models.Users
 
         public UserType UserType { get; set; } = UserType.Restricted;
 
-        public UserGame? UserGame { get; set; }
+        public UserGame? UserGame { get; set; } = null!;
     }
 }
