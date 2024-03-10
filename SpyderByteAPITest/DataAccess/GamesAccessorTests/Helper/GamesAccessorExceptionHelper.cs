@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SpyderByteAPI.DataAccess.Accessors;
-using SpyderByteAPI.DataAccess;
-using SpyderByteAPI.Services.Imgur.Abstract;
 using Microsoft.EntityFrameworkCore;
+using SpyderByteDataAccess.DataAccess;
+using SpyderByteDataAccess.Contexts;
+using SpyderByteServices.Services.Imgur.Abstract;
 
 namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
 {

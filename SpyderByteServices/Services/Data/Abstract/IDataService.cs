@@ -1,6 +1,6 @@
-﻿using SpyderByteAPI.DataAccess.Abstract;
+﻿using SpyderByteResources.Responses.Abstract;
 
-namespace SpyderByteAPI.Services.Data.Abstract
+namespace SpyderByteServices.Services.Data.Abstract
 {
     public interface IDataService
     {

@@ -1,12 +1,14 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using SpyderByteAPI.DataAccess;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Services.Data.Abstract;
-using SpyderByteAPI.Services.Storage.Abstract;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Responses;
+using SpyderByteResources.Responses.Abstract;
+using SpyderByteServices.Services.Data.Abstract;
+using SpyderByteServices.Services.Storage.Abstract;
 using System.IO.Compression;
 
-namespace SpyderByteAPI.Services.Data
+namespace SpyderByteServices.Services.Data
 {
     public class DataService : IDataService
     {

@@ -1,5 +1,5 @@
 using AspNetCoreRateLimit;
-using SpyderByteAPI.Extensions;
+using SpyderByteResources.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressMapClientErrors = true);
@@ -12,6 +12,7 @@ builder.Services.AddProjectCors();
 builder.Services.AddProjectAzureServices(builder.Configuration);
 builder.Services.AddMemoryCache();
 builder.Services.AddProjectRateLimiting();
+builder.Services.AddProjectMapperProfiles();
 builder.Services.AddProjectAuthentication(builder.Configuration);
 builder.Services.AddProjectAuthorization();
 

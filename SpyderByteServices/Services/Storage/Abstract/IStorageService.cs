@@ -1,6 +1,6 @@
-﻿using SpyderByteAPI.DataAccess.Abstract;
+﻿using SpyderByteResources.Responses.Abstract;
 
-namespace SpyderByteAPI.Services.Storage.Abstract
+namespace SpyderByteServices.Services.Storage.Abstract
 {
     public interface IStorageService
     {

@@ -1,4 +1,4 @@
-﻿using SpyderByteAPI.Enums;
+﻿using SpyderByteResources.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace SpyderByteAPI.Models.Users

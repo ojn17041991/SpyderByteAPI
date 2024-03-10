@@ -1,7 +1,8 @@
-﻿using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Models.Authentication;
+﻿using Microsoft.AspNetCore.Http;
+using SpyderByteResources.Responses.Abstract;
+using SpyderByteServices.Models.Authentication;
 
-namespace SpyderByteAPI.Services.Auth.Abstract
+namespace SpyderByteServices.Services.Authentication.Abstract
 {
     public interface IAuthenticationService
     {

@@ -1,7 +1,8 @@
-﻿using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Models.Imgur;
+﻿using Microsoft.AspNetCore.Http;
+using SpyderByteResources.Responses.Abstract;
+using SpyderByteServices.Models.Imgur;
 
-namespace SpyderByteAPI.Services.Imgur.Abstract
+namespace SpyderByteServices.Services.Imgur.Abstract
 {
     public interface IImgurService
     {

@@ -1,7 +1,7 @@
-﻿using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Models.Users;
+﻿using SpyderByteResources.Responses.Abstract;
+using SpyderByteServices.Models.Users;
 
-namespace SpyderByteAPI.Services.Users.Abstract
+namespace SpyderByteServices.Services.Users.Abstract
 {
     public interface IUsersService
     {

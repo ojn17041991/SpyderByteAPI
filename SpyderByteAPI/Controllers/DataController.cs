@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Helpers.Authorization;
-using SpyderByteAPI.Services.Data.Abstract;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.Authorization;
+using SpyderByteServices.Services.Data.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {

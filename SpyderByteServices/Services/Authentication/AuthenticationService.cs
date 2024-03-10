@@ -1,26 +1,31 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using SpyderByteAPI.DataAccess;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.DataAccess.Abstract.Accessors;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Helpers.Authentication;
-using SpyderByteAPI.Helpers.Authorization;
-using SpyderByteAPI.Models.Authentication;
-using SpyderByteAPI.Services.Auth.Abstract;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using SpyderByteDataAccess.Accessors.Users.Abstract;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.Authorization;
+using SpyderByteResources.Responses;
+using SpyderByteResources.Responses.Abstract;
+using SpyderByteServices.Helpers.Authentication;
+using SpyderByteServices.Models.Authentication;
+using SpyderByteServices.Services.Authentication.Abstract;
 using System.Security.Claims;
 
-namespace SpyderByteAPI.Services.Auth
+namespace SpyderByteServices.Services.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IUsersAccessor usersAccessor;
+        private readonly IMapper mapper;
         private readonly ILogger<AuthenticationService> logger;
         private readonly TokenEncoder tokenEncoder;
         private readonly PasswordHasher passwordHasher;
 
-        public AuthenticationService(IUsersAccessor usersAccessor, ILogger<AuthenticationService> logger, TokenEncoder tokenEncoder, PasswordHasher passwordHasher)
+        public AuthenticationService(IUsersAccessor usersAccessor, IMapper mapper, ILogger<AuthenticationService> logger, TokenEncoder tokenEncoder, PasswordHasher passwordHasher)
         {
             this.usersAccessor = usersAccessor;
+            this.mapper = mapper;
             this.logger = logger;
             this.tokenEncoder = tokenEncoder;
             this.passwordHasher = passwordHasher;
@@ -66,7 +71,7 @@ namespace SpyderByteAPI.Services.Auth
                     claims = ClaimProfile.AdministratorClaims();
                     break;
                 case UserType.Restricted:
-                    claims = ClaimProfile.RestrictedClaims(user);
+                    claims = ClaimProfile.RestrictedClaims(mapper.Map<SpyderByteServices.Models.Users.User>(user));
                     break;
                 case UserType.Utility:
                     claims = ClaimProfile.UtilityClaims();

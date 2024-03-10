@@ -32,15 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Databases\sbapi.db">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="Databases\sbapi.db-shm">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="Databases\sbapi.db-wal">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\SpyderByteResources\SpyderByteResources.csproj" />
+    <ProjectReference Include="..\SpyderByteServices\SpyderByteServices.csproj" />
   </ItemGroup>
 
 </Project>

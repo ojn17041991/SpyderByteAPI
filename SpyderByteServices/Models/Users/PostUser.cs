@@ -1,0 +1,18 @@
+﻿using SpyderByteResources.Enums;
+using SpyderByteServices.Models.Authentication;
+
+namespace SpyderByteServices.Models.Users
+{
+    public class PostUser
+    {
+        public string UserName { get; set; } = string.Empty;
+
+        public string Password { get; set; } = string.Empty;
+
+        public HashData HashData { get; set; } = new HashData();
+
+        public UserType UserType { get; set; } = UserType.Restricted;
+
+        public Guid? GameId { get; set; }
+    }
+}

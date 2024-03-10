@@ -1,8 +1,5 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Leaderboard;
 using SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper;
 
 namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests

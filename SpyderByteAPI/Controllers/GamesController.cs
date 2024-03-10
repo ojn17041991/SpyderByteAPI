@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SpyderByteAPI.DataAccess.Abstract.Accessors;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Models.Games;
-using SpyderByteAPI.Resources.Abstract;
+using SpyderByteAPI.Text.Abstract;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.Authorization;
+using SpyderByteServices.Services.Games.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
@@ -12,13 +13,15 @@ namespace SpyderByteAPI.Controllers
     [ApiController]
     public class GamesController : ControllerBase
     {
-        private readonly IGamesAccessor gamesAccessor;
+        private readonly IGamesService gamesService;
+        private readonly IMapper mapper;
         private readonly IStringLookup<ModelResult> modelResources;
         private readonly IConfiguration configuration;
 
-        public GamesController(IGamesAccessor gamesAccessor, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
+        public GamesController(IGamesService gamesService, IMapper mapper, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
         {
-            this.gamesAccessor = gamesAccessor;
+            this.gamesService = gamesService;
+            this.mapper = mapper;
             this.modelResources = modelResources;
             this.configuration = configuration;
         }
@@ -29,11 +32,12 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get()
         {
-            var response = await gamesAccessor.GetAllAsync();
+            var response = await gamesService.GetAllAsync();
 
             if (response.Result == ModelResult.OK)
             {
-                return Ok(response.Data);
+                var data = mapper.Map<IList<SpyderByteAPI.Models.Games.Game>>(response.Data);
+                return Ok(data);
             }
             else
             {
@@ -48,11 +52,12 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetGame(Guid id)
         {
-            var response = await gamesAccessor.GetSingleAsync(id);
+            var response = await gamesService.GetSingleAsync(id);
 
             if (response.Result == ModelResult.OK)
             {
-                return Ok(response.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
             {
@@ -73,11 +78,12 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromForm] PostGame game)
         {
-            var response = await gamesAccessor.PostAsync(game);
+            var response = await gamesService.PostAsync(mapper.Map<SpyderByteServices.Models.Games.PostGame>(game));
 
             if (response.Result == ModelResult.Created)
             {
-                return CreatedAtAction(nameof(GetGame), new { id = response?.Data?.Id }, response?.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                return CreatedAtAction(nameof(GetGame), new { id = data.Id }, data);
             }
             else if (response.Result == ModelResult.AlreadyExists)
             {
@@ -102,15 +108,20 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Patch([FromForm] PatchGame game)
         {
-            var response = await gamesAccessor.PatchAsync(game);
+            var response = await gamesService.PatchAsync(mapper.Map<SpyderByteServices.Models.Games.PatchGame>(game));
 
             if (response.Result == ModelResult.OK)
             {
-                return Ok(response.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
             {
                 return NotFound();
+            }
+            else if (response.Result == ModelResult.AlreadyExists)
+            {
+                return BadRequest(modelResources.GetResource(ModelResult.AlreadyExists));
             }
             else
             {
@@ -127,11 +138,12 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var response = await gamesAccessor.DeleteAsync(id);
+            var response = await gamesService.DeleteAsync(id);
 
             if (response.Result == ModelResult.OK)
             {
-                return Ok(response.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                return Ok(data);
             }
             else if (response.Result == ModelResult.RelationshipViolation)
             {
@@ -140,31 +152,6 @@ namespace SpyderByteAPI.Controllers
             else if (response.Result == ModelResult.NotFound)
             {
                 return NotFound();
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
-
-        [HttpDelete]
-        [Authorize]
-        [Authorize(PolicyType.WriteGames)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ClearRecords()
-        {
-            if (!Convert.ToBoolean(configuration["AllowDataClears"] ?? "false"))
-            {
-                return NotFound();
-            }
-
-            var response = await gamesAccessor.DeleteAllAsync();
-
-            if (response.Result == ModelResult.OK)
-            {
-                return Ok(response.Data);
             }
             else
             {

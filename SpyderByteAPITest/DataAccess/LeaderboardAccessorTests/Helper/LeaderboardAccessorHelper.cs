@@ -2,10 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SpyderByteAPI.DataAccess;
-using SpyderByteAPI.DataAccess.Accessors;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Models.Leaderboard;
+using SpyderByteDataAccess.Contexts;
+using SpyderByteDataAccess.DataAccess;
 
 namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper
 {

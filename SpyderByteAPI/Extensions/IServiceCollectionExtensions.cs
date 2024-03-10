@@ -1,43 +1,53 @@
-﻿using SpyderByteAPI.DataAccess.Abstract.Accessors;
-using SpyderByteAPI.DataAccess.Accessors;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Resources.Abstract;
-using SpyderByteAPI.Resources;
-using SpyderByteAPI.Services.Imgur.Abstract;
-using SpyderByteAPI.Services.Imgur;
-using SpyderByteAPI.Services.Auth.Abstract;
-using SpyderByteAPI.Services.Auth;
-using SpyderByteAPI.DataAccess;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
-using SpyderByteAPI.Helpers.Authorization;
 using Microsoft.OpenApi.Models;
-using SpyderByteAPI.Helpers.Authentication;
-using SpyderByteAPI.Services.Storage.Abstract;
-using SpyderByteAPI.Services.Storage;
-using SpyderByteAPI.Services.Data.Abstract;
-using SpyderByteAPI.Services.Data;
 using SpyderByteAPI.Middleware; // Required for release.
 using Azure.Identity; // Required for release.
-using SpyderByteAPI.Services.Users.Abstract;
-using SpyderByteAPI.Services.Users;
+using SpyderByteDataAccess.Accessors.Games.Abstract;
+using SpyderByteDataAccess.Accessors.Games;
+using SpyderByteDataAccess.Accessors.Leaderboards.Abstract;
+using SpyderByteDataAccess.Accessors.Leaderboards;
+using SpyderByteDataAccess.Accessors.Users;
+using SpyderByteDataAccess.Accessors.Users.Abstract;
+using SpyderByteServices.Services.Authentication.Abstract;
+using SpyderByteServices.Services.Data.Abstract;
+using SpyderByteServices.Services.Data;
+using SpyderByteServices.Services.Authentication;
+using SpyderByteServices.Services.Users.Abstract;
+using SpyderByteServices.Services.Users;
+using SpyderByteServices.Services.Storage.Abstract;
+using SpyderByteServices.Services.Storage;
+using SpyderByteServices.Services.Imgur;
+using SpyderByteServices.Services.Imgur.Abstract;
+using SpyderByteAPI.Text.Abstract;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Resources;
+using SpyderByteDataAccess.Contexts;
+using SpyderByteServices.Helpers.Authentication;
+using SpyderByteResources.Helpers.Authorization;
+using SpyderByteServices.Services.Games.Abstract;
+using SpyderByteServices.Services.Games;
+using SpyderByteServices.Services.Leaderboards.Abstract;
+using SpyderByteServices.Services.Leaderboards;
 
-namespace SpyderByteAPI.Extensions
+namespace SpyderByteResources.Extensions
 {
     public static class IServiceCollectionExtensions
     {
         public static void AddProjectDependencies(this IServiceCollection services)
         {
             services.AddScoped<IGamesAccessor, GamesAccessor>();
-            services.AddScoped<ILeaderboardAccessor, LeaderboardAccessor>();
+            services.AddScoped<ILeaderboardsAccessor, LeaderboardsAccessor>();
             services.AddScoped<IUsersAccessor, UsersAccessor>();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IDataService, DataService>();
+            services.AddScoped<IGamesService, GamesService>();
+            services.AddScoped<ILeaderboardsService, LeaderboardsService>();
             services.AddScoped<IUsersService, UsersService>();
             services.AddSingleton<IStorageService, StorageService>();
             services.AddSingleton<IImgurService, ImgurService>();
@@ -145,7 +155,7 @@ namespace SpyderByteAPI.Extensions
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Authentication:Issuer"],
-                    ValidAudience = configuration["Authentication:Audience"],
+                    ValidAudience = "SpyderByteWebApplication",
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:EncodingKey"] ?? string.Empty)),
                     ClockSkew = TimeSpan.Zero
                 };
@@ -225,6 +235,12 @@ namespace SpyderByteAPI.Extensions
                     Version = "1.0.0.0"
                 });
             });
+        }
+
+        public static void AddProjectMapperProfiles(this IServiceCollection services)
+        {
+            services.AddAutoMapper(typeof(SpyderByteAPI.Mappers.MapperProfile));
+            services.AddAutoMapper(typeof(SpyderByteServices.Mappers.MapperProfile));
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SpyderByteAPI.DataAccess.Accessors;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Helpers.Authorization;
 using SpyderByteAPI.Models.Users;
-using SpyderByteAPI.Resources.Abstract;
-using SpyderByteAPI.Services.Users.Abstract;
+using SpyderByteAPI.Text.Abstract;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.Authorization;
+using SpyderByteServices.Services.Users.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
@@ -15,11 +15,13 @@ namespace SpyderByteAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUsersService usersService;
+        private readonly IMapper mapper;
         private readonly IStringLookup<ModelResult> modelResources;
 
-        public UsersController(IUsersService usersService, IStringLookup<ModelResult> modelResources)
+        public UsersController(IUsersService usersService, IMapper mapper, IStringLookup<ModelResult> modelResources)
         {
             this.usersService = usersService;
+            this.mapper = mapper;
             this.modelResources = modelResources;
         }
 
@@ -31,7 +33,8 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                return Ok(response.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Users.User>(response.Data);
+                return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
             {
@@ -47,11 +50,12 @@ namespace SpyderByteAPI.Controllers
         [Authorize(PolicyType.WriteUsers)]
         public async Task<IActionResult> Post(PostUser user)
         {
-            var response = await usersService.PostAsync(user);
+            var response = await usersService.PostAsync(mapper.Map<SpyderByteServices.Models.Users.PostUser>(user));
 
             if (response.Result == ModelResult.Created)
             {
-                return Created(string.Empty, response.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Users.User>(response.Data);
+                return CreatedAtAction(nameof(Get), new { id = data.Id }, data);
             }
             else if (response.Result == ModelResult.AlreadyExists)
             {
@@ -75,11 +79,12 @@ namespace SpyderByteAPI.Controllers
         [Authorize(PolicyType.WriteUsers)]
         public async Task<IActionResult> Patch(PatchUser user)
         {
-            var response = await usersService.PatchAsync(user);
+            var response = await usersService.PatchAsync(mapper.Map<SpyderByteServices.Models.Users.PatchUser>(user));
 
             if (response.Result == ModelResult.OK)
             {
-                return Ok();
+                var data = mapper.Map<SpyderByteAPI.Models.Users.User>(response.Data);
+                return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
             {
@@ -103,7 +108,8 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                return NoContent();
+                var data = mapper.Map<SpyderByteAPI.Models.Users.User>(response.Data);
+                return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
             {

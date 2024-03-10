@@ -1,14 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SpyderByteAPI.DataAccess;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Extensions;
-using SpyderByteAPI.Models.Imgur;
-using SpyderByteAPI.Services.Imgur.Abstract;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Extensions;
+using SpyderByteResources.Responses;
+using SpyderByteResources.Responses.Abstract;
+using SpyderByteServices.Models.Imgur;
+using SpyderByteServices.Services.Imgur.Abstract;
 using System.Net.Http.Headers;
 
-namespace SpyderByteAPI.Services.Imgur
+namespace SpyderByteServices.Services.Imgur
 {
     public class ImgurService : IImgurService
     {

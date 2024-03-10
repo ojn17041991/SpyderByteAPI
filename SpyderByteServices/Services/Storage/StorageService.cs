@@ -1,10 +1,12 @@
 ﻿using Azure.Storage.Blobs;
-using SpyderByteAPI.DataAccess;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Services.Storage.Abstract;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Responses;
+using SpyderByteResources.Responses.Abstract;
+using SpyderByteServices.Services.Storage.Abstract;
 
-namespace SpyderByteAPI.Services.Storage
+namespace SpyderByteServices.Services.Storage
 {
     public class StorageService : IStorageService
     {
