@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.Protected;
-using SpyderByteAPI.Services.Imgur;
-using SpyderByteAPI.Services.Imgur.Abstract;
+using SpyderByteServices.Services.Imgur;
+using SpyderByteServices.Services.Imgur.Abstract;
 using System.Net;
 
 namespace SpyderByteAPITest.Services.ImgurServiceTests.Helper

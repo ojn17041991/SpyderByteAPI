@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SpyderByteAPI.DataAccess.Accessors;
-using SpyderByteAPI.DataAccess;
+using SpyderByteDataAccess.Accessors.Leaderboards;
+using SpyderByteDataAccess.Contexts;
 
 namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper
 {
     public class LeaderboardAccessorExceptionHelper
     {
-        public LeaderboardAccessor Accessor;
+        public LeaderboardsAccessor Accessor;
 
         public LeaderboardAccessorExceptionHelper()
         {
@@ -16,9 +16,9 @@ namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper
             var options = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
             var context = new Mock<ApplicationDbContext>(options);
 
-            var logger = new Mock<ILogger<LeaderboardAccessor>>();
+            var logger = new Mock<ILogger<LeaderboardsAccessor>>();
 
-            Accessor = new LeaderboardAccessor(context.Object, logger.Object);
+            Accessor = new LeaderboardsAccessor(context.Object, logger.Object);
         }
     }
 }

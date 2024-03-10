@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPI.Enums;
 using SpyderByteAPITest.Services.ImgurServiceTests.Helper;
+using SpyderByteResources.Enums;
 
 namespace SpyderByteAPITest.Services.ImgurServiceTests
 {

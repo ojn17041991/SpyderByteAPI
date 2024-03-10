@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Leaderboard;
 using SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper;
+using SpyderByteDataAccess.Models.Leaderboards;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Responses.Abstract;
 
 namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests
 {
@@ -18,42 +18,41 @@ namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests
             _exceptionHelper = new LeaderboardAccessorExceptionHelper();
         }
 
-        //[Fact]
-        //public async Task Can_Get_Leaderboard_Records_From_Accessor()
-        //{
-        //    // Arrange
-        //    var leaderboardRecord = await _helper.AddLeaderboardRecord();
+        [Fact]
+        public async Task Can_Get_Leaderboard_Records_From_Accessor()
+        {
+            // Arrange
+            var leaderboardRecord = await _helper.AddLeaderboardRecord();
 
-        //    // Act
-        //    var leaderboardRecords = await _helper.Accessor.GetAsync(leaderboardRecord.GameId);
+            // Act
+            var leaderboardRecords = await _helper.Accessor.GetAsync(leaderboardRecord.Id);
 
-        //    // Assert
-        //    using (new AssertionScope())
-        //    {
-        //        leaderboardRecords.Should().NotBeNull();
-        //        leaderboardRecords.Result.Should().Be(ModelResult.OK);
-        //        leaderboardRecords.Data.Should().NotBeNull();
-        //        leaderboardRecords.Data.Should().HaveCount(1);
-        //        leaderboardRecords.Data.Should().ContainEquivalentOf(leaderboardRecord);
-        //    }
-        //}
+            // Assert
+            using (new AssertionScope())
+            {
+                leaderboardRecords.Should().NotBeNull();
+                leaderboardRecords.Result.Should().Be(ModelResult.OK);
+                leaderboardRecords.Data.Should().NotBeNull();
+                leaderboardRecords.Data.Should().BeEquivalentTo(leaderboardRecord);
+            }
+        }
 
-        //[Fact]
-        //public async Task Exceptions_Are_Caught_And_Handled()
-        //{
-        //    // Arrange
+        [Fact]
+        public async Task Exceptions_Are_Caught_And_Handled()
+        {
+            // Arrange
 
-        //    // Act
-        //    Func<Task<IDataResponse<IList<LeaderboardRecord>?>>> func = () => _exceptionHelper.Accessor.GetAsync(Guid.NewGuid());
+            // Act
+            Func<Task<IDataResponse<Leaderboard?>>> func = () => _exceptionHelper.Accessor.GetAsync(Guid.NewGuid());
 
-        //    // Assert
-        //    using (new AssertionScope())
-        //    {
-        //        var leaderboardRecords = await func.Invoke();
-        //        leaderboardRecords?.Should().NotBeNull();
-        //        leaderboardRecords?.Result.Should().Be(ModelResult.Error);
-        //        leaderboardRecords?.Data?.Should().BeNull();
-        //    }
-        //}
+            // Assert
+            using (new AssertionScope())
+            {
+                var leaderboardRecords = await func.Invoke();
+                leaderboardRecords?.Should().NotBeNull();
+                leaderboardRecords?.Result.Should().Be(ModelResult.Error);
+                leaderboardRecords?.Data?.Should().BeNull();
+            }
+        }
     }
 }

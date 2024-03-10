@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Games;
 using SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper;
+using SpyderByteDataAccess.Models.Games;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Responses.Abstract;
 
 namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
 {

@@ -32,7 +32,7 @@ namespace SpyderByteDataAccess.Accessors.Games
                     .Include(g => g.UserGame)
                         .ThenInclude(ug => ug!.User)
                     .Include(g => g.LeaderboardGame)
-                        .ThenInclude(lg => lg.Leaderboard)
+                        .ThenInclude(lg => lg!.Leaderboard)
                     .OrderBy(g => g.PublishDate).ToListAsync();
                 return new DataResponse<IList<Game>?>(data, ModelResult.OK);
             }

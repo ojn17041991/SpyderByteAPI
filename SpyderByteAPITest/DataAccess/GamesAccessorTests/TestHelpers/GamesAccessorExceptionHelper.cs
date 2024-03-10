@@ -2,9 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Microsoft.EntityFrameworkCore;
-using SpyderByteDataAccess.DataAccess;
 using SpyderByteDataAccess.Contexts;
-using SpyderByteServices.Services.Imgur.Abstract;
+using SpyderByteDataAccess.Accessors.Games;
 
 namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
 {
@@ -25,9 +24,7 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
                 .AddInMemoryCollection(configurationContents)
                 .Build();
 
-            var imgurService = new Mock<IImgurService>();
-
-            Accessor = new GamesAccessor(context.Object, logger.Object, configuration, imgurService.Object);
+            Accessor = new GamesAccessor(context.Object, logger.Object, configuration);
         }
     }
 }

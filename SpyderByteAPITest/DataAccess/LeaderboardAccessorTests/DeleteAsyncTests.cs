@@ -1,6 +1,9 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
 using SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper;
+using SpyderByteDataAccess.Models.Leaderboards;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Responses.Abstract;
 
 namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests
 {
@@ -62,25 +65,23 @@ namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests
             }
         }
 
-        // OJN: Sort this later.
+        [Fact]
+        public async Task Exceptions_Are_Caught_And_Handled()
+        {
+            // Arrange
+            var dbLeaderboardRecord = await _helper.AddGame();
 
-        //[Fact]
-        //public async Task Exceptions_Are_Caught_And_Handled()
-        //{
-        //    // Arrange
-        //    var dbLeaderboardRecord = await _helper.AddJam();
+            // Act
+            Func<Task<IDataResponse<LeaderboardRecord?>>> func = () => _exceptionHelper.Accessor.DeleteRecordAsync(dbLeaderboardRecord.Id);
 
-        //    // Act
-        //    Func<Task<IDataResponse<LeaderboardRecord?>>> func = () => _exceptionHelper.Accessor.DeleteRecordAsync(dbLeaderboardRecord.Id);
-
-        //    // Assert
-        //    using (new AssertionScope())
-        //    {
-        //        var games = await func.Invoke();
-        //        games?.Should().NotBeNull();
-        //        games?.Result.Should().Be(ModelResult.Error);
-        //        games?.Data?.Should().BeNull();
-        //    }
-        //}
+            // Assert
+            using (new AssertionScope())
+            {
+                var games = await func.Invoke();
+                games?.Should().NotBeNull();
+                games?.Result.Should().Be(ModelResult.Error);
+                games?.Data?.Should().BeNull();
+            }
+        }
     }
 }

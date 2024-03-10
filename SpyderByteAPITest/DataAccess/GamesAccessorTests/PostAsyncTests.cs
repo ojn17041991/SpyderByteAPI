@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Games;
 using SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper;
+using SpyderByteDataAccess.Models.Games;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Responses.Abstract;
 
 namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
 {
@@ -35,14 +35,14 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
                 game.Should().NotBeNull();
                 game.Result.Should().Be(ModelResult.Created);
                 game.Data.Should().NotBeNull();
-                game.Data.Should().BeEquivalentTo(postGame, options => options.Excluding(g => g.Image));
+                game.Data.Should().BeEquivalentTo(postGame);
                 game.Data!.Id.Should().NotBeEmpty();
 
                 // Check the database.
                 var dbGame = await _helper.GetGame(game.Data!.Id);
                 dbGame.Should().NotBeNull();
                 dbGame.Should().BeEquivalentTo(game.Data);
-                dbGame.Should().BeEquivalentTo(postGame, options => options.Excluding(g => g.Image));
+                dbGame.Should().BeEquivalentTo(postGame);
 
                 var postTestGames = await _helper.GetGames();
                 postTestGames.Should().HaveCount(preTestGames.Count + 1);
@@ -85,7 +85,6 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             // Arrange
             var preTestGames = await _helper.GetGames();
             var postGame = _helper.GeneratePostGame();
-            postGame.Image = null;
 
             // Act
             var game = await _helper.Accessor.PostAsync(postGame);

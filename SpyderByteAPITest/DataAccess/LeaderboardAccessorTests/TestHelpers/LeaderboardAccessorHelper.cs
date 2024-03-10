@@ -2,16 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SpyderByteAPI.Models.Games;
-using SpyderByteAPI.Models.Leaderboard;
+using SpyderByteDataAccess.Accessors.Leaderboards;
 using SpyderByteDataAccess.Contexts;
-using SpyderByteDataAccess.DataAccess;
+using SpyderByteDataAccess.Models.Games;
+using SpyderByteDataAccess.Models.Leaderboards;
 
 namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper
 {
     public class LeaderboardAccessorHelper
     {
-        public LeaderboardAccessor Accessor;
+        public LeaderboardsAccessor Accessor;
 
         private readonly ApplicationDbContext _context;
         private readonly Fixture _fixture;
@@ -25,9 +25,9 @@ namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper
                 .Options;
             _context = new ApplicationDbContext(options);
 
-            var logger = new Mock<ILogger<LeaderboardAccessor>>();
+            var logger = new Mock<ILogger<LeaderboardsAccessor>>();
 
-            Accessor = new LeaderboardAccessor(_context, logger.Object);
+            Accessor = new LeaderboardsAccessor(_context, logger.Object);
         }
 
         public async Task<LeaderboardRecord> AddLeaderboardRecord()
@@ -60,14 +60,6 @@ namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper
             await _context.SaveChangesAsync();
             return game;
         }
-
-        //public async Task<Jam> AddJam()
-        //{
-        //    var jam = _fixture.Create<Jam>();
-        //    _context.Jams.Add(jam);
-        //    await _context.SaveChangesAsync();
-        //    return jam;
-        //}
 
         private LeaderboardRecord DeepClone(LeaderboardRecord leaderboardRecord)
         {

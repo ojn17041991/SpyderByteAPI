@@ -4,12 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SpyderByteAPI.DataAccess;
-using SpyderByteAPI.DataAccess.Accessors;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Games;
-using SpyderByteAPI.Models.Imgur;
-using SpyderByteAPI.Services.Imgur.Abstract;
+using SpyderByteDataAccess.Accessors.Games;
+using SpyderByteDataAccess.Contexts;
+using SpyderByteDataAccess.Models.Games;
 
 namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
 {
@@ -37,21 +34,21 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
                 .AddInMemoryCollection(configurationContents)
                 .Build();
 
-            var imgurService = new Mock<IImgurService>();
-            imgurService.Setup(i => i.PostImageAsync(
-                It.IsAny<IFormFile>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()
-            )).ReturnsAsync((IFormFile file, string albumHash, string title) =>
-                new DataResponse<PostImageResponse>(_fixture.Create<PostImageResponse>(), ModelResult.OK)
-            );
-            imgurService.Setup(i => i.DeleteImageAsync(
-                It.IsAny<string>()
-            )).ReturnsAsync((string imageHash) =>
-                new DataResponse<bool>(true, ModelResult.OK)
-            );
+            //var imgurService = new Mock<IImgurService>();
+            //imgurService.Setup(i => i.PostImageAsync(
+            //    It.IsAny<IFormFile>(),
+            //    It.IsAny<string>(),
+            //    It.IsAny<string>()
+            //)).ReturnsAsync((IFormFile file, string albumHash, string title) =>
+            //    new DataResponse<PostImageResponse>(_fixture.Create<PostImageResponse>(), ModelResult.OK)
+            //);
+            //imgurService.Setup(i => i.DeleteImageAsync(
+            //    It.IsAny<string>()
+            //)).ReturnsAsync((string imageHash) =>
+            //    new DataResponse<bool>(true, ModelResult.OK)
+            //);
 
-            Accessor = new GamesAccessor(_context, logger.Object, configuration, imgurService.Object);
+            Accessor = new GamesAccessor(_context, logger.Object, configuration);
         }
 
         public async Task<Game> AddGame()

@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Games;
 using SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper;
+using SpyderByteDataAccess.Models.Games;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Responses.Abstract;
 
 namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
 {
@@ -25,7 +25,6 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             var dbGame = await _helper.AddGame();
             var patchGame = _helper.GeneratePatchGame();
             patchGame.Id = dbGame.Id;
-            patchGame.Image = null;
 
             // Act
             var game = await _helper.Accessor.PatchAsync(patchGame);
@@ -37,7 +36,7 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
                 game.Should().NotBeNull();
                 game.Result.Should().Be(ModelResult.OK);
                 game.Data.Should().NotBeNull();
-                game.Data.Should().BeEquivalentTo(patchGame, options => options.Excluding(g => g.Image));
+                game.Data.Should().BeEquivalentTo(patchGame);
 
                 // Check the database.
                 var updatedDbGame = await _helper.GetGame(patchGame.Id);
@@ -70,7 +69,7 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
                 game.Should().NotBeNull();
                 game.Result.Should().Be(ModelResult.OK);
                 game.Data.Should().NotBeNull();
-                game.Data.Should().BeEquivalentTo(patchGame, options => options.Excluding(g => g.Image));
+                game.Data.Should().BeEquivalentTo(patchGame);
 
                 // Check the database.
                 var updatedDbGame = await _helper.GetGame(patchGame.Id);
