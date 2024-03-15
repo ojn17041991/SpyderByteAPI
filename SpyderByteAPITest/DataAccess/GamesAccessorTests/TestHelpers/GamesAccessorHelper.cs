@@ -20,6 +20,7 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
         public GamesAccessorHelper()
         {
             _fixture = new Fixture();
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
             _fixture.Customize<IFormFile>(f => f.FromFactory(() => new Mock<IFormFile>().Object));
 
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -55,6 +56,8 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
         {
             var game = _fixture.Create<Game>();
             _context.Games.Add(game);
+            _context.UserGames.Add(game.UserGame!);
+            _context.LeaderboardGames.Add(game.LeaderboardGame!);
             await _context.SaveChangesAsync();
             return DeepClone(game);
         }
@@ -79,6 +82,26 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
             return _fixture.Create<PatchGame>();
         }
 
+        public async Task RemoveGameRelationships(Guid id)
+        {
+            var game = await _context.Games
+                .Include(g => g.LeaderboardGame)
+                .Include(g => g.UserGame)
+                .SingleAsync(g => g.Id == id);
+
+            if (game.LeaderboardGame != null)
+            {
+                _context.LeaderboardGames.Remove(game.LeaderboardGame);
+            }
+
+            if (game.UserGame != null)
+            {
+                _context.UserGames.Remove(game.UserGame);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
         private Game DeepClone(Game game)
         {
             return new Game
@@ -88,7 +111,9 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
                 HtmlUrl = game.HtmlUrl,
                 ImgurUrl = game.ImgurUrl,
                 ImgurImageId = game.ImgurImageId,
-                PublishDate = game.PublishDate
+                PublishDate = game.PublishDate,
+                LeaderboardGame = game.LeaderboardGame,
+                UserGame = game.UserGame
             };
         }
     }

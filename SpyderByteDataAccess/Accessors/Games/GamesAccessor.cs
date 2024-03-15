@@ -91,7 +91,12 @@ namespace SpyderByteDataAccess.Accessors.Games
         {
             try
             {
-                Game storedGame = await context.Games.SingleAsync(g => g.Id == patchedGame.Id);
+                Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Id == patchedGame.Id);
+                if (storedGame == null)
+                {
+                    logger.LogError($"Failed to patch game. A game of ID {patchedGame.Id} does not exist.");
+                    return new DataResponse<Game?>(null, ModelResult.NotFound);
+                }
 
                 if (patchedGame.ImgurUrl.IsNullOrEmpty() == false)
                 {
@@ -138,9 +143,22 @@ namespace SpyderByteDataAccess.Accessors.Games
         {
             try
             {
-                Game game = await context.Games
+                Game? game = await context.Games
+                    .Include(g => g.LeaderboardGame)
                     .Include(g => g.UserGame)
-                    .SingleAsync(g => g.Id == id);
+                    .SingleOrDefaultAsync(g => g.Id == id);
+
+                if (game == null)
+                {
+                    logger.LogError($"Failed to delete game. A game of ID {id} does not exist.");
+                    return new DataResponse<Game?>(null, ModelResult.NotFound);
+                }
+
+                if (game.LeaderboardGame != null || game.UserGame != null)
+                {
+                    logger.LogError($"Failed to delete game. A game of ID {id} does not exist.");
+                    return new DataResponse<Game?>(game, ModelResult.RelationshipViolation);
+                }
 
                 context.Games.Remove(game);
                 await context.SaveChangesAsync();

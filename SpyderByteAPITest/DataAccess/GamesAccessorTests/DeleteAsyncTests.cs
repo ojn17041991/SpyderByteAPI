@@ -23,6 +23,7 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
         {
             // Arrange
             var dbGame = await _helper.AddGame();
+            await _helper.RemoveGameRelationships(dbGame.Id);
             var preTestGames = await _helper.GetGames();
 
             // Act
@@ -34,7 +35,9 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
                 // Check the response.
                 game.Should().NotBeNull();
                 game.Result.Should().Be(ModelResult.OK);
-                game.Data.Should().BeEquivalentTo(dbGame);
+                game.Data.Should().BeEquivalentTo(dbGame, options =>
+                    options.Excluding(g => g.LeaderboardGame)
+                        .Excluding(g => g.UserGame));
 
                 // Check the database.
                 var postTestGames = await _helper.GetGames();
