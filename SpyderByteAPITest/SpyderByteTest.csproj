@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataAccess\UsersAccessorTests\TestHelpers\" />
+    <Folder Include="DataAccess\UsersAccessorTests\Helpers\" />
     <Folder Include="Resources\Helpers\" />
     <Folder Include="Resources\Extensions\" />
     <Folder Include="Services\Helpers\" />
