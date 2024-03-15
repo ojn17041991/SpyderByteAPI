@@ -26,23 +26,23 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             var postGame = _helper.GeneratePostGame();
 
             // Act
-            var game = await _helper.Accessor.PostAsync(postGame);
+            var returnedGame = await _helper.Accessor.PostAsync(postGame);
 
             // Assert
             using (new AssertionScope())
             {
                 // Check the response.
-                game.Should().NotBeNull();
-                game.Result.Should().Be(ModelResult.Created);
-                game.Data.Should().NotBeNull();
-                game.Data.Should().BeEquivalentTo(postGame);
-                game.Data!.Id.Should().NotBeEmpty();
+                returnedGame.Should().NotBeNull();
+                returnedGame.Result.Should().Be(ModelResult.Created);
+                returnedGame.Data.Should().NotBeNull();
+                returnedGame.Data.Should().BeEquivalentTo(postGame);
+                returnedGame.Data!.Id.Should().NotBeEmpty();
 
                 // Check the database.
-                var dbGame = await _helper.GetGame(game.Data!.Id);
-                dbGame.Should().NotBeNull();
-                dbGame.Should().BeEquivalentTo(game.Data);
-                dbGame.Should().BeEquivalentTo(postGame);
+                var storedGame = await _helper.GetGame(returnedGame.Data!.Id);
+                storedGame.Should().NotBeNull();
+                storedGame.Should().BeEquivalentTo(returnedGame.Data);
+                storedGame.Should().BeEquivalentTo(postGame);
 
                 var postTestGames = await _helper.GetGames();
                 postTestGames.Should().HaveCount(preTestGames.Count + 1);
@@ -61,10 +61,10 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             // Assert
             using (new AssertionScope())
             {
-                var games = await func.Invoke();
-                games?.Should().NotBeNull();
-                games?.Result.Should().Be(ModelResult.Error);
-                games?.Data?.Should().BeNull();
+                var returnedGame = await func.Invoke();
+                returnedGame?.Should().NotBeNull();
+                returnedGame?.Result.Should().Be(ModelResult.Error);
+                returnedGame?.Data?.Should().BeNull();
             }
         }
     }

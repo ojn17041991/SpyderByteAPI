@@ -132,33 +132,17 @@ namespace SpyderByteServices.Services.Games
 
         public async Task<IDataResponse<Game?>> DeleteAsync(Guid id)
         {
-            var game = await gamesAccessor.GetSingleAsync(id);
-            if (game.Result != ModelResult.OK)
-            {
-                logger.LogInformation($"Unable to delete game. Could not find a game of ID {id}.");
-                return new DataResponse<Game?>(null, ModelResult.NotFound);
-            }
-
-            if (game.Data!.LeaderboardGame != null)
-            {
-                logger.LogInformation($"Unable to delete game. Leaderboard {game.Data!.LeaderboardGame.LeaderboardId} is dependent on game ID {id}.");
-                return new DataResponse<Game?>(null, ModelResult.RelationshipViolation);
-            }
-
-            if (game.Data!.UserGame != null)
-            {
-                logger.LogInformation($"Unable to delete game. User {game.Data!.UserGame.UserId} is dependent on game ID {id}.");
-                return new DataResponse<Game?>(null, ModelResult.RelationshipViolation);
-            }
-
-            var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(game.Data!.ImgurImageId);
-            if (!imgurDeleteSuccessful.Data)
-            {
-                logger.LogInformation($"Failed to delete image from Imgur during game delete. Continuing to database update.");
-                return new DataResponse<Game?>(null, ModelResult.Error);
-            }
-
             var response = await gamesAccessor.DeleteAsync(id);
+            if (response.Result == ModelResult.OK)
+            {
+                var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(response.Data!.ImgurImageId);
+                if (!imgurDeleteSuccessful.Data)
+                {
+                    logger.LogInformation($"Failed to delete image from Imgur during game delete. Continuing to database update.");
+                    return new DataResponse<Game?>(null, ModelResult.Error);
+                }
+            }
+
             return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
         }
     }

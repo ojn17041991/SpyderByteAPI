@@ -58,15 +58,15 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             var patchGame = _helper.GeneratePatchGame();
 
             // Act
-            var game = await _helper.Accessor.PatchAsync(patchGame);
+            var returnedGame = await _helper.Accessor.PatchAsync(patchGame);
 
             // Assert
             using (new AssertionScope())
             {
                 // Check the response.
-                game.Should().NotBeNull();
-                game.Result.Should().Be(ModelResult.NotFound);
-                game.Data.Should().BeNull();
+                returnedGame.Should().NotBeNull();
+                returnedGame.Result.Should().Be(ModelResult.NotFound);
+                returnedGame.Data.Should().BeNull();
             }
         }
 
@@ -82,10 +82,10 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             // Assert
             using (new AssertionScope())
             {
-                var games = await func.Invoke();
-                games?.Should().NotBeNull();
-                games?.Result.Should().Be(ModelResult.Error);
-                games?.Data?.Should().BeNull();
+                var returnedGame = await func.Invoke();
+                returnedGame?.Should().NotBeNull();
+                returnedGame?.Result.Should().Be(ModelResult.Error);
+                returnedGame?.Data?.Should().BeNull();
             }
         }
     }

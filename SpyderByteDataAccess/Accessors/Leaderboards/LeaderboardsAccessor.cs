@@ -154,9 +154,6 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
             return new DataResponse<Leaderboard?>(storedLeaderboard, ModelResult.OK);
         }
 
-        // OJN: more granularity on the claim types. DeleteRecord, PostRecord, etc.
-
-
         public async Task<IDataResponse<Leaderboard?>> DeleteAsync(Guid id)
         {
             Leaderboard? leaderboard = await context.Leaderboards

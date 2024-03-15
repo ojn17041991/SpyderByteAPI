@@ -80,21 +80,29 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
             return _fixture.Create<PatchGame>();
         }
 
-        public async Task RemoveGameRelationships(Guid id)
+        public async Task RemoveUserGameRelationship(Guid id)
+        {
+            var game = await _context.Games
+                .Include(g => g.UserGame)
+                .SingleAsync(g => g.Id == id);
+
+            if (game.UserGame != null)
+            {
+                _context.UserGames.Remove(game.UserGame);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveLeaderboardGameRelationship(Guid id)
         {
             var game = await _context.Games
                 .Include(g => g.LeaderboardGame)
-                .Include(g => g.UserGame)
                 .SingleAsync(g => g.Id == id);
 
             if (game.LeaderboardGame != null)
             {
                 _context.LeaderboardGames.Remove(game.LeaderboardGame);
-            }
-
-            if (game.UserGame != null)
-            {
-                _context.UserGames.Remove(game.UserGame);
             }
 
             await _context.SaveChangesAsync();

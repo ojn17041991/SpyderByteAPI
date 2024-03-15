@@ -22,19 +22,19 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
         public async Task Can_Get_Games_From_Accessor()
         {
             // Arrange
-            var game = await _helper.AddGame();
+            var storedGame = await _helper.AddGame();
 
             // Act
-            var games = await _helper.Accessor.GetAllAsync();
+            var returnedGames = await _helper.Accessor.GetAllAsync();
 
             // Assert
             using (new AssertionScope())
             {
-                games.Should().NotBeNull();
-                games.Result.Should().Be(ModelResult.OK);
-                games.Data.Should().NotBeNull();
-                games.Data.Should().HaveCount(1);
-                games.Data.Should().ContainEquivalentOf(game);
+                returnedGames.Should().NotBeNull();
+                returnedGames.Result.Should().Be(ModelResult.OK);
+                returnedGames.Data.Should().NotBeNull();
+                returnedGames.Data.Should().HaveCount(1);
+                returnedGames.Data.Should().ContainEquivalentOf(storedGame);
             }
         }
 
@@ -49,10 +49,10 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             // Assert
             using (new AssertionScope())
             {
-                var games = await func.Invoke();
-                games?.Should().NotBeNull();
-                games?.Result.Should().Be(ModelResult.Error);
-                games?.Data?.Should().BeNull();
+                var returnedGames = await func.Invoke();
+                returnedGames?.Should().NotBeNull();
+                returnedGames?.Result.Should().Be(ModelResult.Error);
+                returnedGames?.Data?.Should().BeNull();
             }
         }
     }

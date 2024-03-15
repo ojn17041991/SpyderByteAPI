@@ -64,7 +64,6 @@ namespace SpyderByteDataAccess.Accessors.Games
         {
             try
             {
-                // OJN: Rewrite to use mapper later.
                 Game mappedGame = new Game
                 {
                     Name = game.Name,

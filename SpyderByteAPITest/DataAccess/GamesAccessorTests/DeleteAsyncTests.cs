@@ -22,20 +22,21 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
         public async Task Can_Delete_Game_In_Accessor()
         {
             // Arrange
-            var dbGame = await _helper.AddGame();
-            await _helper.RemoveGameRelationships(dbGame.Id);
+            var storedGame = await _helper.AddGame();
+            await _helper.RemoveUserGameRelationship(storedGame.Id);
+            await _helper.RemoveLeaderboardGameRelationship(storedGame.Id);
             var preTestGames = await _helper.GetGames();
 
             // Act
-            var game = await _helper.Accessor.DeleteAsync(dbGame.Id);
+            var returnedGame = await _helper.Accessor.DeleteAsync(storedGame.Id);
 
             // Assert
             using (new AssertionScope())
             {
                 // Check the response.
-                game.Should().NotBeNull();
-                game.Result.Should().Be(ModelResult.OK);
-                game.Data.Should().BeEquivalentTo(dbGame, options =>
+                returnedGame.Should().NotBeNull();
+                returnedGame.Result.Should().Be(ModelResult.OK);
+                returnedGame.Data.Should().BeEquivalentTo(storedGame, options =>
                     options.Excluding(g => g.LeaderboardGame)
                         .Excluding(g => g.UserGame));
 
@@ -52,15 +53,71 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             var preTestGames = await _helper.GetGames();
 
             // Act
-            var game = await _helper.Accessor.DeleteAsync(Guid.NewGuid());
+            var returnedGame = await _helper.Accessor.DeleteAsync(Guid.NewGuid());
 
             // Assert
             using (new AssertionScope())
             {
                 // Check the response.
-                game.Should().NotBeNull();
-                game.Result.Should().Be(ModelResult.NotFound);
-                game.Data.Should().BeNull();
+                returnedGame.Should().NotBeNull();
+                returnedGame.Result.Should().Be(ModelResult.NotFound);
+                returnedGame.Data.Should().BeNull();
+
+                // Check the database.
+                var postTestGames = await _helper.GetGames();
+                postTestGames.Should().HaveCount(preTestGames.Count);
+            }
+        }
+
+        [Fact]
+        public async Task Can_Not_Delete_Game_When_User_Is_Dependent_On_Game()
+        {
+            // Arrange
+            var storedGame = await _helper.AddGame();
+            await _helper.RemoveLeaderboardGameRelationship(storedGame.Id);
+            var preTestGames = await _helper.GetGames();
+
+            // Act
+            var returnedGame = await _helper.Accessor.DeleteAsync(storedGame.Id);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                // Check the response.
+                returnedGame.Should().NotBeNull();
+                returnedGame.Result.Should().Be(ModelResult.RelationshipViolation);
+                returnedGame.Data.Should().NotBeNull();
+                returnedGame.Data.Should().BeEquivalentTo(storedGame, options =>
+                    options.Excluding(g => g.LeaderboardGame)
+                        .Excluding(g => g.UserGame));
+
+                // Check the database.
+                var postTestGames = await _helper.GetGames();
+                postTestGames.Should().HaveCount(preTestGames.Count);
+            }
+        }
+
+        [Fact]
+        public async Task Can_Not_Delete_Game_When_Leaderboard_Is_Dependent_On_Game()
+        {
+            // Arrange
+            var storedGame = await _helper.AddGame();
+            await _helper.RemoveUserGameRelationship(storedGame.Id);
+            var preTestGames = await _helper.GetGames();
+
+            // Act
+            var returnedGame = await _helper.Accessor.DeleteAsync(storedGame.Id);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                // Check the response.
+                returnedGame.Should().NotBeNull();
+                returnedGame.Result.Should().Be(ModelResult.RelationshipViolation);
+                returnedGame.Data.Should().NotBeNull();
+                returnedGame.Data.Should().BeEquivalentTo(storedGame, options =>
+                    options.Excluding(g => g.LeaderboardGame)
+                        .Excluding(g => g.UserGame));
 
                 // Check the database.
                 var postTestGames = await _helper.GetGames();
@@ -72,18 +129,18 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
         public async Task Exceptions_Are_Caught_And_Handled()
         {
             // Arrange
-            var dbGame = await _helper.AddGame();
+            var storedGame = await _helper.AddGame();
 
             // Act
-            Func<Task<IDataResponse<Game?>>> func = () => _exceptionHelper.Accessor.DeleteAsync(dbGame.Id);
+            Func<Task<IDataResponse<Game?>>> func = () => _exceptionHelper.Accessor.DeleteAsync(storedGame.Id);
 
             // Assert
             using (new AssertionScope())
             {
-                var games = await func.Invoke();
-                games?.Should().NotBeNull();
-                games?.Result.Should().Be(ModelResult.Error);
-                games?.Data?.Should().BeNull();
+                var returnedGame = await func.Invoke();
+                returnedGame?.Should().NotBeNull();
+                returnedGame?.Result.Should().Be(ModelResult.Error);
+                returnedGame?.Data?.Should().BeNull();
             }
         }
     }
