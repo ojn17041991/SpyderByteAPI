@@ -1,6 +1,6 @@
-﻿using SpyderByteResources.Enums;
+﻿using SpyderByteDataAccess.Models.Users;
+using SpyderByteResources.Enums;
 using SpyderByteResources.Extensions;
-using SpyderByteServices.Models.Users;
 using System.Security.Claims;
 
 namespace SpyderByteServices.Helpers.Authentication
@@ -10,14 +10,16 @@ namespace SpyderByteServices.Helpers.Authentication
         private const string claimEnabled = "true";
         private const string globalAccess = "*";
 
-        public static IEnumerable<Claim> AdministratorClaims()
+        public static IEnumerable<Claim> AdministratorClaims(User user)
         {
             return new List<Claim>
             {
+                new Claim(ClaimType.UserId.ToDescription(), user.Id.ToString()),
                 new Claim(ClaimType.ReadUsers.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteUsers.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteGames.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteJams.ToDescription(), claimEnabled),
+                new Claim(ClaimType.ReadLeaderboards.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteLeaderboards.ToDescription(), claimEnabled),
                 new Claim(ClaimType.DeleteLeaderboards.ToDescription(), claimEnabled),
                 new Claim(ClaimType.AssignedGame.ToDescription(), globalAccess)
@@ -28,6 +30,8 @@ namespace SpyderByteServices.Helpers.Authentication
         {
             var claims =  new List<Claim>
             {
+                new Claim(ClaimType.UserId.ToDescription(), user.Id.ToString()),
+                new Claim(ClaimType.ReadLeaderboards.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteLeaderboards.ToDescription(), claimEnabled)
             };
 
@@ -39,10 +43,11 @@ namespace SpyderByteServices.Helpers.Authentication
             return claims;
         }
 
-        public static IEnumerable<Claim> UtilityClaims()
+        public static IEnumerable<Claim> UtilityClaims(User user)
         {
             return new List<Claim>
             {
+                new Claim(ClaimType.UserId.ToDescription(), user.Id.ToString()),
                 new Claim(ClaimType.DataBackup.ToDescription(), claimEnabled)
             };
         }

@@ -29,9 +29,9 @@ namespace SpyderByteServices.Helpers.Authentication
                 SigningCredentials = signingCredentials
             };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.CreateToken(tokenDescriptor);
+            var tokenString = handler.WriteToken(token);
             return tokenString;
         }
 

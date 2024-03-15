@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Extensions;
 using SpyderByteResources.Helpers.Authorization;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
@@ -68,13 +69,13 @@ namespace SpyderByteServices.Services.Authentication
             switch (user.UserType)
             {
                 case UserType.Admin:
-                    claims = ClaimProfile.AdministratorClaims();
+                    claims = ClaimProfile.AdministratorClaims(user);
                     break;
                 case UserType.Restricted:
-                    claims = ClaimProfile.RestrictedClaims(mapper.Map<SpyderByteServices.Models.Users.User>(user));
+                    claims = ClaimProfile.RestrictedClaims(user);
                     break;
                 case UserType.Utility:
-                    claims = ClaimProfile.UtilityClaims();
+                    claims = ClaimProfile.UtilityClaims(user);
                     break;
                 default:
                     logger.LogError($"Failed to authenticate user. User Type {(int)user.UserType} not recognised.");
@@ -96,7 +97,7 @@ namespace SpyderByteServices.Services.Authentication
 
         public IDataResponse<string> Deauthenticate(HttpContext context)
         {
-            var token = TokenExtractor.GetTokenFromHttpContext(context);
+            var token = context.GetToken();
             if (token.IsNullOrEmpty())
             {
                 logger.LogError($"Failed to deauthenticate user. Unable to find authorization token.");
@@ -109,7 +110,7 @@ namespace SpyderByteServices.Services.Authentication
 
         public IDataResponse<string> Refresh(HttpContext context)
         {
-            var token = TokenExtractor.GetTokenFromHttpContext(context);
+            var token = context.GetToken();
             if (token.IsNullOrEmpty())
             {
                 logger.LogError($"Failed to refresh token. Unable to find authorization token.");

@@ -7,6 +7,8 @@
 
         public const string WriteGames = "WriteGames";
         public const string WriteJams = "WriteJams";
+
+        public const string ReadLeaderboards = "ReadLeaderboards";
         public const string WriteLeaderboards = "WriteLeaderboards";
         public const string DeleteLeaderboards = "DeleteLeaderboards";
 

@@ -45,6 +45,7 @@ namespace SpyderByteResources.Extensions
             services.AddScoped<IUsersAccessor, UsersAccessor>();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService, SpyderByteServices.Services.Authorization.AuthorizationService>();
             services.AddScoped<IDataService, DataService>();
             services.AddScoped<IGamesService, GamesService>();
             services.AddScoped<ILeaderboardsService, LeaderboardsService>();
@@ -170,7 +171,7 @@ namespace SpyderByteResources.Extensions
                     .RequireAuthenticatedUser()
                     .RequireAssertion(context =>
                     {
-                        var token = TokenExtractor.GetTokenFromHttpContext(context.Resource as HttpContext);
+                        var token = (context.Resource as HttpContext).GetToken();
                         if (token.IsNullOrEmpty()) return false;
 
                         var isTokenBlacklisted = TokenBlacklister.IsTokenBlacklisted(token);
@@ -199,6 +200,12 @@ namespace SpyderByteResources.Extensions
                 options.AddPolicy(PolicyType.WriteJams,
                     new AuthorizationPolicyBuilder()
                     .RequireClaim(ClaimType.WriteJams.ToDescription())
+                    .Build()
+                );
+
+                options.AddPolicy(PolicyType.ReadLeaderboards,
+                    new AuthorizationPolicyBuilder()
+                    .RequireClaim(ClaimType.ReadLeaderboards.ToDescription())
                     .Build()
                 );
 

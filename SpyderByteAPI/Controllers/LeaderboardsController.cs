@@ -6,6 +6,7 @@ using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Helpers.Authorization;
 using SpyderByteServices.Services.Leaderboards.Abstract;
+using SpyderByteResources.Extensions;
 
 namespace SpyderByteAPI.Controllers
 {
@@ -14,24 +15,39 @@ namespace SpyderByteAPI.Controllers
     public class LeaderboardsController : ControllerBase
     {
         private readonly ILeaderboardsService leaderboardsService;
+        private readonly SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService;
         private readonly IMapper mapper;
         private readonly IStringLookup<ModelResult> modelResources;
         private readonly IConfiguration configuration;
 
-        public LeaderboardsController(ILeaderboardsService leaderboardsService, IMapper mapper, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
+        public LeaderboardsController(
+            ILeaderboardsService leaderboardsService,
+            SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService,
+            IMapper mapper,
+            IStringLookup<ModelResult> modelResources,
+            IConfiguration configuration)
         {
             this.leaderboardsService = leaderboardsService;
+            this.authorizationService = authorizationService;
             this.mapper = mapper;
             this.modelResources = modelResources;
             this.configuration = configuration;
         }
 
         [HttpGet("{id}")]
+        [Authorize]
+        [Authorize(PolicyType.ReadLeaderboards)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(Guid id)
         {
+            var authorizationResponse = await authorizationService.UserHasAccessToLeaderboard(HttpContext.GetLoggedInUserId(), id);
+            if (authorizationResponse.Result == ModelResult.Unauthorized)
+            {
+                return Unauthorized();
+            }
+
             var response = await leaderboardsService.GetAsync(id);
 
             if (response.Result == ModelResult.OK)
@@ -86,6 +102,12 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> PostRecord([FromBody] PostLeaderboardRecord leaderboardRecord)
         {
+            var authorizationResponse = await authorizationService.UserHasAccessToLeaderboard(HttpContext.GetLoggedInUserId(), leaderboardRecord.LeaderboardId);
+            if (authorizationResponse.Result == ModelResult.Unauthorized)
+            {
+                return Unauthorized();
+            }
+
             var response = await leaderboardsService.PostRecordAsync(mapper.Map<SpyderByteServices.Models.Leaderboards.PostLeaderboardRecord>(leaderboardRecord));
 
             if (response.Result == ModelResult.Created)

@@ -4,6 +4,9 @@ namespace SpyderByteResources.Enums
 {
     public enum ClaimType
     {
+        [Description("UserId")]
+        UserId,
+
         [Description("ReadUsers")]
         ReadUsers,
 
@@ -15,6 +18,9 @@ namespace SpyderByteResources.Enums
 
         [Description("WriteJams")]
         WriteJams,
+
+        [Description("ReadLeaderboards")]
+        ReadLeaderboards,
 
         [Description("WriteLeaderboards")]
         WriteLeaderboards,
