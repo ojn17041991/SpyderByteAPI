@@ -22,64 +22,34 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
         public async Task Can_Patch_Game_In_Accessor()
         {
             // Arrange
-            var dbGame = await _helper.AddGame();
+            var storedGame = await _helper.AddGame();
             var patchGame = _helper.GeneratePatchGame();
-            patchGame.Id = dbGame.Id;
+            patchGame.Id = storedGame.Id;
 
             // Act
-            var game = await _helper.Accessor.PatchAsync(patchGame);
+            var returnedGame = await _helper.Accessor.PatchAsync(patchGame);
 
             // Assert
             using (new AssertionScope())
             {
                 // Check the response.
-                game.Should().NotBeNull();
-                game.Result.Should().Be(ModelResult.OK);
-                game.Data.Should().NotBeNull();
-                game.Data.Should().BeEquivalentTo(patchGame);
+                returnedGame.Should().NotBeNull();
+                returnedGame.Result.Should().Be(ModelResult.OK);
+                returnedGame.Data.Should().NotBeNull();
+                returnedGame.Data.Should().BeEquivalentTo(patchGame);
 
                 // Check the database.
-                var updatedDbGame = await _helper.GetGame(patchGame.Id);
-                updatedDbGame.Should().NotBeNull();
-                updatedDbGame.Should().BeEquivalentTo(game.Data);
-                updatedDbGame!.Id.Should().Be(dbGame.Id);
-                updatedDbGame!.Name.Should().NotBe(dbGame.Name);
-                updatedDbGame!.HtmlUrl.Should().NotBe(dbGame.HtmlUrl);
-                updatedDbGame!.ImgurUrl.Should().NotBe(dbGame.ImgurUrl);
-                updatedDbGame!.ImgurImageId.Should().NotBe(dbGame.ImgurImageId);
-                updatedDbGame!.PublishDate.Should().NotBe(dbGame.PublishDate);
+                var patchedStoredGame = await _helper.GetGame(patchGame.Id);
+                patchedStoredGame.Should().NotBeNull();
+                patchedStoredGame.Should().BeEquivalentTo(returnedGame.Data);
+                patchedStoredGame!.Id.Should().Be(storedGame.Id);
+                patchedStoredGame!.Name.Should().NotBe(storedGame.Name);
+                patchedStoredGame!.HtmlUrl.Should().NotBe(storedGame.HtmlUrl);
+                patchedStoredGame!.ImgurUrl.Should().NotBe(storedGame.ImgurUrl);
+                patchedStoredGame!.ImgurImageId.Should().NotBe(storedGame.ImgurImageId);
+                patchedStoredGame!.PublishDate.Should().NotBe(storedGame.PublishDate);
             }
         }
-
-        //[Fact]
-        //public async Task Can_Patch_Game_With_Updated_Image_In_Accessor()
-        //{
-        //    // Arrange
-        //    var dbGame = await _helper.AddGame();
-        //    var patchGame = _helper.GeneratePatchGame();
-        //    patchGame.Id = dbGame.Id;
-
-        //    // Act
-        //    var game = await _helper.Accessor.PatchAsync(patchGame);
-
-        //    // Assert
-        //    using (new AssertionScope())
-        //    {
-        //        // Check the response.
-        //        game.Should().NotBeNull();
-        //        game.Result.Should().Be(ModelResult.OK);
-        //        game.Data.Should().NotBeNull();
-        //        game.Data.Should().BeEquivalentTo(patchGame);
-
-        //        // Check the database.
-        //        var updatedDbGame = await _helper.GetGame(patchGame.Id);
-        //        updatedDbGame.Should().NotBeNull();
-        //        updatedDbGame.Should().BeEquivalentTo(game.Data);
-        //        updatedDbGame!.Id.Should().Be(dbGame.Id);
-        //        updatedDbGame!.ImgurUrl.Should().NotBe(dbGame.ImgurUrl);
-        //        updatedDbGame!.ImgurImageId.Should().NotBe(dbGame.ImgurImageId);
-        //    }
-        //}
 
         [Fact]
         public async Task Can_Not_Patch_Game_That_Does_Not_Exist_In_Accessor()

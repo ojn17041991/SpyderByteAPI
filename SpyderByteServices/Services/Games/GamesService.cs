@@ -63,7 +63,7 @@ namespace SpyderByteServices.Services.Games
             }
 
             var imgurResponse = await imgurService.PostImageAsync(game.Image, configuration["Imgur:GamesAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(game.Image.FileName));
-            if (imgurResponse.Result != ModelResult.OK)
+            if (imgurResponse.Result != ModelResult.Created)
             {
                 logger.LogInformation("Unable to post game. Failed to upload image to Imgur.");
                 return new DataResponse<Game?>(null, imgurResponse.Result);
@@ -82,7 +82,7 @@ namespace SpyderByteServices.Services.Games
             var storedGames = await gamesAccessor.GetAllAsync();
             if (storedGames.Result != ModelResult.OK)
             {
-                logger.LogInformation($"Unable to post game. Failed to check existing games for duplicates.");
+                logger.LogInformation($"Unable to patch game. Failed to check existing games for duplicates.");
                 return new DataResponse<Game?>(null, ModelResult.Error);
             }
 
@@ -116,7 +116,7 @@ namespace SpyderByteServices.Services.Games
 
                 // Post the new image.
                 var imgurResponse = await imgurService.PostImageAsync(game.Image, configuration["Imgur:GamesAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(game.Image.FileName));
-                if (imgurResponse.Result != ModelResult.OK)
+                if (imgurResponse.Result != ModelResult.Created)
                 {
                     logger.LogInformation($"Unable to patch game. Failed to add image to Imgur.");
                     return new DataResponse<Game?>(null, imgurResponse.Result);
@@ -137,6 +137,12 @@ namespace SpyderByteServices.Services.Games
             {
                 logger.LogInformation($"Unable to delete game. Could not find a game of ID {id}.");
                 return new DataResponse<Game?>(null, ModelResult.NotFound);
+            }
+
+            if (game.Data!.LeaderboardGame != null)
+            {
+                logger.LogInformation($"Unable to delete game. Leaderboard {game.Data!.LeaderboardGame.LeaderboardId} is dependent on game ID {id}.");
+                return new DataResponse<Game?>(null, ModelResult.RelationshipViolation);
             }
 
             if (game.Data!.UserGame != null)

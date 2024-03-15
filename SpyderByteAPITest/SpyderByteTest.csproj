@@ -38,7 +38,6 @@
     <Folder Include="Services\Helpers\" />
     <Folder Include="Services\AuthenticationServiceTests\" />
     <Folder Include="Services\DataServiceTests\" />
-    <Folder Include="Services\GamesServiceTests\" />
     <Folder Include="Services\LeaderboardsServiceTests\" />
     <Folder Include="Services\UsersServiceTests\" />
     <Folder Include="Services\StorageServiceTests\" />

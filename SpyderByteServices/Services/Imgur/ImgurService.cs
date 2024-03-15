@@ -71,7 +71,7 @@ namespace SpyderByteServices.Services.Imgur
                 Url = imageUrl,
                 ImageId = imageId
             };
-            return new DataResponse<PostImageResponse>(postImageResponse, ModelResult.OK);
+            return new DataResponse<PostImageResponse>(postImageResponse, ModelResult.Created);
         }
 
         public async Task<IDataResponse<bool>> DeleteImageAsync(string imageId)

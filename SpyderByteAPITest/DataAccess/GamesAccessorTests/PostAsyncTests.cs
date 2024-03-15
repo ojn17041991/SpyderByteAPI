@@ -49,60 +49,6 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             }
         }
 
-        //[Fact]
-        //public async Task Can_Not_Add_Duplicate_Game_To_Accessor()
-        //{
-        //    // Arrange
-        //    var preTestGames = await _helper.GetGames();
-        //    var postGame = _helper.GeneratePostGame();
-
-        //    // Act
-        //    var response1 = await _helper.Accessor.PostAsync(postGame);
-        //    var response2 = await _helper.Accessor.PostAsync(postGame);
-
-        //    // Assert
-        //    using (new AssertionScope())
-        //    {
-        //        // Check the responses.
-        //        response1.Should().NotBeNull();
-        //        response1.Result.Should().Be(ModelResult.Created);
-        //        response1.Data.Should().NotBeNull();
-
-        //        response2.Should().NotBeNull();
-        //        response2.Result.Should().Be(ModelResult.AlreadyExists);
-        //        response2.Data.Should().NotBeNull();
-        //        response2.Data.Should().BeEquivalentTo(response1.Data);
-
-        //        // Check the database.
-        //        var postTestGames = await _helper.GetGames();
-        //        postTestGames.Should().HaveCount(preTestGames.Count + 1);
-        //    }
-        //}
-
-        //[Fact]
-        //public async Task Can_Not_Add_Game_Without_Image_File_To_Accessor()
-        //{
-        //    // Arrange
-        //    var preTestGames = await _helper.GetGames();
-        //    var postGame = _helper.GeneratePostGame();
-
-        //    // Act
-        //    var game = await _helper.Accessor.PostAsync(postGame);
-
-        //    // Assert
-        //    using (new AssertionScope())
-        //    {
-        //        // Check the response.
-        //        game.Should().NotBeNull();
-        //        game.Result.Should().Be(ModelResult.RequestDataIncomplete);
-        //        game.Data.Should().BeNull();
-
-        //        // Check the database.
-        //        var postTestGames = await _helper.GetGames();
-        //        postTestGames.Should().HaveCount(preTestGames.Count);
-        //    }
-        //}
-
         [Fact]
         public async Task Exceptions_Are_Caught_And_Handled()
         {

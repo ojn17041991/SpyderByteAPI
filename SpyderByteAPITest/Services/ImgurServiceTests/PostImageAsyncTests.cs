@@ -28,7 +28,7 @@ namespace SpyderByteAPITest.Services.ImgurServiceTests
             using (new AssertionScope())
             {
                 response.Should().NotBeNull();
-                response.Result.Should().Be(ModelResult.OK);
+                response.Result.Should().Be(ModelResult.Created);
                 response.Data.Should().NotBeNull();
                 response.Data.Url.Should().NotBeNullOrEmpty();
                 response.Data.ImageId.Should().NotBeNullOrEmpty();

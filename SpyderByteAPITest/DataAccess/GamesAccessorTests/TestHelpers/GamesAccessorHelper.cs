@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -21,7 +20,6 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
         {
             _fixture = new Fixture();
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            _fixture.Customize<IFormFile>(f => f.FromFactory(() => new Mock<IFormFile>().Object));
 
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
