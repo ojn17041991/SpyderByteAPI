@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPI.Enums;
-using SpyderByteAPITest.Services.ImgurServiceTests.Helper;
+using SpyderByteTest.Services.ImgurServiceTests.Helpers;
+using SpyderByteResources.Enums;
 
-namespace SpyderByteAPITest.Services.ImgurServiceTests
+namespace SpyderByteTest.Services.ImgurServiceTests
 {
     public class DeleteImageAsyncTests
     {

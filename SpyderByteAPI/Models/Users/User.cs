@@ -1,20 +1,16 @@
-﻿using SpyderByteAPI.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using SpyderByteResources.Enums;
+using System.Text.Json.Serialization;
 
 namespace SpyderByteAPI.Models.Users
 {
     public class User
     {
-        [Required]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
-        [Required]
-        public string Hash { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
 
-        [Required]
-        public string Salt { get; set; } = string.Empty;
-
-        [Required]
         public UserType UserType { get; set; } = UserType.Restricted;
+
+        public Guid? GameId { get; set; }
     }
 }

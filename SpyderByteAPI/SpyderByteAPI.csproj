@@ -32,6 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SpyderByteResources\SpyderByteResources.csproj" />
+    <ProjectReference Include="..\SpyderByteServices\SpyderByteServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Databases\sbapi.db">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>

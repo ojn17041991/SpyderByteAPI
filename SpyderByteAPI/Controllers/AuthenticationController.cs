@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SpyderByteAPI.Enums;
 using SpyderByteAPI.Models.Authentication;
-using SpyderByteAPI.Services.Auth.Abstract;
+using SpyderByteResources.Enums;
+using SpyderByteServices.Services.Authentication.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
@@ -11,11 +12,13 @@ namespace SpyderByteAPI.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService authenticationService;
+        private readonly IMapper mapper;
         private readonly IConfiguration configuration;
 
-        public AuthenticationController(IAuthenticationService authenticationService, IConfiguration configuration)
+        public AuthenticationController(IAuthenticationService authenticationService, IMapper mapper, IConfiguration configuration)
         {
             this.authenticationService = authenticationService;
+            this.mapper = mapper;
             this.configuration = configuration;
         }
 
@@ -25,7 +28,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post(Login login)
         {
-            var response = await authenticationService.AuthenticateAsync(login);
+            var response = await authenticationService.AuthenticateAsync(mapper.Map<SpyderByteServices.Models.Authentication.Login>(login));
 
             if (response.Result == ModelResult.OK)
             {

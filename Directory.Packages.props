@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AspNetCoreRateLimit" Version="5.0.0" />
+    <PackageVersion Include="AutoMapper" Version="13.0.1" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageVersion Include="Azure.Identity" Version="1.10.0" />
     <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.5.0" />
@@ -11,12 +12,17 @@
     <PackageVersion Include="Konscious.Security.Cryptography.Argon2" Version="1.3.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.15" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
+    <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Http.Features" Version="2.1.1" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.16" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.16">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.10" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.16" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.21.0" />
     <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="7.2.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />

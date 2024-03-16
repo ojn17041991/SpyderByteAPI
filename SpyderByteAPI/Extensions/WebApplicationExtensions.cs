@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SpyderByteAPI.DataAccess;
 using SpyderByteAPI.Middleware; // Required for release.
+using SpyderByteDataAccess.Contexts;
 
-namespace SpyderByteAPI.Extensions
+namespace SpyderByteResources.Extensions
 {
     public static class WebApplicationExtensions
     {

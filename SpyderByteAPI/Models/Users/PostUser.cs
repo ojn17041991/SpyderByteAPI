@@ -1,4 +1,4 @@
-﻿using SpyderByteAPI.Enums;
+﻿using SpyderByteResources.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace SpyderByteAPI.Models.Users
@@ -6,12 +6,14 @@ namespace SpyderByteAPI.Models.Users
     public class PostUser
     {
         [Required]
-        public string Id { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
 
         [Required]
         public string Password { get; set; } = string.Empty;
 
         [Required]
         public UserType UserType { get; set; } = UserType.Restricted;
+
+        public Guid? GameId { get; set; }
     }
 }

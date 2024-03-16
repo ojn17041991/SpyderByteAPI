@@ -1,0 +1,9 @@
+﻿namespace SpyderByteServices.Models.Users
+{
+    public class PatchUser
+    {
+        public Guid Id { get; set; }
+
+        public Guid GameId { get; set; }
+    }
+}

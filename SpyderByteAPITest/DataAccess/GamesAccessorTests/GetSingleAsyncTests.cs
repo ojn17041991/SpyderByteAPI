@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPI.DataAccess.Abstract;
-using SpyderByteAPI.Enums;
-using SpyderByteAPI.Models.Games;
-using SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper;
+using SpyderByteTest.DataAccess.GamesAccessorTests.Helpers;
+using SpyderByteDataAccess.Models.Games;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Responses.Abstract;
 
-namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
+namespace SpyderByteTest.DataAccess.GamesAccessorTests
 {
     public class GetSingleAsyncTests
     {
@@ -22,18 +22,18 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
         public async Task Can_Get_Single_Game_From_Accessor()
         {
             // Arrange
-            var game = await _helper.AddGame();
+            var storedGame = await _helper.AddGame();
 
             // Act
-            var games = await _helper.Accessor.GetSingleAsync(game.Id);
+            var returnedGame = await _helper.Accessor.GetSingleAsync(storedGame.Id);
 
             // Assert
             using (new AssertionScope())
             {
-                games.Should().NotBeNull();
-                games.Result.Should().Be(ModelResult.OK);
-                games.Data.Should().NotBeNull();
-                games.Data.Should().BeEquivalentTo(game);
+                returnedGame.Should().NotBeNull();
+                returnedGame.Result.Should().Be(ModelResult.OK);
+                returnedGame.Data.Should().NotBeNull();
+                returnedGame.Data.Should().BeEquivalentTo(storedGame);
             }
         }
 
@@ -44,14 +44,14 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
             await _helper.AddGame();
 
             // Act
-            var games = await _helper.Accessor.GetSingleAsync(Guid.NewGuid());
+            var returnedGame = await _helper.Accessor.GetSingleAsync(Guid.NewGuid());
 
             // Assert
             using (new AssertionScope())
             {
-                games.Should().NotBeNull();
-                games.Result.Should().Be(ModelResult.NotFound);
-                games.Data.Should().BeNull();
+                returnedGame.Should().NotBeNull();
+                returnedGame.Result.Should().Be(ModelResult.NotFound);
+                returnedGame.Data.Should().BeNull();
             }
         }
 
@@ -59,18 +59,18 @@ namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
         public async Task Exceptions_Are_Caught_And_Handled()
         {
             // Arrange
-            var dbGame = await _helper.AddGame();
+            var storedGame = await _helper.AddGame();
 
             // Act
-            Func<Task<IDataResponse<Game?>>> func = () => _exceptionHelper.Accessor.GetSingleAsync(dbGame.Id);
+            Func<Task<IDataResponse<Game?>>> func = () => _exceptionHelper.Accessor.GetSingleAsync(storedGame.Id);
 
             // Assert
             using (new AssertionScope())
             {
-                var games = await func.Invoke();
-                games?.Should().NotBeNull();
-                games?.Result.Should().Be(ModelResult.Error);
-                games?.Data?.Should().BeNull();
+                var returnedGame = await func.Invoke();
+                returnedGame?.Should().NotBeNull();
+                returnedGame?.Result.Should().Be(ModelResult.Error);
+                returnedGame?.Data?.Should().BeNull();
             }
         }
     }
