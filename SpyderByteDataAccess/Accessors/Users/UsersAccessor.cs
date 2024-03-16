@@ -197,13 +197,21 @@ namespace SpyderByteDataAccess.Accessors.Users
 
         public async Task<bool> DeleteAllAsync()
         {
-            var users = context.Users.ToList();
-            foreach (var user in users)
+            try
             {
-                context.Users.Remove(user);
+                var users = context.Users.ToList();
+                foreach (var user in users)
+                {
+                    context.Users.Remove(user);
+                }
+                await context.SaveChangesAsync();
+                return true;
             }
-            await context.SaveChangesAsync();
-            return true;
+            catch (Exception e)
+            {
+                logger.LogError("Failed to delete all users.", e);
+                return false;
+            }
         }
     }
 }
