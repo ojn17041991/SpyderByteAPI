@@ -102,5 +102,10 @@ namespace SpyderByteServices.Services.Users
             var response = await usersAccessor.DeleteAsync(id);
             return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
         }
+
+        public async Task<bool> DeleteAllAsync()
+        {
+            return await usersAccessor.DeleteAllAsync();
+        }
     }
 }
