@@ -10,7 +10,7 @@ using SpyderByteServices.Services.Users.Abstract;
 namespace SpyderByteAPI.Controllers
 {
     [Route("[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(PolicyType.ReadUsers)]
+        //[Authorize(PolicyType.ReadUsers)]
         public async Task<IActionResult> Get(Guid id)
         {
             var response = await usersService.GetAsync(id);
@@ -47,7 +47,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(PolicyType.WriteUsers)]
+        //[Authorize(PolicyType.WriteUsers)]
         public async Task<IActionResult> Post(PostUser user)
         {
             var response = await usersService.PostAsync(mapper.Map<SpyderByteServices.Models.Users.PostUser>(user));
@@ -76,7 +76,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpPatch]
-        [Authorize(PolicyType.WriteUsers)]
+        //[Authorize(PolicyType.WriteUsers)]
         public async Task<IActionResult> Patch(PatchUser user)
         {
             var response = await usersService.PatchAsync(mapper.Map<SpyderByteServices.Models.Users.PatchUser>(user));
@@ -101,7 +101,7 @@ namespace SpyderByteAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(PolicyType.WriteUsers)]
+        //[Authorize(PolicyType.WriteUsers)]
         public async Task<IActionResult> Delete(Guid id)
         {
             var response = await usersService.DeleteAsync(id);
