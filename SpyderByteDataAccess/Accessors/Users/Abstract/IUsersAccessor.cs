@@ -14,7 +14,5 @@ namespace SpyderByteDataAccess.Accessors.Users.Abstract
         Task<IDataResponse<User?>> PatchAsync(PatchUser user);
 
         Task<IDataResponse<User?>> DeleteAsync(Guid id);
-
-        Task<bool> DeleteAllAsync();
     }
 }
