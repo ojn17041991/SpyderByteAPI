@@ -42,11 +42,11 @@ namespace SpyderByteServices.Services.Users
             }
 
             // Don't allow any user to create new Admin or Utility user types.
-            //if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
-            //{
-            //    logger.LogError($"Failed to post user {user.UserName}. A user of type Admin or Utility cannot be created.");
-            //    return new DataResponse<User?>(null, ModelResult.RequestInvalid);
-            //}
+            if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
+            {
+                logger.LogError($"Failed to post user {user.UserName}. A user of type Admin or Utility cannot be created.");
+                return new DataResponse<User?>(null, ModelResult.RequestInvalid);
+            }
 
             // Generate the hash data for the user.
             var hashData = passwordHasher.GenerateNewHash(user.Password);
@@ -101,11 +101,6 @@ namespace SpyderByteServices.Services.Users
             // Return the deleted user.
             var response = await usersAccessor.DeleteAsync(id);
             return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
-        }
-
-        public async Task<bool> DeleteAllAsync()
-        {
-            return await usersAccessor.DeleteAllAsync();
         }
     }
 }
