@@ -75,8 +75,8 @@ namespace SpyderByteResources.Extensions
                 options.AddPolicy("SpyderByteAPIOrigins", builder =>
                 {
                     builder
-                        .WithOrigins("https://spyderbytestudios.itch.io/*",
-                                     "https://www.spyderbyte.co.uk/*")
+                        .WithOrigins("https://spyderbytestudios.itch.io",
+                                     "https://www.spyderbyte.co.uk")
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 })

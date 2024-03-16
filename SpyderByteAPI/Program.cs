@@ -27,7 +27,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors("SpyderByteAPI");
+app.UseCors("SpyderByteAPIOrigins");
 app.UseIpRateLimiting();
 app.AddProjectMiddleware();
 app.RunProjectMigrations();
