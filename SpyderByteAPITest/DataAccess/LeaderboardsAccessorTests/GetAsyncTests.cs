@@ -1,39 +1,40 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper;
+using SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers;
 using SpyderByteDataAccess.Models.Leaderboards;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Responses.Abstract;
 
-namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests
+namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
 {
     public class GetAsyncTests
     {
-        private readonly LeaderboardAccessorHelper _helper;
-        private readonly LeaderboardAccessorExceptionHelper _exceptionHelper;
+        private readonly LeaderboardsAccessorHelper _helper;
+        private readonly LeaderboardsAccessorExceptionHelper _exceptionHelper;
 
         public GetAsyncTests()
         {
-            _helper = new LeaderboardAccessorHelper();
-            _exceptionHelper = new LeaderboardAccessorExceptionHelper();
+            _helper = new LeaderboardsAccessorHelper();
+            _exceptionHelper = new LeaderboardsAccessorExceptionHelper();
         }
 
         [Fact]
         public async Task Can_Get_Leaderboard_Records_From_Accessor()
         {
             // Arrange
-            var leaderboardRecord = await _helper.AddLeaderboardRecord();
+            var storedLeaderboard = await _helper.AddLeaderboardWithRecords();
 
             // Act
-            var leaderboardRecords = await _helper.Accessor.GetAsync(leaderboardRecord.Id);
+            var returnedLeaderboard = await _helper.Accessor.GetAsync(storedLeaderboard.Id);
 
             // Assert
             using (new AssertionScope())
             {
-                leaderboardRecords.Should().NotBeNull();
-                leaderboardRecords.Result.Should().Be(ModelResult.OK);
-                leaderboardRecords.Data.Should().NotBeNull();
-                leaderboardRecords.Data.Should().BeEquivalentTo(leaderboardRecord);
+                returnedLeaderboard.Should().NotBeNull();
+                returnedLeaderboard.Result.Should().Be(ModelResult.OK);
+                returnedLeaderboard.Data.Should().NotBeNull();
+                returnedLeaderboard.Data!.LeaderboardRecords.Count().Should().Be(storedLeaderboard.LeaderboardRecords.Count());
+                returnedLeaderboard.Data.Should().BeEquivalentTo(storedLeaderboard);
             }
         }
 

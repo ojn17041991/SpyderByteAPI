@@ -7,7 +7,7 @@ using SpyderByteDataAccess.Accessors.Games;
 using SpyderByteDataAccess.Contexts;
 using SpyderByteDataAccess.Models.Games;
 
-namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
+namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
 {
     public class GamesAccessorHelper
     {

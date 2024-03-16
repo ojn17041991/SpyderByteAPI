@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper;
+using SpyderByteTest.DataAccess.GamesAccessorTests.Helpers;
 using SpyderByteDataAccess.Models.Games;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Responses.Abstract;
 
-namespace SpyderByteAPITest.DataAccess.GamesAccessorTests
+namespace SpyderByteTest.DataAccess.GamesAccessorTests
 {
     public class PostAsyncTests
     {

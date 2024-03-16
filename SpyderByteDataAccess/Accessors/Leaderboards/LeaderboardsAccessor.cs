@@ -119,59 +119,76 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
 
         public async Task<IDataResponse<Leaderboard?>> PatchAsync(PatchLeaderboard leaderboard)
         {
-            Leaderboard? storedLeaderboard = await context.Leaderboards.SingleOrDefaultAsync(l => l.Id == leaderboard.Id);
-            if (storedLeaderboard == null)
+            try
             {
-                logger.LogInformation($"Unable to patch leaderboard. Could not find a leaderboard of ID {leaderboard.Id}.");
-                return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
-            }
+                Leaderboard? storedLeaderboard = await context.Leaderboards.SingleOrDefaultAsync(l => l.Id == leaderboard.Id);
+                if (storedLeaderboard == null)
+                {
+                    logger.LogInformation($"Unable to patch leaderboard. Could not find a leaderboard of ID {leaderboard.Id}.");
+                    return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                }
 
-            Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Id == leaderboard.GameId);
-            if (storedGame == null)
+                Game? storedGame = await context.Games.SingleOrDefaultAsync(g => g.Id == leaderboard.GameId);
+                if (storedGame == null)
+                {
+                    logger.LogInformation($"Unable to patch leaderboard. Could not find a game of ID {leaderboard.GameId}.");
+                    return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                }
+
+                var gameAllocatedToLeaderboard = await context.LeaderboardGames.AnyAsync(lg => lg.GameId == leaderboard.GameId && lg.LeaderboardId != leaderboard.Id);
+                if (gameAllocatedToLeaderboard == true)
+                {
+                    logger.LogInformation($"Unable to patch leaderboard. A leaderboard is already assigned to game of ID {leaderboard.GameId}.");
+                    return new DataResponse<Leaderboard?>(null, ModelResult.AlreadyExists);
+                }
+
+                LeaderboardGame? storedLeaderboardGame = await context.LeaderboardGames.SingleOrDefaultAsync(lg => lg.LeaderboardId == leaderboard.Id);
+                if (storedLeaderboardGame == null)
+                {
+                    logger.LogInformation($"Unable to patch leaderboard. Could not find an existing game associated with leaderboard {leaderboard.Id}.");
+                    return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                }
+
+                storedLeaderboardGame.GameId = leaderboard.GameId;
+
+                await context.SaveChangesAsync();
+
+                return new DataResponse<Leaderboard?>(storedLeaderboard, ModelResult.OK);
+            }
+            catch (Exception e)
             {
-                logger.LogInformation($"Unable to patch leaderboard. Could not find a game of ID {leaderboard.GameId}.");
-                return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                logger.LogError("Failed to patch leaderboard.", e);
+                return new DataResponse<Leaderboard?>(null, ModelResult.Error);
             }
-
-            var gameAllocatedToLeaderboard = await context.LeaderboardGames.AnyAsync(lg => lg.GameId == leaderboard.GameId && lg.LeaderboardId != leaderboard.Id);
-            if (gameAllocatedToLeaderboard == true)
-            {
-                logger.LogInformation($"Unable to patch leaderboard. A leaderboard is already assigned to game of ID {leaderboard.GameId}.");
-                return new DataResponse<Leaderboard?>(null, ModelResult.AlreadyExists);
-            }
-
-            LeaderboardGame? storedLeaderboardGame = await context.LeaderboardGames.SingleOrDefaultAsync(lg => lg.LeaderboardId == leaderboard.Id);
-            if (storedLeaderboardGame == null)
-            {
-                logger.LogInformation($"Unable to patch leaderboard. Could not find an existing game associated with leaderboard {leaderboard.Id}.");
-                return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
-            }
-
-            storedLeaderboardGame.GameId = leaderboard.GameId;
-
-            await context.SaveChangesAsync();
-
-            return new DataResponse<Leaderboard?>(storedLeaderboard, ModelResult.OK);
         }
 
         public async Task<IDataResponse<Leaderboard?>> DeleteAsync(Guid id)
         {
-            Leaderboard? leaderboard = await context.Leaderboards
-                .Include(l => l.LeaderboardRecords)
-                .Include(l => l.LeaderboardGame)
-                .SingleOrDefaultAsync(l => l.Id == id);
-            if (leaderboard == null)
+            try
             {
-                logger.LogInformation($"Unable to delete leaderboard. Could not find a leaderboard of ID {id}.");
-                return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                Leaderboard? leaderboard = await context.Leaderboards
+                    .Include(l => l.LeaderboardRecords)
+                    .Include(l => l.LeaderboardGame)
+                    .SingleOrDefaultAsync(l => l.Id == id);
+
+                if (leaderboard == null)
+                {
+                    logger.LogInformation($"Unable to delete leaderboard. Could not find a leaderboard of ID {id}.");
+                    return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                }
+
+                context.LeaderboardRecords.RemoveRange(leaderboard.LeaderboardRecords);
+                context.LeaderboardGames.Remove(leaderboard.LeaderboardGame);
+                context.Leaderboards.Remove(leaderboard);
+                await context.SaveChangesAsync();
+
+                return new DataResponse<Leaderboard?>(leaderboard, ModelResult.OK);
             }
-
-            context.LeaderboardRecords.RemoveRange(leaderboard.LeaderboardRecords);
-            context.LeaderboardGames.Remove(leaderboard.LeaderboardGame);
-            context.Leaderboards.Remove(leaderboard);
-            await context.SaveChangesAsync();
-
-            return new DataResponse<Leaderboard?>(leaderboard, ModelResult.OK);
+            catch (Exception e)
+            {
+                logger.LogError("Failed to delete leaderboard.", e);
+                return new DataResponse<Leaderboard?>(null, ModelResult.Error);
+            }
         }
 
         public async Task<IDataResponse<LeaderboardRecord?>> DeleteRecordAsync(Guid id)

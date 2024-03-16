@@ -7,7 +7,7 @@ using SpyderByteServices.Services.Imgur;
 using SpyderByteServices.Services.Imgur.Abstract;
 using System.Net;
 
-namespace SpyderByteAPITest.Services.ImgurServiceTests.Helper
+namespace SpyderByteTest.Services.ImgurServiceTests.Helpers
 {
     public class ImgurServiceHelper
     {

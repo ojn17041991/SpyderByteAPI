@@ -4,13 +4,13 @@ using Moq;
 using SpyderByteDataAccess.Accessors.Leaderboards;
 using SpyderByteDataAccess.Contexts;
 
-namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper
+namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers
 {
-    public class LeaderboardAccessorExceptionHelper
+    public class LeaderboardsAccessorExceptionHelper
     {
         public LeaderboardsAccessor Accessor;
 
-        public LeaderboardAccessorExceptionHelper()
+        public LeaderboardsAccessorExceptionHelper()
         {
             // The DB Context is mocked out, so it will always throw an exception.
             var options = new DbContextOptionsBuilder<ApplicationDbContext>().Options;

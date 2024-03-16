@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SpyderByteDataAccess.Contexts;
 using SpyderByteDataAccess.Accessors.Games;
 
-namespace SpyderByteAPITest.DataAccess.GamesAccessorTests.Helper
+namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
 {
     public class GamesAccessorExceptionHelper
     {

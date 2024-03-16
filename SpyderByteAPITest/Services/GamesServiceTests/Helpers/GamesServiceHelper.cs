@@ -11,7 +11,7 @@ using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Services.Games;
 using SpyderByteServices.Services.Imgur.Abstract;
 
-namespace SpyderByteTest.Services.GamesServiceTests.Helper
+namespace SpyderByteTest.Services.GamesServiceTests.Helpers
 {
     public class GamesServiceHelper
     {

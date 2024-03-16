@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using SpyderByteResources.Enums;
-using SpyderByteTest.Services.GamesServiceTests.Helper;
+using SpyderByteTest.Services.GamesServiceTests.Helpers;
 
 namespace SpyderByteTest.Services.GamesServiceTests
 {

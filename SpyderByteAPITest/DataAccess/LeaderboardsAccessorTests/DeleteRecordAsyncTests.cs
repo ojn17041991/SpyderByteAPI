@@ -1,49 +1,50 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using SpyderByteAPITest.DataAccess.LeaderboardAccessorTests.Helper;
+using SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers;
 using SpyderByteDataAccess.Models.Leaderboards;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Responses.Abstract;
 
-namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests
+namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
 {
-    public class DeleteAsyncTests
+    public class DeleteRecordAsyncTests
     {
-        private readonly LeaderboardAccessorHelper _helper;
-        private readonly LeaderboardAccessorExceptionHelper _exceptionHelper;
+        private readonly LeaderboardsAccessorHelper _helper;
+        private readonly LeaderboardsAccessorExceptionHelper _exceptionHelper;
 
-        public DeleteAsyncTests()
+        public DeleteRecordAsyncTests()
         {
-            _helper = new LeaderboardAccessorHelper();
-            _exceptionHelper = new LeaderboardAccessorExceptionHelper();
+            _helper = new LeaderboardsAccessorHelper();
+            _exceptionHelper = new LeaderboardsAccessorExceptionHelper();
         }
 
         [Fact]
         public async Task Can_Delete_Leaderboard_Record_In_Accessor()
         {
             // Arrange
-            var dbLeaderboardRecords = await _helper.AddLeaderboardRecord();
+            var storedLeaderboard = await _helper.AddLeaderboardWithRecords();
+            var storedLeaderboardRecord = storedLeaderboard.LeaderboardRecords.First()!;
             var preTestLeaderboardRecords = await _helper.GetLeaderboardRecords();
 
             // Act
-            var leaderboardRecords = await _helper.Accessor.DeleteRecordAsync(dbLeaderboardRecords.Id);
+            var returnedLeaderboardRecord = await _helper.Accessor.DeleteRecordAsync(storedLeaderboardRecord.Id);
 
             // Assert
             using (new AssertionScope())
             {
                 // Check the response.
-                leaderboardRecords.Should().NotBeNull();
-                leaderboardRecords.Result.Should().Be(ModelResult.OK);
-                leaderboardRecords.Data.Should().BeEquivalentTo(dbLeaderboardRecords);
+                returnedLeaderboardRecord.Should().NotBeNull();
+                returnedLeaderboardRecord.Result.Should().Be(ModelResult.OK);
+                returnedLeaderboardRecord.Data.Should().BeEquivalentTo(storedLeaderboardRecord);
 
                 // Check the database.
-                var postTestLeaderboards = await _helper.GetLeaderboardRecords();
-                postTestLeaderboards.Should().HaveCount(preTestLeaderboardRecords.Count - 1);
+                var postTestLeaderboardRecords = await _helper.GetLeaderboardRecords();
+                postTestLeaderboardRecords.Should().HaveCount(preTestLeaderboardRecords.Count - 1);
             }
         }
 
         [Fact]
-        public async Task Can_Not_Delete_Leaderboard_Record_That_Does_Not_Exist_In_Accessor()
+        public async Task Can_Not_Delete_Leaderboard_Record_In_Accessor_That_Does_Not_Exist()
         {
             // Arrange
             var preTestLeaderboardRecords = await _helper.GetLeaderboardRecords();
@@ -69,10 +70,11 @@ namespace SpyderByteAPITest.DataAccess.LeaderboardAccessorTests
         public async Task Exceptions_Are_Caught_And_Handled()
         {
             // Arrange
-            var dbLeaderboardRecord = await _helper.AddGame();
+            var storedLeaderboard = await _helper.AddLeaderboardWithRecords();
+            var storedLeaderboardRecord = storedLeaderboard.LeaderboardGame!.Leaderboard.LeaderboardRecords.First();
 
             // Act
-            Func<Task<IDataResponse<LeaderboardRecord?>>> func = () => _exceptionHelper.Accessor.DeleteRecordAsync(dbLeaderboardRecord.Id);
+            Func<Task<IDataResponse<LeaderboardRecord?>>> func = () => _exceptionHelper.Accessor.DeleteRecordAsync(storedLeaderboardRecord.Id);
 
             // Assert
             using (new AssertionScope())
