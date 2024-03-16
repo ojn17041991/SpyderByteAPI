@@ -51,7 +51,7 @@ namespace SpyderByteDataAccess.Contexts
                     .WithOne(e => e.LeaderboardGame)
                     .HasForeignKey<LeaderboardGame>(e => e.GameId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_LeaderboardGame_User");
+                    .HasConstraintName("FK_LeaderboardGame_Game");
 
                 entity.HasOne(e => e.Leaderboard)
                     .WithOne(e => e.LeaderboardGame)

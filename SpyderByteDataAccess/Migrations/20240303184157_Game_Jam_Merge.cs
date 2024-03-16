@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 #nullable disable
 
@@ -125,6 +126,12 @@ namespace SpyderByteAPI.Migrations
                 table: "UserGames",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.Operations.Add(
+                new SqlOperation
+                {
+                    Sql = "DELETE FROM LeaderboardRecords"
+                });
 
             migrationBuilder.AddForeignKey(
                 name: "FK_LeaderboardRecord_Leaderboard",
