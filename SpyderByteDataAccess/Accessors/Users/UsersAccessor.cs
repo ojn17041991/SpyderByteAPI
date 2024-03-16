@@ -6,6 +6,7 @@ using SpyderByteDataAccess.Models.Users;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
+using System.Xml.Xsl;
 
 namespace SpyderByteDataAccess.Accessors.Users
 {
@@ -192,6 +193,17 @@ namespace SpyderByteDataAccess.Accessors.Users
                 logger.LogError($"Failed to delete user {id}.", e);
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
+        }
+
+        public async Task<bool> DeleteAllAsync()
+        {
+            var users = context.Users.ToList();
+            foreach (var user in users)
+            {
+                context.Users.Remove(user);
+            }
+            await context.SaveChangesAsync();
+            return true;
         }
     }
 }

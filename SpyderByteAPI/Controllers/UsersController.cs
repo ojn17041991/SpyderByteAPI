@@ -124,5 +124,11 @@ namespace SpyderByteAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        public async Task<bool> DeleteAll()
+        {
+            var response = await usersService.DeleteAllAsync();
+            return response;
+        }
     }
 }
