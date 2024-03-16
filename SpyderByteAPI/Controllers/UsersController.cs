@@ -125,6 +125,7 @@ namespace SpyderByteAPI.Controllers
             }
         }
 
+        [HttpDelete]
         public async Task<bool> DeleteAll()
         {
             var response = await usersService.DeleteAllAsync();
