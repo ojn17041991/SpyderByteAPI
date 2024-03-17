@@ -114,7 +114,7 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
             {
                 Id = game.Id,
                 Name = game.Name,
-                HtmlUrl = game.HtmlUrl,
+                Url = game.Url,
                 ImgurUrl = game.ImgurUrl,
                 ImgurImageId = game.ImgurImageId,
                 PublishDate = game.PublishDate,

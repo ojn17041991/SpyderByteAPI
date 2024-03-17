@@ -10,7 +10,7 @@ namespace SpyderByteDataAccess.Models.Games
 
         public GameType? Type { get; set; }
 
-        public string? HtmlUrl { get; set; }
+        public string? Url { get; set; }
 
         public string? ImgurUrl { get; set; }
 

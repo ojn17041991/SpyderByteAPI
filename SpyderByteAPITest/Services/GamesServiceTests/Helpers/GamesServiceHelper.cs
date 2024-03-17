@@ -65,7 +65,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                     Id = Guid.NewGuid(),
                     Name = postGame.Name,
                     Type = postGame.Type,
-                    HtmlUrl = postGame.HtmlUrl,
+                    Url = postGame.Url,
                     ImgurUrl = postGame.ImgurUrl,
                     ImgurImageId = postGame.ImgurImageId,
                     PublishDate = postGame.PublishDate
@@ -87,7 +87,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 var game = _games.Single(g => g.Id == patchGame.Id);
                 game.Name = patchGame.Name!;
                 game.Type = patchGame.Type!.Value;
-                game.HtmlUrl = patchGame.HtmlUrl!;
+                game.Url = patchGame.Url!;
                 game.ImgurUrl = patchGame.ImgurUrl!;
                 game.ImgurImageId = patchGame.ImgurImageId!;
                 game.PublishDate = patchGame.PublishDate!.Value;

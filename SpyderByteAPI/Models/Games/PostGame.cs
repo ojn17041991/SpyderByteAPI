@@ -12,7 +12,7 @@ namespace SpyderByteAPI.Models.Games
         public GameType Type { get; set; }
 
         [Required]
-        public string HtmlUrl { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
 
         [Required]
         public IFormFile? Image { get; set; }

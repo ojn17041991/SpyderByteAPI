@@ -44,7 +44,7 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests
                 patchedStoredGame.Should().BeEquivalentTo(returnedGame.Data);
                 patchedStoredGame!.Id.Should().Be(storedGame.Id);
                 patchedStoredGame!.Name.Should().NotBe(storedGame.Name);
-                patchedStoredGame!.HtmlUrl.Should().NotBe(storedGame.HtmlUrl);
+                patchedStoredGame!.Url.Should().NotBe(storedGame.Url);
                 patchedStoredGame!.ImgurUrl.Should().NotBe(storedGame.ImgurUrl);
                 patchedStoredGame!.ImgurImageId.Should().NotBe(storedGame.ImgurImageId);
                 patchedStoredGame!.PublishDate.Should().NotBe(storedGame.PublishDate);

@@ -32,7 +32,7 @@ namespace SpyderByteTest.Services.GamesServiceTests
 
             returnedGame.Data!.Id.Should().Be(storedGame.Id);
             returnedGame.Data!.Name.Should().NotBe(storedGame.Name);
-            returnedGame.Data!.HtmlUrl.Should().NotBe(storedGame.HtmlUrl);
+            returnedGame.Data!.Url.Should().NotBe(storedGame.Url);
             returnedGame.Data!.ImgurUrl.Should().NotBe(storedGame.ImgurUrl);
             returnedGame.Data!.ImgurImageId.Should().NotBe(storedGame.ImgurImageId);
             returnedGame.Data!.PublishDate.Should().NotBe(storedGame.PublishDate);
