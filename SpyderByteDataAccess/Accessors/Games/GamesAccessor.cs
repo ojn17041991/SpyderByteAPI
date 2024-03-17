@@ -70,7 +70,7 @@ namespace SpyderByteDataAccess.Accessors.Games
                     Type = game.Type,
                     ImgurUrl = game.ImgurUrl,
                     ImgurImageId = game.ImgurImageId,
-                    HtmlUrl = game.HtmlUrl,
+                    Url = game.Url,
                     PublishDate = game.PublishDate
                 };
 
@@ -117,9 +117,9 @@ namespace SpyderByteDataAccess.Accessors.Games
                     storedGame.Type = patchedGame.Type.Value;
                 }
 
-                if (patchedGame.HtmlUrl.IsNullOrEmpty() == false)
+                if (patchedGame.Url.IsNullOrEmpty() == false)
                 {
-                    storedGame.HtmlUrl = patchedGame.HtmlUrl!;
+                    storedGame.Url = patchedGame.Url!;
                 }
 
                 if (patchedGame.PublishDate != null)
