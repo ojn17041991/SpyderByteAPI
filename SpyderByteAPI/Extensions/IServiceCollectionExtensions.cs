@@ -197,12 +197,6 @@ namespace SpyderByteResources.Extensions
                     .Build()
                 );
 
-                options.AddPolicy(PolicyType.WriteJams,
-                    new AuthorizationPolicyBuilder()
-                    .RequireClaim(ClaimType.WriteJams.ToDescription())
-                    .Build()
-                );
-
                 options.AddPolicy(PolicyType.ReadLeaderboards,
                     new AuthorizationPolicyBuilder()
                     .RequireClaim(ClaimType.ReadLeaderboards.ToDescription())
@@ -215,9 +209,21 @@ namespace SpyderByteResources.Extensions
                     .Build()
                 );
 
+                options.AddPolicy(PolicyType.WriteLeaderboardRecords,
+                    new AuthorizationPolicyBuilder()
+                    .RequireClaim(ClaimType.WriteLeaderboardRecords.ToDescription())
+                    .Build()
+                );
+
                 options.AddPolicy(PolicyType.DeleteLeaderboards,
                     new AuthorizationPolicyBuilder()
                     .RequireClaim(ClaimType.DeleteLeaderboards.ToDescription())
+                    .Build()
+                );
+
+                options.AddPolicy(PolicyType.DeleteLeaderboardRecords,
+                    new AuthorizationPolicyBuilder()
+                    .RequireClaim(ClaimType.DeleteLeaderboardRecords.ToDescription())
                     .Build()
                 );
 

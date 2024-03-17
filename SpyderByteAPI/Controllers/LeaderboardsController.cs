@@ -96,7 +96,7 @@ namespace SpyderByteAPI.Controllers
 
         [HttpPost("Records")]
         [Authorize]
-        [Authorize(PolicyType.WriteLeaderboards)]
+        [Authorize(PolicyType.WriteLeaderboardRecords)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -178,7 +178,7 @@ namespace SpyderByteAPI.Controllers
 
         [HttpDelete("Records/{id}")]
         [Authorize]
-        [Authorize(PolicyType.DeleteLeaderboards)]
+        [Authorize(PolicyType.DeleteLeaderboardRecords)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

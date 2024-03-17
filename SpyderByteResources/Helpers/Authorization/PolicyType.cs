@@ -10,7 +10,9 @@
 
         public const string ReadLeaderboards = "ReadLeaderboards";
         public const string WriteLeaderboards = "WriteLeaderboards";
+        public const string WriteLeaderboardRecords = "WriteLeaderboardRecords";
         public const string DeleteLeaderboards = "DeleteLeaderboards";
+        public const string DeleteLeaderboardRecords = "DeleteLeaderboardRecords";
 
         public const string DataBackup = "DataBackup";
     }

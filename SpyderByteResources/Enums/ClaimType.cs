@@ -16,17 +16,20 @@ namespace SpyderByteResources.Enums
         [Description("WriteGames")]
         WriteGames,
 
-        [Description("WriteJams")]
-        WriteJams,
-
         [Description("ReadLeaderboards")]
         ReadLeaderboards,
 
         [Description("WriteLeaderboards")]
         WriteLeaderboards,
 
+        [Description("WriteLeaderboardRecords")]
+        WriteLeaderboardRecords,
+
         [Description("DeleteLeaderboards")]
         DeleteLeaderboards,
+
+        [Description("DeleteLeaderboardRecords")]
+        DeleteLeaderboardRecords,
 
         [Description("DataBackup")]
         DataBackup,

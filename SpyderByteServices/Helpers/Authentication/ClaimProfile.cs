@@ -18,10 +18,11 @@ namespace SpyderByteServices.Helpers.Authentication
                 new Claim(ClaimType.ReadUsers.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteUsers.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteGames.ToDescription(), claimEnabled),
-                new Claim(ClaimType.WriteJams.ToDescription(), claimEnabled),
                 new Claim(ClaimType.ReadLeaderboards.ToDescription(), claimEnabled),
                 new Claim(ClaimType.WriteLeaderboards.ToDescription(), claimEnabled),
+                new Claim(ClaimType.WriteLeaderboardRecords.ToDescription(), claimEnabled),
                 new Claim(ClaimType.DeleteLeaderboards.ToDescription(), claimEnabled),
+                new Claim(ClaimType.DeleteLeaderboardRecords.ToDescription(), claimEnabled),
                 new Claim(ClaimType.AssignedGame.ToDescription(), globalAccess)
             };
         }
@@ -32,7 +33,7 @@ namespace SpyderByteServices.Helpers.Authentication
             {
                 new Claim(ClaimType.UserId.ToDescription(), user.Id.ToString()),
                 new Claim(ClaimType.ReadLeaderboards.ToDescription(), claimEnabled),
-                new Claim(ClaimType.WriteLeaderboards.ToDescription(), claimEnabled)
+                new Claim(ClaimType.WriteLeaderboardRecords.ToDescription(), claimEnabled)
             };
 
             if (user.UserGame != null)
