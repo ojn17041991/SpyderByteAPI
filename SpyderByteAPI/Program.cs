@@ -15,6 +15,7 @@ builder.Services.AddProjectRateLimiting();
 builder.Services.AddProjectMapperProfiles();
 builder.Services.AddProjectAuthentication(builder.Configuration);
 builder.Services.AddProjectAuthorization();
+builder.Services.AddProjectFeatureFlags(builder.Configuration);
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

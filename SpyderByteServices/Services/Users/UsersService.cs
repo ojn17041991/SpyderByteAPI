@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
+using Microsoft.FeatureManagement;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.FeatureFlags;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Models.Users;
@@ -16,13 +18,20 @@ namespace SpyderByteServices.Services.Users
         private readonly IMapper mapper;
         private readonly ILogger<UsersService> logger;
         private readonly IPasswordService passwordService;
+        private readonly IFeatureManager featureManager;
 
-        public UsersService(IUsersAccessor usersAccessor, IMapper mapper, ILogger<UsersService> logger, IPasswordService passwordService)
+        public UsersService(
+            IUsersAccessor usersAccessor,
+            IMapper mapper,
+            ILogger<UsersService> logger,
+            IPasswordService passwordService,
+            IFeatureManager featureManager)
         {
             this.usersAccessor = usersAccessor;
             this.mapper = mapper;
             this.logger = logger;
             this.passwordService = passwordService;
+            this.featureManager = featureManager;
         }
 
         public async Task<IDataResponse<User?>> GetAsync(Guid id)
@@ -42,10 +51,13 @@ namespace SpyderByteServices.Services.Users
             }
 
             // Don't allow any user to create new Admin or Utility user types.
-            if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
+            if (await featureManager.IsEnabledAsync(FeatureFlags.AllowWriteOperationsOnNonRestrictedUsers) == false)
             {
-                logger.LogError($"Failed to post user {user.UserName}. A user of type Admin or Utility cannot be created.");
-                return new DataResponse<User?>(null, ModelResult.RequestInvalid);
+                if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
+                {
+                    logger.LogError($"Failed to post user {user.UserName}. A user of type Admin or Utility cannot be created.");
+                    return new DataResponse<User?>(null, ModelResult.RequestInvalid);
+                }
             }
 
             // Generate the hash data for the user.
@@ -69,11 +81,14 @@ namespace SpyderByteServices.Services.Users
             }
 
             // Don't allow any user to patch Admin or Utility user types.
-            var storedUser = userResponse.Data!;
-            if (storedUser.UserType == UserType.Admin || storedUser.UserType == UserType.Utility)
+            if (await featureManager.IsEnabledAsync(FeatureFlags.AllowWriteOperationsOnNonRestrictedUsers) == false)
             {
-                logger.LogError($"Failed to patch user {storedUser.UserName}. A user of type Admin or Utility cannot be patched.");
-                return new DataResponse<User?>(null, ModelResult.RequestInvalid);
+                var storedUser = userResponse.Data!;
+                if (storedUser.UserType == UserType.Admin || storedUser.UserType == UserType.Utility)
+                {
+                    logger.LogError($"Failed to patch user {storedUser.UserName}. A user of type Admin or Utility cannot be patched.");
+                    return new DataResponse<User?>(null, ModelResult.RequestInvalid);
+                }
             }
 
             // Return the patched user.
@@ -92,11 +107,14 @@ namespace SpyderByteServices.Services.Users
             }
 
             // Don't allow any user to create new Admin or Utility user types.
-            var user = userResponse.Data!;
-            if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
+            if (await featureManager.IsEnabledAsync(FeatureFlags.AllowWriteOperationsOnNonRestrictedUsers) == false)
             {
-                logger.LogError($"Failed to delete user {user.UserName}. A user of type Admin or Utility cannot be deleted.");
-                return new DataResponse<User?>(null, ModelResult.RequestInvalid);
+                var user = userResponse.Data!;
+                if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
+                {
+                    logger.LogError($"Failed to delete user {user.UserName}. A user of type Admin or Utility cannot be deleted.");
+                    return new DataResponse<User?>(null, ModelResult.RequestInvalid);
+                }
             }
 
             // Return the deleted user.

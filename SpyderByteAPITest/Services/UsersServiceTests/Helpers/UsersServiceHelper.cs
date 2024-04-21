@@ -10,6 +10,7 @@ using SpyderByteServices.Services.Password.Abstract;
 using SpyderByteServices.Services.Users;
 using SpyderByteServices.Models.Users;
 using SpyderByteServices.Models.Authentication;
+using Microsoft.FeatureManagement;
 
 namespace SpyderByteTest.Services.UsersServiceTests.Helpers
 {
@@ -127,7 +128,15 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
                 };
             });
 
-            Service = new UsersService(usersAccessor.Object, _mapper, logger.Object, passwordService.Object);
+            var featureManager = new Mock<IFeatureManager>();
+            featureManager.Setup(x =>
+                x.IsEnabledAsync(
+                    It.IsAny<string>()
+            )).Returns((string feature) =>
+                Task.FromResult(false)
+            );
+
+            Service = new UsersService(usersAccessor.Object, _mapper, logger.Object, passwordService.Object, featureManager.Object);
         }
 
         public SpyderByteDataAccess.Models.Users.User AddUser(UserType userType)

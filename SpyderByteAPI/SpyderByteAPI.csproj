@@ -24,6 +24,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" />
+    <PackageReference Include="Microsoft.FeatureManagement" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Swashbuckle.AspNetCore" />

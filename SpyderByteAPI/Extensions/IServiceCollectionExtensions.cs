@@ -35,6 +35,7 @@ using SpyderByteServices.Services.Leaderboards.Abstract;
 using SpyderByteServices.Services.Leaderboards;
 using SpyderByteServices.Services.Password;
 using SpyderByteServices.Services.Password.Abstract;
+using Microsoft.FeatureManagement;
 
 namespace SpyderByteResources.Extensions
 {
@@ -256,6 +257,11 @@ namespace SpyderByteResources.Extensions
         {
             services.AddAutoMapper(typeof(SpyderByteAPI.Mappers.MapperProfile));
             services.AddAutoMapper(typeof(SpyderByteServices.Mappers.MapperProfile));
+        }
+
+        public static void AddProjectFeatureFlags(this IServiceCollection services, ConfigurationManager configuration)
+        {
+            services.AddFeatureManagement(configuration.GetSection("FeatureFlags"));
         }
     }
 }
