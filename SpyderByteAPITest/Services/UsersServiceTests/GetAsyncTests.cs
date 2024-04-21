@@ -17,7 +17,7 @@ namespace SpyderByteTest.Services.UsersServiceTests
         public async Task Can_Get_Users_From_Service()
         {
             // Arrange
-            var storedUser = _helper.AddUser();
+            var storedUser = _helper.AddUser(UserType.Restricted);
 
             // Act
             var returnedUser = await _helper.Service.GetAsync(storedUser.Id);

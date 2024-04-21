@@ -138,7 +138,7 @@ namespace SpyderByteServices.Services.Games
                 var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(response.Data!.ImgurImageId);
                 if (!imgurDeleteSuccessful.Data)
                 {
-                    logger.LogInformation($"Failed to delete image from Imgur during game delete. Continuing to database update.");
+                    logger.LogInformation($"Failed to delete image from Imgur during game delete.");
                     return new DataResponse<Game?>(null, ModelResult.Error);
                 }
             }

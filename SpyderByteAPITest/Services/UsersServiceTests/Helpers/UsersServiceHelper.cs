@@ -34,10 +34,11 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
                     It.IsAny<Guid>()
             )).Returns((Guid id) =>
             {
+                var user = _users.SingleOrDefault(u => u.Id == id);
                 return Task.FromResult(
                     new DataResponse<SpyderByteDataAccess.Models.Users.User?>(
                         _users.SingleOrDefault(u => u.Id == id),
-                        ModelResult.OK
+                        user == null ? ModelResult.NotFound : ModelResult.OK
                     )
                     as IDataResponse<SpyderByteDataAccess.Models.Users.User?>
                 );
@@ -74,6 +75,38 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
                     as IDataResponse<SpyderByteDataAccess.Models.Users.User?>
                 );
             });
+            usersAccessor.Setup(x =>
+                x.PatchAsync(
+                    It.IsAny<SpyderByteDataAccess.Models.Users.PatchUser>()
+            )).Returns((SpyderByteDataAccess.Models.Users.PatchUser patchUser) =>
+            {
+                var user = _users.Single(u => u.Id == patchUser.Id);
+                user.UserGame!.GameId = patchUser.GameId!.Value;
+
+                return Task.FromResult(
+                    new DataResponse<SpyderByteDataAccess.Models.Users.User?>(
+                        user,
+                        ModelResult.OK
+                    )
+                    as IDataResponse<SpyderByteDataAccess.Models.Users.User?>
+                );
+            });
+            usersAccessor.Setup(x =>
+                x.DeleteAsync(
+                    It.IsAny<Guid>()
+            )).Returns((Guid id) =>
+            {
+                var user = _users.Single(u => u.Id == id);
+                _users.Remove(user);
+
+                return Task.FromResult(
+                    new DataResponse<SpyderByteDataAccess.Models.Users.User?>(
+                        user,
+                        ModelResult.OK
+                    )
+                    as IDataResponse<SpyderByteDataAccess.Models.Users.User?>
+                );
+            });
 
             var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteServices.Mappers.MapperProfile>());
             _mapper = new Mapper(mapperConfiguration);
@@ -97,9 +130,10 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
             Service = new UsersService(usersAccessor.Object, _mapper, logger.Object, passwordService.Object);
         }
 
-        public SpyderByteDataAccess.Models.Users.User AddUser()
+        public SpyderByteDataAccess.Models.Users.User AddUser(UserType userType)
         {
             var user = _fixture.Create<SpyderByteDataAccess.Models.Users.User>();
+            user.UserType = userType;
             _users.Add(user);
             return user;
         }
@@ -107,6 +141,11 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
         public PostUser GeneratePostUser()
         {
             return _fixture.Create<PostUser>();
+        }
+
+        public PatchUser GeneratePatchUser()
+        {
+            return _fixture.Create<PatchUser>();
         }
     }
 }

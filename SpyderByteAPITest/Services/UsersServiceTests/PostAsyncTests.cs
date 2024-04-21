@@ -33,5 +33,38 @@ namespace SpyderByteTest.Services.UsersServiceTests
                     .Excluding(u => u.GameId)
             );
         }
+
+        [Fact]
+        public async Task Can_Not_Post_User_In_Service_If_User_Name_Already_Exists()
+        {
+            // Arrange
+            var storedUser = _helper.AddUser(UserType.Restricted);
+            var postUser = _helper.GeneratePostUser();
+            postUser.UserName = storedUser.UserName;
+
+            // Act
+            var returnedUser = await _helper.Service.PostAsync(postUser);
+
+            // Assert
+            returnedUser.Should().NotBeNull();
+            returnedUser.Result.Should().Be(ModelResult.AlreadyExists);
+            returnedUser.Data.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task Can_Not_Post_User_In_Service_If_User_Type_Is_Not_Restricted()
+        {
+            // Arrange
+            var postUser = _helper.GeneratePostUser();
+            postUser.UserType = UserType.Admin;
+
+            // Act
+            var returnedUser = await _helper.Service.PostAsync(postUser);
+
+            // Assert
+            returnedUser.Should().NotBeNull();
+            returnedUser.Result.Should().Be(ModelResult.RequestInvalid);
+            returnedUser.Data.Should().BeNull();
+        }
     }
 }
