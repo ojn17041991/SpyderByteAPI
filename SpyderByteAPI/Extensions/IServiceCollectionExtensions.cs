@@ -33,6 +33,8 @@ using SpyderByteServices.Services.Games.Abstract;
 using SpyderByteServices.Services.Games;
 using SpyderByteServices.Services.Leaderboards.Abstract;
 using SpyderByteServices.Services.Leaderboards;
+using SpyderByteServices.Services.Password;
+using SpyderByteServices.Services.Password.Abstract;
 
 namespace SpyderByteResources.Extensions
 {
@@ -52,9 +54,9 @@ namespace SpyderByteResources.Extensions
             services.AddScoped<IUsersService, UsersService>();
             services.AddSingleton<IStorageService, StorageService>();
             services.AddSingleton<IImgurService, ImgurService>();
+            services.AddScoped<IPasswordService, PasswordService>();
 
             services.AddScoped<TokenEncoder, TokenEncoder>();
-            services.AddScoped<PasswordHasher, PasswordHasher>();
             services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
         }
 

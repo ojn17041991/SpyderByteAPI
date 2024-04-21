@@ -11,6 +11,7 @@ using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Helpers.Authentication;
 using SpyderByteServices.Models.Authentication;
 using SpyderByteServices.Services.Authentication.Abstract;
+using SpyderByteServices.Services.Password.Abstract;
 using System.Security.Claims;
 
 namespace SpyderByteServices.Services.Authentication
@@ -21,15 +22,15 @@ namespace SpyderByteServices.Services.Authentication
         private readonly IMapper mapper;
         private readonly ILogger<AuthenticationService> logger;
         private readonly TokenEncoder tokenEncoder;
-        private readonly PasswordHasher passwordHasher;
+        private readonly IPasswordService passwordService;
 
-        public AuthenticationService(IUsersAccessor usersAccessor, IMapper mapper, ILogger<AuthenticationService> logger, TokenEncoder tokenEncoder, PasswordHasher passwordHasher)
+        public AuthenticationService(IUsersAccessor usersAccessor, IMapper mapper, ILogger<AuthenticationService> logger, TokenEncoder tokenEncoder, IPasswordService passwordService)
         {
             this.usersAccessor = usersAccessor;
             this.mapper = mapper;
             this.logger = logger;
             this.tokenEncoder = tokenEncoder;
-            this.passwordHasher = passwordHasher;
+            this.passwordService = passwordService;
         }
 
         public async Task<IDataResponse<string>> AuthenticateAsync(Login login)
@@ -58,7 +59,7 @@ namespace SpyderByteServices.Services.Authentication
             Thread.Sleep(sleepTime);
 
             // Check if the password is correct for the user.
-            bool passwordIsValid = passwordHasher.IsPasswordValid(passwordVerification);
+            bool passwordIsValid = passwordService.IsPasswordValid(passwordVerification);
             if (passwordIsValid == false)
             {
                 logger.LogError($"Failed to authenticate user {login.UserName}. Password incorrect.");

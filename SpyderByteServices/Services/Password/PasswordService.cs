@@ -1,16 +1,17 @@
 ﻿using Konscious.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
 using SpyderByteServices.Models.Authentication;
+using SpyderByteServices.Services.Password.Abstract;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SpyderByteServices.Helpers.Authentication
+namespace SpyderByteServices.Services.Password
 {
-    public class PasswordHasher
+    public class PasswordService : IPasswordService
     {
         private readonly IConfiguration configuration;
 
-        public PasswordHasher(IConfiguration configuration)
+        public PasswordService(IConfiguration configuration)
         {
             this.configuration = configuration;
         }

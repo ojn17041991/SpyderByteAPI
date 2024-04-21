@@ -9,8 +9,6 @@ namespace SpyderByteServices.Models.Users
 
         public string Password { get; set; } = string.Empty;
 
-        public HashData HashData { get; set; } = null!;
-
         public UserType UserType { get; set; } = UserType.Restricted;
 
         public Guid? GameId { get; set; }

@@ -4,8 +4,8 @@ using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
-using SpyderByteServices.Helpers.Authentication;
 using SpyderByteServices.Models.Users;
+using SpyderByteServices.Services.Password.Abstract;
 using SpyderByteServices.Services.Users.Abstract;
 
 namespace SpyderByteServices.Services.Users
@@ -15,14 +15,14 @@ namespace SpyderByteServices.Services.Users
         private readonly IUsersAccessor usersAccessor;
         private readonly IMapper mapper;
         private readonly ILogger<UsersService> logger;
-        private readonly PasswordHasher passwordHasher;
+        private readonly IPasswordService passwordService;
 
-        public UsersService(IUsersAccessor usersAccessor, IMapper mapper, ILogger<UsersService> logger, PasswordHasher passwordHasher)
+        public UsersService(IUsersAccessor usersAccessor, IMapper mapper, ILogger<UsersService> logger, IPasswordService passwordService)
         {
             this.usersAccessor = usersAccessor;
             this.mapper = mapper;
             this.logger = logger;
-            this.passwordHasher = passwordHasher;
+            this.passwordService = passwordService;
         }
 
         public async Task<IDataResponse<User?>> GetAsync(Guid id)
@@ -49,11 +49,12 @@ namespace SpyderByteServices.Services.Users
             }
 
             // Generate the hash data for the user.
-            var hashData = passwordHasher.GenerateNewHash(user.Password);
-            user.HashData = hashData;
+            var hashData = passwordService.GenerateNewHash(user.Password);
+            var dataServiceUser = mapper.Map<SpyderByteDataAccess.Models.Users.PostUser>(user);
+            dataServiceUser.HashData = mapper.Map<SpyderByteDataAccess.Models.Authentication.HashData>(hashData);
 
             // Save the user with hash data to the database.
-            var response = await usersAccessor.PostAsync(mapper.Map<SpyderByteDataAccess.Models.Users.PostUser>(user));
+            var response = await usersAccessor.PostAsync(dataServiceUser);
             return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
         }
 

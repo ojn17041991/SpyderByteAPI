@@ -32,13 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataAccess\UsersAccessorTests\Helpers\" />
     <Folder Include="Resources\Helpers\" />
     <Folder Include="Resources\Extensions\" />
     <Folder Include="Services\Helpers\" />
     <Folder Include="Services\AuthenticationServiceTests\" />
     <Folder Include="Services\DataServiceTests\" />
-    <Folder Include="Services\UsersServiceTests\" />
     <Folder Include="Services\StorageServiceTests\" />
   </ItemGroup>
 
