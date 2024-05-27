@@ -9,7 +9,7 @@ using SpyderByteServices.Services.Users.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
-    [Route("v1/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [Authorize]
     [ApiController]
     public class UsersController : ControllerBase

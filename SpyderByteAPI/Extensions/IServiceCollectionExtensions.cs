@@ -36,6 +36,7 @@ using SpyderByteServices.Services.Leaderboards;
 using SpyderByteServices.Services.Password;
 using SpyderByteServices.Services.Password.Abstract;
 using Microsoft.FeatureManagement;
+using Asp.Versioning;
 
 namespace SpyderByteResources.Extensions
 {
@@ -240,16 +241,31 @@ namespace SpyderByteResources.Extensions
 
         public static void AddProjectVersioning(this IServiceCollection services)
         {
+            const int MAJOR = 1;
+            const int MINOR = 0;
+            const int PATCH = 0;
+
             var apiResources = new APIResources();
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.EnableAnnotations();
-                c.SwaggerDoc("v1", new OpenApiInfo
+                options.EnableAnnotations();
+                options.SwaggerDoc($"v{MAJOR}", new OpenApiInfo
                 {
                     Title = apiResources.GetResource("Title"),
                     Description = apiResources.GetResource("Description"),
-                    Version = "1.0.0"
+                    Version = $"{MAJOR}.{MINOR}.{PATCH}"
                 });
+            });
+
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(MAJOR, MINOR);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
         }
 
