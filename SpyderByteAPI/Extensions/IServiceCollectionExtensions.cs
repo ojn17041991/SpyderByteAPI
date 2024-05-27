@@ -248,7 +248,7 @@ namespace SpyderByteResources.Extensions
                 {
                     Title = apiResources.GetResource("Title"),
                     Description = apiResources.GetResource("Description"),
-                    Version = "1.0.0.0"
+                    Version = "1.0.0"
                 });
             });
         }

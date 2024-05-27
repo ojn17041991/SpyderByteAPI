@@ -9,7 +9,7 @@ using SpyderByteServices.Services.Games.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     [ApiController]
     public class GamesController : ControllerBase
     {

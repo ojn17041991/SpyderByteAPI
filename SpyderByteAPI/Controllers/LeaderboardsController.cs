@@ -10,7 +10,7 @@ using SpyderByteResources.Extensions;
 
 namespace SpyderByteAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     [ApiController]
     public class LeaderboardsController : ControllerBase
     {

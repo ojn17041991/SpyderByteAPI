@@ -8,7 +8,7 @@ using SpyderByteServices.Services.Data.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     [ApiController]
     public class DataController : ControllerBase
     {
