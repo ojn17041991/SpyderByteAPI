@@ -19,12 +19,7 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
 
             var logger = new Mock<ILogger<GamesAccessor>>();
 
-            var configurationContents = new Dictionary<string, string?>();
-            var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(configurationContents)
-                .Build();
-
-            Accessor = new GamesAccessor(context.Object, logger.Object, configuration);
+            Accessor = new GamesAccessor(context.Object, logger.Object);
         }
     }
 }

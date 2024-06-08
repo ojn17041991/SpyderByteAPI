@@ -77,7 +77,7 @@ namespace SpyderByteServices.Services.Data
                     }
 
                     // Upload the ZIP to storage.
-                    var response = await storageService.Upload($"{DateTime.UtcNow.ToString("yyyy-MM-ddThh:mm:ss.fffZ")}.zip", memoryStream);
+                    var response = await storageService.Upload($"{DateTime.UtcNow:yyyy-MM-ddThh:mm:ss.fffZ}.zip", memoryStream);
                     if (response.Result != ModelResult.OK)
                     {
                         logger.LogError($"Failed to upload ZIP file.");

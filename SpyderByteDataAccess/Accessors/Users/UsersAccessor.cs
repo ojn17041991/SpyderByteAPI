@@ -11,8 +11,8 @@ namespace SpyderByteDataAccess.Accessors.Users
 {
     public class UsersAccessor : IUsersAccessor
     {
-        private ApplicationDbContext context;
-        private ILogger<UsersAccessor> logger;
+        private readonly ApplicationDbContext context;
+        private readonly ILogger<UsersAccessor> logger;
 
         public UsersAccessor(ApplicationDbContext context, ILogger<UsersAccessor> logger)
         {
@@ -32,7 +32,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError($"Failed to get user {id}.", e);
+                logger.LogError(e, $"Failed to get user {id}.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -49,7 +49,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError($"Failed to get user {userName}.", e);
+                logger.LogError(e, $"Failed to get user {userName}.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -65,7 +65,7 @@ namespace SpyderByteDataAccess.Accessors.Users
                     return new DataResponse<User?>(null, ModelResult.AlreadyExists);
                 }
 
-                User mappedUser = new User
+                User mappedUser = new()
                 {
                     UserName = user.UserName,
                     Hash = user.HashData.Hash,
@@ -108,7 +108,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to post user.", e);
+                logger.LogError(e, "Failed to post user.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -166,7 +166,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to patch user.", e);
+                logger.LogError(e, "Failed to patch user.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -199,7 +199,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError($"Failed to delete user {id}.", e);
+                logger.LogError(e, $"Failed to delete user {id}.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }

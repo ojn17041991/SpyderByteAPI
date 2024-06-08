@@ -13,15 +13,13 @@ namespace SpyderByteDataAccess.Accessors.Games
 {
     public class GamesAccessor : IGamesAccessor
     {
-        private ApplicationDbContext context;
-        private ILogger<GamesAccessor> logger;
-        private IConfiguration configuration;
+        private readonly ApplicationDbContext context;
+        private readonly ILogger<GamesAccessor> logger;
 
-        public GamesAccessor(ApplicationDbContext context, ILogger<GamesAccessor> logger, IConfiguration configuration)
+        public GamesAccessor(ApplicationDbContext context, ILogger<GamesAccessor> logger)
         {
             this.context = context;
             this.logger = logger;
-            this.configuration = configuration;
         }
 
         public async Task<IDataResponse<IList<Game>?>> GetAllAsync()
@@ -38,7 +36,7 @@ namespace SpyderByteDataAccess.Accessors.Games
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to get all games.", e);
+                logger.LogError(e, "Failed to get all games.");
                 return new DataResponse<IList<Game>?>(null, ModelResult.Error);
             }
         }
@@ -55,7 +53,7 @@ namespace SpyderByteDataAccess.Accessors.Games
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to get single game.", e);
+                logger.LogError(e, "Failed to get single game.");
                 return new DataResponse<Game?>(null, ModelResult.Error);
             }
         }
@@ -64,7 +62,7 @@ namespace SpyderByteDataAccess.Accessors.Games
         {
             try
             {
-                Game mappedGame = new Game
+                Game mappedGame = new()
                 {
                     Name = game.Name,
                     Type = game.Type,
@@ -81,7 +79,7 @@ namespace SpyderByteDataAccess.Accessors.Games
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to post game.", e);
+                logger.LogError(e, "Failed to post game.");
                 return new DataResponse<Game?>(null, ModelResult.Error);
             }
         }
@@ -133,7 +131,7 @@ namespace SpyderByteDataAccess.Accessors.Games
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to patch game.", e);
+                logger.LogError(e, "Failed to patch game.");
                 return new DataResponse<Game?>(null, ModelResult.Error);
             }
         }
@@ -166,7 +164,7 @@ namespace SpyderByteDataAccess.Accessors.Games
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to delete game.", e);
+                logger.LogError(e, "Failed to delete game.");
                 return new DataResponse<Game?>(null, ModelResult.Error);
             }
         }
