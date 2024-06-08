@@ -7,7 +7,7 @@ using SpyderByteServices.Services.Authentication.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {

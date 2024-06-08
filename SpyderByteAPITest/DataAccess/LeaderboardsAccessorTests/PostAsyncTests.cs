@@ -39,11 +39,11 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
                 returnedLeaderboard.Data!.LeaderboardGame.GameId.Should().Be(postLeaderboard.GameId);
 
                 // Check the database.
-                var updatedStoredLeaderboard = await _helper.GetLeaderboard(returnedLeaderboard.Data!.Id);
-                updatedStoredLeaderboard.Should().NotBeNull();
-                updatedStoredLeaderboard!.Id.Should().Be(returnedLeaderboard.Data!.Id);
-                updatedStoredLeaderboard!.LeaderboardRecords.Should().BeEquivalentTo(returnedLeaderboard.Data!.LeaderboardRecords);
-                updatedStoredLeaderboard!.LeaderboardGame.GameId.Should().Be(postLeaderboard.GameId);
+                var storedLeaderboard = await _helper.GetLeaderboard(returnedLeaderboard.Data!.Id);
+                storedLeaderboard.Should().NotBeNull();
+                storedLeaderboard!.Id.Should().Be(returnedLeaderboard.Data!.Id);
+                storedLeaderboard!.LeaderboardRecords.Should().BeEquivalentTo(returnedLeaderboard.Data!.LeaderboardRecords);
+                storedLeaderboard!.LeaderboardGame.GameId.Should().Be(postLeaderboard.GameId);
             }
         }
 

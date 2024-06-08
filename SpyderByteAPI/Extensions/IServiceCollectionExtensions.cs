@@ -33,6 +33,10 @@ using SpyderByteServices.Services.Games.Abstract;
 using SpyderByteServices.Services.Games;
 using SpyderByteServices.Services.Leaderboards.Abstract;
 using SpyderByteServices.Services.Leaderboards;
+using SpyderByteServices.Services.Password;
+using SpyderByteServices.Services.Password.Abstract;
+using Microsoft.FeatureManagement;
+using Asp.Versioning;
 
 namespace SpyderByteResources.Extensions
 {
@@ -52,9 +56,9 @@ namespace SpyderByteResources.Extensions
             services.AddScoped<IUsersService, UsersService>();
             services.AddSingleton<IStorageService, StorageService>();
             services.AddSingleton<IImgurService, ImgurService>();
+            services.AddScoped<IPasswordService, PasswordService>();
 
             services.AddScoped<TokenEncoder, TokenEncoder>();
-            services.AddScoped<PasswordHasher, PasswordHasher>();
             services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
         }
 
@@ -235,18 +239,34 @@ namespace SpyderByteResources.Extensions
             });
         }
 
-        public static void AddProjectVersioning(this IServiceCollection services)
+        public static void AddProjectVersioning(this IServiceCollection services, ConfigurationManager configuration)
         {
+            var versionMetadata = configuration.GetSection("Version");
+            int major = Convert.ToInt32(versionMetadata["Major"]);
+            int minor = Convert.ToInt32(versionMetadata["Minor"]);
+            int patch = Convert.ToInt32(versionMetadata["Patch"]);
+
             var apiResources = new APIResources();
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.EnableAnnotations();
-                c.SwaggerDoc("v1", new OpenApiInfo
+                options.EnableAnnotations();
+                options.SwaggerDoc($"v{major}", new OpenApiInfo
                 {
                     Title = apiResources.GetResource("Title"),
                     Description = apiResources.GetResource("Description"),
-                    Version = "1.0.0.0"
+                    Version = $"{major}.{minor}.{patch}"
                 });
+            });
+
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(major, minor);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
         }
 
@@ -254,6 +274,11 @@ namespace SpyderByteResources.Extensions
         {
             services.AddAutoMapper(typeof(SpyderByteAPI.Mappers.MapperProfile));
             services.AddAutoMapper(typeof(SpyderByteServices.Mappers.MapperProfile));
+        }
+
+        public static void AddProjectFeatureFlags(this IServiceCollection services, ConfigurationManager configuration)
+        {
+            services.AddFeatureManagement(configuration.GetSection("FeatureFlags"));
         }
     }
 }

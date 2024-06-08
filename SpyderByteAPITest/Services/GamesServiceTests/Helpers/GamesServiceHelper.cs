@@ -17,6 +17,8 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
     {
         public GamesService Service;
 
+        private const string BAD_IMGUR_ID = "BAD_IMGUR_ID";
+
         private readonly Fixture _fixture;
         private readonly IMapper _mapper;
         private readonly IList<SpyderByteDataAccess.Models.Games.Game> _games;
@@ -134,14 +136,16 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 s.DeleteImageAsync(
                     It.IsAny<string>()
             )).Returns((string imageId) =>
-                Task.FromResult(
+            {
+                var result = imageId != BAD_IMGUR_ID;
+                return Task.FromResult(
                     new DataResponse<bool>(
-                        true,
-                        ModelResult.OK
+                        result,
+                        result ? ModelResult.OK : ModelResult.Error
                     )
                     as IDataResponse<bool>
-                )
-            );
+                );
+            });
 
             var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteServices.Mappers.MapperProfile>());
             _mapper = new Mapper(mapperConfiguration);
@@ -191,6 +195,13 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
             {
                 game.LeaderboardGame = null!;
             }
+        }
+
+        public void IncludeBadImgurId(Guid id)
+        {
+            var game = _games.Single(g => g.Id == id);
+
+            game.ImgurImageId = BAD_IMGUR_ID;
         }
     }
 }

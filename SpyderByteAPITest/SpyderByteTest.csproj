@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -32,13 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataAccess\UsersAccessorTests\Helpers\" />
     <Folder Include="Resources\Helpers\" />
     <Folder Include="Resources\Extensions\" />
-    <Folder Include="Services\Helpers\" />
     <Folder Include="Services\AuthenticationServiceTests\" />
     <Folder Include="Services\DataServiceTests\" />
-    <Folder Include="Services\UsersServiceTests\" />
     <Folder Include="Services\StorageServiceTests\" />
   </ItemGroup>
 

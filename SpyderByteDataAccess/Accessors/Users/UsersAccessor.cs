@@ -6,7 +6,6 @@ using SpyderByteDataAccess.Models.Users;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
-using System.Xml.Xsl;
 
 namespace SpyderByteDataAccess.Accessors.Users
 {
@@ -116,50 +115,60 @@ namespace SpyderByteDataAccess.Accessors.Users
 
         public async Task<IDataResponse<User?>> PatchAsync(PatchUser user)
         {
-            User? storedUser = await context.Users
-                .Include(u => u.UserGame)
-                .SingleOrDefaultAsync(u => u.Id == user.Id);
+            try {
+                User? storedUser = await context.Users
+                    .Include(u => u.UserGame)
+                    .SingleOrDefaultAsync(u => u.Id == user.Id);
 
-            if (storedUser == null)
-            {
-                logger.LogInformation($"Unable to patch user. Could not find a user of ID {user.Id}.");
-                return new DataResponse<User?>(null, ModelResult.NotFound);
-            }
-
-            var gameExists = await context.Games.AnyAsync(g => g.Id == user.GameId);
-            if (gameExists == false)
-            {
-                logger.LogInformation($"Unable to patch user. Could not find a game of ID {user.GameId}.");
-                return new DataResponse<User?>(null, ModelResult.NotFound);
-            }
-
-            var gameAllocatedToUser = await context.UserGames.AnyAsync(ug => ug.GameId == user.GameId && ug.UserId !=  user.Id);
-            if (gameAllocatedToUser == true)
-            {
-                logger.LogInformation($"Unable to patch user. Game {user.GameId} has already been allocated to a user.");
-                return new DataResponse<User?>(null, ModelResult.NotFound);
-            }
-
-            if (storedUser.UserGame == null)
-            {
-                // Assign the game to the user as a new record.
-                var userGame = new UserGame
+                if (storedUser == null)
                 {
-                    UserId = user.Id,
-                    GameId = user.GameId
-                };
-                await context.UserGames.AddAsync(userGame);
+                    logger.LogInformation($"Unable to patch user. Could not find a user of ID {user.Id}.");
+                    return new DataResponse<User?>(null, ModelResult.NotFound);
+                }
+
+                if (user.GameId != null)
+                {
+                    var gameExists = await context.Games.AnyAsync(g => g.Id == user.GameId);
+                    if (gameExists == false)
+                    {
+                        logger.LogInformation($"Unable to patch user. Could not find a game of ID {user.GameId}.");
+                        return new DataResponse<User?>(null, ModelResult.NotFound);
+                    }
+
+                    var gameAllocatedToUser = await context.UserGames.AnyAsync(ug => ug.GameId == user.GameId && ug.UserId != user.Id);
+                    if (gameAllocatedToUser == true)
+                    {
+                        logger.LogInformation($"Unable to patch user. Game {user.GameId} has already been allocated to a user.");
+                        return new DataResponse<User?>(null, ModelResult.AlreadyExists);
+                    }
+
+                    if (storedUser.UserGame == null)
+                    {
+                        // Assign the game to the user as a new record.
+                        var userGame = new UserGame
+                        {
+                            UserId = user.Id,
+                            GameId = user.GameId.Value
+                        };
+                        await context.UserGames.AddAsync(userGame);
+                    }
+                    else
+                    {
+                        // Update the existing record.
+                        var storedUserGame = await context.UserGames.SingleAsync(ug => ug.UserId == storedUser.UserGame.UserId && ug.GameId == storedUser.UserGame.GameId);
+                        storedUserGame.GameId = user.GameId.Value;
+                    }
+                }
+
+                await context.SaveChangesAsync();
+
+                return new DataResponse<User?>(storedUser, ModelResult.OK);
             }
-            else
+            catch (Exception e)
             {
-                // Update the existing record.
-                var storedUserGame = await context.UserGames.SingleAsync(ug => ug.UserId == storedUser.UserGame.UserId && ug.GameId == storedUser.UserGame.GameId);
-                storedUserGame.GameId = user.GameId;
+                logger.LogError("Failed to patch user.", e);
+                return new DataResponse<User?>(null, ModelResult.Error);
             }
-
-            await context.SaveChangesAsync();
-
-            return new DataResponse<User?>(storedUser, ModelResult.OK);
         }
 
         public async Task<IDataResponse<User?>> DeleteAsync(Guid id)
