@@ -4,7 +4,7 @@ using SpyderByteResources.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => options.SuppressMapClientErrors = true);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddProjectVersioning();
+builder.Services.AddProjectVersioning(builder.Configuration);
 builder.Services.AddProjectDependencies();
 builder.Services.AddProjectDatabase(builder.Configuration);
 builder.Services.AddHttpClient();

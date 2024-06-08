@@ -239,27 +239,28 @@ namespace SpyderByteResources.Extensions
             });
         }
 
-        public static void AddProjectVersioning(this IServiceCollection services)
+        public static void AddProjectVersioning(this IServiceCollection services, ConfigurationManager configuration)
         {
-            const int MAJOR = 1;
-            const int MINOR = 0;
-            const int PATCH = 0;
+            var versionMetadata = configuration.GetSection("Version");
+            int major = Convert.ToInt32(versionMetadata["Major"]);
+            int minor = Convert.ToInt32(versionMetadata["Minor"]);
+            int patch = Convert.ToInt32(versionMetadata["Patch"]);
 
             var apiResources = new APIResources();
             services.AddSwaggerGen(options =>
             {
                 options.EnableAnnotations();
-                options.SwaggerDoc($"v{MAJOR}", new OpenApiInfo
+                options.SwaggerDoc($"v{major}", new OpenApiInfo
                 {
                     Title = apiResources.GetResource("Title"),
                     Description = apiResources.GetResource("Description"),
-                    Version = $"{MAJOR}.{MINOR}.{PATCH}"
+                    Version = $"{major}.{minor}.{patch}"
                 });
             });
 
             services.AddApiVersioning(options =>
             {
-                options.DefaultApiVersion = new ApiVersion(MAJOR, MINOR);
+                options.DefaultApiVersion = new ApiVersion(major, minor);
                 options.AssumeDefaultVersionWhenUnspecified = true;
             })
             .AddApiExplorer(options =>
