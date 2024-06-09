@@ -89,7 +89,7 @@ namespace SpyderByteServices.Services.Data
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Failed to find database backup file extension in configuration.");
+                logger.LogError(e, $"Failed to create ZIP file.");
                 return new DataResponse<bool>(false, ModelResult.Error);
             }
             finally

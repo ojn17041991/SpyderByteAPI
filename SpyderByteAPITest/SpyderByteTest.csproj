@@ -35,7 +35,6 @@
     <Folder Include="Resources\Helpers\" />
     <Folder Include="Resources\Extensions\" />
     <Folder Include="Services\AuthenticationServiceTests\" />
-    <Folder Include="Services\DataServiceTests\" />
     <Folder Include="Services\StorageServiceTests\" />
   </ItemGroup>
 
