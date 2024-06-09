@@ -12,27 +12,18 @@ using SpyderByteServices.Services.Users.Abstract;
 
 namespace SpyderByteServices.Services.Users
 {
-    public class UsersService : IUsersService
+    public class UsersService(
+        IUsersAccessor usersAccessor,
+        IMapper mapper,
+        ILogger<UsersService> logger,
+        IPasswordService passwordService,
+        IFeatureManager featureManager) : IUsersService
     {
-        private readonly IUsersAccessor usersAccessor;
-        private readonly IMapper mapper;
-        private readonly ILogger<UsersService> logger;
-        private readonly IPasswordService passwordService;
-        private readonly IFeatureManager featureManager;
-
-        public UsersService(
-            IUsersAccessor usersAccessor,
-            IMapper mapper,
-            ILogger<UsersService> logger,
-            IPasswordService passwordService,
-            IFeatureManager featureManager)
-        {
-            this.usersAccessor = usersAccessor;
-            this.mapper = mapper;
-            this.logger = logger;
-            this.passwordService = passwordService;
-            this.featureManager = featureManager;
-        }
+        private readonly IUsersAccessor usersAccessor = usersAccessor;
+        private readonly IMapper mapper = mapper;
+        private readonly ILogger<UsersService> logger = logger;
+        private readonly IPasswordService passwordService = passwordService;
+        private readonly IFeatureManager featureManager = featureManager;
 
         public async Task<IDataResponse<User?>> GetAsync(Guid id)
         {

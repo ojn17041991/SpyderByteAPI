@@ -7,16 +7,10 @@ using SpyderByteServices.Services.Leaderboards.Abstract;
 
 namespace SpyderByteServices.Services.Leaderboards
 {
-    public class LeaderboardsService : ILeaderboardsService
+    public class LeaderboardsService(ILeaderboardsAccessor leaderboardsAccessor, IMapper mapper) : ILeaderboardsService
     {
-        private readonly ILeaderboardsAccessor leaderboardsAccessor;
-        private readonly IMapper mapper;
-
-        public LeaderboardsService(ILeaderboardsAccessor leaderboardsAccessor, IMapper mapper)
-        {
-            this.leaderboardsAccessor = leaderboardsAccessor;
-            this.mapper = mapper;
-        }
+        private readonly ILeaderboardsAccessor leaderboardsAccessor = leaderboardsAccessor;
+        private readonly IMapper mapper = mapper;
 
         public async Task<IDataResponse<Leaderboard?>> GetAsync(Guid leaderboardId)
         {

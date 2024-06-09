@@ -10,20 +10,13 @@ using System.IO.Compression;
 
 namespace SpyderByteServices.Services.Data
 {
-    public class DataService : IDataService
+    public class DataService(ILogger<DataService> logger, IConfiguration configuration, IStorageService storageService) : IDataService
     {
         private const string DATABASE_FOLDER_NAME = "Databases"; // OJN: Shouldn't really be hard-coded.
 
-        private readonly ILogger<DataService> logger;
-        private readonly IConfiguration configuration;
-        private readonly IStorageService storageService;
-
-        public DataService(ILogger<DataService> logger, IConfiguration configuration, IStorageService storageService)
-        {
-            this.logger = logger;
-            this.configuration = configuration;
-            this.storageService = storageService;
-        }
+        private readonly ILogger<DataService> logger = logger;
+        private readonly IConfiguration configuration = configuration;
+        private readonly IStorageService storageService = storageService;
 
         public async Task<IDataResponse<bool>> Backup()
         {

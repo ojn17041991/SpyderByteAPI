@@ -8,18 +8,11 @@ using SpyderByteDataAccess.Accessors.Games.Abstract;
 
 namespace SpyderByteServices.Services.Authorization
 {
-    public class AuthorizationService : IAuthorizationService
+    public class AuthorizationService(IUsersAccessor usersAccessor, IGamesAccessor gamesAccessor, ILogger<AuthorizationService> logger) : IAuthorizationService
     {
-        private readonly IUsersAccessor usersAccessor;
-        private readonly IGamesAccessor gamesAccessor;
-        private readonly ILogger<AuthorizationService> logger;
-
-        public AuthorizationService(IUsersAccessor usersAccessor, IGamesAccessor gamesAccessor, ILogger<AuthorizationService> logger)
-        {
-            this.usersAccessor = usersAccessor;
-            this.gamesAccessor = gamesAccessor;
-            this.logger = logger;
-        }
+        private readonly IUsersAccessor usersAccessor = usersAccessor;
+        private readonly IGamesAccessor gamesAccessor = gamesAccessor;
+        private readonly ILogger<AuthorizationService> logger = logger;
 
         public async Task<IDataResponse<bool>> UserHasAccessToGame(Guid userId, Guid gameId)
         {

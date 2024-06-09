@@ -7,14 +7,9 @@ using System.Text;
 
 namespace SpyderByteServices.Services.Password
 {
-    public class PasswordService : IPasswordService
+    public class PasswordService(IConfiguration configuration) : IPasswordService
     {
-        private readonly IConfiguration configuration;
-
-        public PasswordService(IConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
+        private readonly IConfiguration configuration = configuration;
 
         public HashData GenerateNewHash(string password)
         {

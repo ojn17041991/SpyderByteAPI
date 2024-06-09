@@ -26,7 +26,7 @@ namespace SpyderByteServices.Services.Storage
             this.connectionString = this.configuration.GetConnectionString("Storage") ?? string.Empty;
             this.containerName = this.configuration["Storage:Containers:Database"] ?? string.Empty;
 
-            client = new BlobServiceClient(this.connectionString);
+            client = new BlobServiceClient(this.connectionString); // OJN: Can't use primary constructor due to this line.
         }
 
         public async Task<IDataResponse<bool>> Upload(string fileName, Stream stream)

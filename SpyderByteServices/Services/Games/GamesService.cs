@@ -11,22 +11,13 @@ using SpyderByteServices.Services.Imgur.Abstract;
 
 namespace SpyderByteServices.Services.Games
 {
-    public class GamesService : IGamesService
+    public class GamesService(IGamesAccessor gamesAccessor, IImgurService imgurService, IMapper mapper, ILogger<GamesService> logger, IConfiguration configuration) : IGamesService
     {
-        private readonly IGamesAccessor gamesAccessor;
-        private readonly IImgurService imgurService;
-        private readonly IMapper mapper;
-        private readonly ILogger<GamesService> logger;
-        private readonly IConfiguration configuration;
-
-        public GamesService(IGamesAccessor gamesAccessor, IImgurService imgurService, IMapper mapper, ILogger<GamesService> logger, IConfiguration configuration)
-        {
-            this.gamesAccessor = gamesAccessor;
-            this.imgurService = imgurService;
-            this.mapper = mapper;
-            this.logger = logger;
-            this.configuration = configuration;
-        }
+        private readonly IGamesAccessor gamesAccessor = gamesAccessor;
+        private readonly IImgurService imgurService = imgurService;
+        private readonly IMapper mapper = mapper;
+        private readonly ILogger<GamesService> logger = logger;
+        private readonly IConfiguration configuration = configuration;
 
         public async Task<IDataResponse<IList<Game>?>> GetAllAsync()
         {

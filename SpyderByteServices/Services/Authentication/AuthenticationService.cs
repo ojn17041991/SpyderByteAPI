@@ -16,22 +16,12 @@ using System.Security.Claims;
 
 namespace SpyderByteServices.Services.Authentication
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService(IUsersAccessor usersAccessor, ILogger<AuthenticationService> logger, TokenEncoder tokenEncoder, IPasswordService passwordService) : IAuthenticationService
     {
-        private readonly IUsersAccessor usersAccessor;
-        private readonly IMapper mapper;
-        private readonly ILogger<AuthenticationService> logger;
-        private readonly TokenEncoder tokenEncoder;
-        private readonly IPasswordService passwordService;
-
-        public AuthenticationService(IUsersAccessor usersAccessor, IMapper mapper, ILogger<AuthenticationService> logger, TokenEncoder tokenEncoder, IPasswordService passwordService)
-        {
-            this.usersAccessor = usersAccessor;
-            this.mapper = mapper;
-            this.logger = logger;
-            this.tokenEncoder = tokenEncoder;
-            this.passwordService = passwordService;
-        }
+        private readonly IUsersAccessor usersAccessor = usersAccessor;
+        private readonly ILogger<AuthenticationService> logger = logger;
+        private readonly TokenEncoder tokenEncoder = tokenEncoder;
+        private readonly IPasswordService passwordService = passwordService;
 
         public async Task<IDataResponse<string>> AuthenticateAsync(Login login)
         {
