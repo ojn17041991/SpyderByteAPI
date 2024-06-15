@@ -4,5 +4,6 @@
     {
         public const string AllowDatabaseBackups = "AllowDatabaseBackups";
         public const string AllowWriteOperationsOnNonRestrictedUsers = "AllowWriteOperationsOnNonRestrictedUsers";
+        public const string AllowAuthenticationRefresh = "AllowAuthenticationRefresh";
     }
 }

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 using SpyderByteAPI.Models.Authentication;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Flags;
 using SpyderByteServices.Services.Authentication.Abstract;
 
 namespace SpyderByteAPI.Controllers
@@ -13,13 +15,13 @@ namespace SpyderByteAPI.Controllers
     {
         private readonly IAuthenticationService authenticationService;
         private readonly IMapper mapper;
-        private readonly IConfiguration configuration;
+        private readonly IFeatureManager featureManager;
 
-        public AuthenticationController(IAuthenticationService authenticationService, IMapper mapper, IConfiguration configuration)
+        public AuthenticationController(IAuthenticationService authenticationService, IMapper mapper, IFeatureManager featureManager)
         {
             this.authenticationService = authenticationService;
             this.mapper = mapper;
-            this.configuration = configuration;
+            this.featureManager = featureManager;
         }
 
         [HttpPost]
@@ -49,9 +51,9 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult Refresh()
+        public async Task<IActionResult> Refresh()
         {
-            if (!Convert.ToBoolean(configuration["AllowAuthenticationRefresh"] ?? "false"))
+            if (await featureManager.IsEnabledAsync(FeatureFlags.AllowAuthenticationRefresh) == false)
             {
                 return NotFound();
             }
