@@ -18,7 +18,7 @@ namespace SpyderByteServices.Services.Storage
         private string containerName = configuration["Storage:Containers:Database"] ?? string.Empty;
         private string clientName = configuration["Storage:ClientName"] ?? string.Empty;
 
-        public async Task<IDataResponse<bool>> Upload(string fileName, Stream stream)
+        public async Task<IDataResponse<bool>> UploadAsync(string fileName, Stream stream)
         {
             var client = clientFactory.CreateClient(clientName);
             var container = client.GetBlobContainerClient(containerName);
@@ -30,8 +30,9 @@ namespace SpyderByteServices.Services.Storage
 
             stream.Position = 0;
             var blob = container.GetBlobClient(fileName);
-            var response = await blob.UploadAsync(stream, true);
-            if (response.GetRawResponse().IsError)
+            var response = await blob.UploadAsync(stream, true, CancellationToken.None);
+            var rawResponse = response.GetRawResponse();
+            if (rawResponse.IsError)
             {
                 logger.LogError($"Failed to upload file {fileName} to Storage Account.");
                 return new DataResponse<bool>(false, ModelResult.Error);

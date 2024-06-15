@@ -29,7 +29,7 @@ namespace SpyderByteTest.Services.DataServiceTests.Helpers
 
             _storageService = new Mock<IStorageService>();
             _storageService.Setup(s =>
-                s.Upload(
+                s.UploadAsync(
                     It.IsAny<string>(),
                     It.IsAny<Stream>()
             )).Returns((string fileName, Stream stream) =>
