@@ -16,7 +16,7 @@ namespace SpyderByteTest.Services.PasswordServiceTests
         public void Can_Generate_New_Hash()
         {
             // Arrange
-            var password = "TESTPASSWORD";
+            var password = Guid.NewGuid().ToString();
 
             // Act
             var returnedHashData = _helper.Service.GenerateNewHash(password);
@@ -30,7 +30,7 @@ namespace SpyderByteTest.Services.PasswordServiceTests
         public void Each_Hashing_Operation_Produces_A_Unique_Hash()
         {
             // Arrange
-            var password = "HelloWorld123!";
+            var password = Guid.NewGuid().ToString();
 
             // Act
             var returnedHashData1 = _helper.Service.GenerateNewHash(password);
