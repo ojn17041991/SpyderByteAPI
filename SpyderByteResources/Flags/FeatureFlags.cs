@@ -1,4 +1,4 @@
-﻿namespace SpyderByteResources.Helpers.FeatureFlags
+﻿namespace SpyderByteResources.Flags
 {
     public static class FeatureFlags
     {

@@ -39,6 +39,7 @@ using Asp.Versioning;
 using Microsoft.Extensions.Azure;
 using SpyderByteServices.Services.Encoding;
 using SpyderByteServices.Services.Encoding.Abstract;
+using SpyderByteResources.Flags;
 
 namespace SpyderByteResources.Extensions
 {

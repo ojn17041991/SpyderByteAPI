@@ -1,4 +1,4 @@
-﻿namespace SpyderByteResources.Helpers.Authorization
+﻿namespace SpyderByteResources.Flags
 {
     public class PolicyType
     {

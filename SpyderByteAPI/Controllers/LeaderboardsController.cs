@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.Models.Leaderboards;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Helpers.Authorization;
 using SpyderByteServices.Services.Leaderboards.Abstract;
 using SpyderByteResources.Extensions;
+using SpyderByteResources.Flags;
 
 namespace SpyderByteAPI.Controllers
 {

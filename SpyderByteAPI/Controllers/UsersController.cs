@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.Models.Users;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Helpers.Authorization;
+using SpyderByteResources.Flags;
 using SpyderByteServices.Services.Users.Abstract;
 
 namespace SpyderByteAPI.Controllers

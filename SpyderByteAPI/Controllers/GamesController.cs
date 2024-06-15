@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Helpers.Authorization;
+using SpyderByteResources.Flags;
 using SpyderByteServices.Services.Games.Abstract;
 
 namespace SpyderByteAPI.Controllers

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Helpers.FeatureFlags;
+using SpyderByteResources.Flags;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Models.Users;

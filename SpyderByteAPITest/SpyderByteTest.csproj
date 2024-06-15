@@ -31,9 +31,4 @@
     <ProjectReference Include="..\SpyderByteResources\SpyderByteResources.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Resources\Helpers\" />
-    <Folder Include="Resources\Extensions\" />
-  </ItemGroup>
-
 </Project>
