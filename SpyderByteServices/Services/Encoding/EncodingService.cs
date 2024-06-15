@@ -1,23 +1,23 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SpyderByteServices.Services.Encoding.Abstract;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
-namespace SpyderByteServices.Helpers.Authentication
+namespace SpyderByteServices.Services.Encoding
 {
-    public class TokenEncoder
+    public class EncodingService : IEncodingService
     {
         private readonly IConfiguration configuration;
 
-        public TokenEncoder(IConfiguration configuration)
+        public EncodingService(IConfiguration configuration)
         {
             this.configuration = configuration;
         }
 
         public string Encode(IEnumerable<Claim> claims)
         {
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:EncodingKey"] ?? string.Empty));
+            var secretKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["Authentication:EncodingKey"] ?? string.Empty));
             var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor

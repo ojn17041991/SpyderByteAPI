@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using SpyderByteServices.Models.Authentication;
 using SpyderByteServices.Services.Password.Abstract;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace SpyderByteServices.Services.Password
 {
@@ -14,7 +13,7 @@ namespace SpyderByteServices.Services.Password
         public HashData GenerateNewHash(string password)
         {
             // Get password and salt as byte array.
-            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+            byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(password);
             List<byte> saltBytes = new List<byte>();
 
             // Generate salt.
@@ -41,7 +40,7 @@ namespace SpyderByteServices.Services.Password
 
         public bool IsPasswordValid(PasswordVerification passwordVerification)
         {
-            byte[] passwordBytes = Encoding.UTF8.GetBytes(passwordVerification.Password);
+            byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(passwordVerification.Password);
             byte[] saltBytes = Convert.FromBase64String(passwordVerification.Salt);
 
             for (int i = 0; i < 26; ++i)

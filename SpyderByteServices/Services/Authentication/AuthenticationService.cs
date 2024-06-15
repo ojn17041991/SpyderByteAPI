@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
@@ -11,16 +10,17 @@ using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Helpers.Authentication;
 using SpyderByteServices.Models.Authentication;
 using SpyderByteServices.Services.Authentication.Abstract;
+using SpyderByteServices.Services.Encoding.Abstract;
 using SpyderByteServices.Services.Password.Abstract;
 using System.Security.Claims;
 
 namespace SpyderByteServices.Services.Authentication
 {
-    public class AuthenticationService(IUsersAccessor usersAccessor, ILogger<AuthenticationService> logger, TokenEncoder tokenEncoder, IPasswordService passwordService) : IAuthenticationService
+    public class AuthenticationService(IUsersAccessor usersAccessor, ILogger<AuthenticationService> logger, IEncodingService encodingService, IPasswordService passwordService) : IAuthenticationService
     {
         private readonly IUsersAccessor usersAccessor = usersAccessor;
         private readonly ILogger<AuthenticationService> logger = logger;
-        private readonly TokenEncoder tokenEncoder = tokenEncoder;
+        private readonly IEncodingService encodingService = encodingService;
         private readonly IPasswordService passwordService = passwordService;
 
         public async Task<IDataResponse<string>> AuthenticateAsync(Login login)
@@ -74,11 +74,11 @@ namespace SpyderByteServices.Services.Authentication
             }
 
             // Encode the claims to produce the token.
-            var token = tokenEncoder.Encode(claims);
+            var token = encodingService.Encode(claims);
             if (token.IsNullOrEmpty())
             {
                 logger.LogError($"Failed to authenticate {login.UserName} user. Unable to generate token.");
-                return new DataResponse<string>(string.Empty, ModelResult.Error);
+                return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
             }
 
             // Login successful. Return token.
@@ -108,14 +108,14 @@ namespace SpyderByteServices.Services.Authentication
                 return new DataResponse<string>(string.Empty, ModelResult.Error);
             }
 
-            var claims = tokenEncoder.Decode(token);
+            var claims = encodingService.Decode(token);
             if (claims.IsNullOrEmpty())
             {
                 logger.LogError($"Failed to refresh token. Unable to extract claims from token.");
                 return new DataResponse<string>(string.Empty, ModelResult.Error);
             }
 
-            var refreshToken = tokenEncoder.Encode(claims);
+            var refreshToken = encodingService.Encode(claims);
             if (refreshToken.IsNullOrEmpty())
             {
                 logger.LogError($"Failed to refresh token. Unable to generate token.");

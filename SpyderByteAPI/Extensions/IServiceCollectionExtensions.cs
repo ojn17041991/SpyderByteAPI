@@ -27,7 +27,6 @@ using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Resources;
 using SpyderByteDataAccess.Contexts;
-using SpyderByteServices.Helpers.Authentication;
 using SpyderByteResources.Helpers.Authorization;
 using SpyderByteServices.Services.Games.Abstract;
 using SpyderByteServices.Services.Games;
@@ -38,6 +37,8 @@ using SpyderByteServices.Services.Password.Abstract;
 using Microsoft.FeatureManagement;
 using Asp.Versioning;
 using Microsoft.Extensions.Azure;
+using SpyderByteServices.Services.Encoding;
+using SpyderByteServices.Services.Encoding.Abstract;
 
 namespace SpyderByteResources.Extensions
 {
@@ -59,7 +60,7 @@ namespace SpyderByteResources.Extensions
             services.AddSingleton<IImgurService, ImgurService>();
             services.AddScoped<IPasswordService, PasswordService>();
 
-            services.AddScoped<TokenEncoder, TokenEncoder>();
+            services.AddScoped<IEncodingService, EncodingService>();
             services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
         }
 
