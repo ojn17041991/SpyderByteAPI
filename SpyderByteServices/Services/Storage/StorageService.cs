@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SpyderByteResources.Enums;
@@ -8,29 +9,18 @@ using SpyderByteServices.Services.Storage.Abstract;
 
 namespace SpyderByteServices.Services.Storage
 {
-    public class StorageService : IStorageService
+    public class StorageService(ILogger<StorageService> logger, IConfiguration configuration, IAzureClientFactory<BlobServiceClient> clientFactory) : IStorageService
     {
-        private readonly ILogger<StorageService> logger;
-        private readonly IConfiguration configuration;
+        private readonly ILogger<StorageService> logger = logger;
+        private readonly IConfiguration configuration = configuration;
+        private IAzureClientFactory<BlobServiceClient> clientFactory = clientFactory;
 
-        private string connectionString;
-        private string containerName;
-
-        private BlobServiceClient client;
-
-        public StorageService(ILogger<StorageService> logger, IConfiguration configuration)
-        {
-            this.logger = logger;
-            this.configuration = configuration;
-
-            this.connectionString = this.configuration.GetConnectionString("Storage") ?? string.Empty;
-            this.containerName = this.configuration["Storage:Containers:Database"] ?? string.Empty;
-
-            client = new BlobServiceClient(this.connectionString); // OJN: Can't use primary constructor due to this line.
-        }
+        private string containerName = configuration["Storage:Containers:Database"] ?? string.Empty;
+        private string clientName = configuration["Storage:ClientName"] ?? string.Empty;
 
         public async Task<IDataResponse<bool>> Upload(string fileName, Stream stream)
         {
+            var client = clientFactory.CreateClient(clientName);
             var container = client.GetBlobContainerClient(containerName);
             if (!await container.ExistsAsync())
             {

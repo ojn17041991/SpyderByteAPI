@@ -37,6 +37,7 @@ using SpyderByteServices.Services.Password;
 using SpyderByteServices.Services.Password.Abstract;
 using Microsoft.FeatureManagement;
 using Asp.Versioning;
+using Microsoft.Extensions.Azure;
 
 namespace SpyderByteResources.Extensions
 {
@@ -100,6 +101,11 @@ namespace SpyderByteResources.Extensions
                     new DefaultAzureCredential()
                 );
             #endif
+
+            services.AddAzureClients(builder =>
+            {
+                builder.AddBlobServiceClient(configuration.GetConnectionString("Storage")).WithName(configuration["Storage:ClientName"]);
+            });
         }
 
         public static void AddProjectRateLimiting(this IServiceCollection services)
