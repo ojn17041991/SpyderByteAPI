@@ -16,7 +16,7 @@ namespace SpyderByteTest.API.AuthenticationControllerTests
         }
 
         [Fact]
-        public async Task Can_Receive_Ok_Response_From_Post_Authentication_Request()
+        public async Task Can_Receive_Ok_Response_From_Refresh_Authentication_Request()
         {
             // Arrange
             helper.SetAllowAuthenticationRefresh(true);
@@ -30,7 +30,7 @@ namespace SpyderByteTest.API.AuthenticationControllerTests
         }
 
         [Fact]
-        public async Task Can_Receive_Unauthorized_Response_From_Post_Authentication_Request()
+        public async Task Can_Receive_Unauthorized_Response_From_Refresh_Authentication_Request()
         {
             // Arrange
             helper.SetAllowAuthenticationRefresh(true);
@@ -44,7 +44,7 @@ namespace SpyderByteTest.API.AuthenticationControllerTests
         }
 
         [Fact]
-        public async Task Can_Receive_Error_Response_From_Post_Authentication_Request()
+        public async Task Can_Receive_Error_Response_From_Refresh_Authentication_Request()
         {
             // Arrange
             helper.SetAllowAuthenticationRefresh(true);
@@ -59,7 +59,7 @@ namespace SpyderByteTest.API.AuthenticationControllerTests
         }
 
         [Fact]
-        public async Task Can_Receive_Not_Found_Response_From_Post_Authentication_Request()
+        public async Task Can_Not_Make_Refresh_Authentication_Request_If_Feature_Flag_Is_Disabled()
         {
             // Arrange
             helper.SetAllowAuthenticationRefresh(false);

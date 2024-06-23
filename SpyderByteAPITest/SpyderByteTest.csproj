@@ -32,7 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="API\DataControllerTests\" />
     <Folder Include="API\GamesControllerTests\" />
     <Folder Include="API\LeaderboardsControllerTests\" />
     <Folder Include="API\UsersControllerTests\" />
