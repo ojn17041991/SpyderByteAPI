@@ -16,14 +16,12 @@ namespace SpyderByteAPI.Controllers
         private readonly IGamesService gamesService;
         private readonly IMapper mapper;
         private readonly IStringLookup<ModelResult> modelResources;
-        private readonly IConfiguration configuration;
 
-        public GamesController(IGamesService gamesService, IMapper mapper, IStringLookup<ModelResult> modelResources, IConfiguration configuration)
+        public GamesController(IGamesService gamesService, IMapper mapper, IStringLookup<ModelResult> modelResources)
         {
             this.gamesService = gamesService;
             this.mapper = mapper;
             this.modelResources = modelResources;
-            this.configuration = configuration;
         }
 
         [HttpGet]
@@ -61,7 +59,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {
@@ -117,7 +115,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else if (response.Result == ModelResult.AlreadyExists)
             {
@@ -151,7 +149,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {

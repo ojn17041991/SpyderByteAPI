@@ -3,13 +3,10 @@ using SpyderByteResources.Enums;
 
 namespace SpyderByteResources.Resources
 {
-    public class ModelResources : IStringLookup<ModelResult>
+    public class HttpErrorMessageLookup : IStringLookup<ModelResult>
     {
-        private IDictionary<ModelResult, string> languageResources = new Dictionary<ModelResult, string>()
+        private IDictionary<ModelResult, string> messagesLookup = new Dictionary<ModelResult, string>()
         {
-            { ModelResult.OK, "The request was served successfully." },
-            { ModelResult.Created, "The resource was created successfully." },
-            { ModelResult.Error, "A server error occurred while processing the request." },
             { ModelResult.NotFound, "Failed to locate resource." },
             { ModelResult.AlreadyExists, "This resource already exists." },
             { ModelResult.RequestDataIncomplete, "The request data is incomplete." },
@@ -19,7 +16,7 @@ namespace SpyderByteResources.Resources
 
         public string GetResource(ModelResult modelResult)
         {
-            return languageResources?[modelResult] ?? string.Empty;
+            return messagesLookup?[modelResult] ?? string.Empty;
         }
     }
 }

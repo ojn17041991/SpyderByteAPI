@@ -38,7 +38,7 @@ namespace SpyderByteTest.API.DataControllerTests
             var response = await helper.Controller.Backup();
 
             // Assert
-            response.Should().BeOfType<NotFoundResult>();
+            response.Should().BeOfType<NotFoundObjectResult>();
         }
 
         [Fact]

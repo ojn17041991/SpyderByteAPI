@@ -38,7 +38,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {
@@ -88,7 +88,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else if (response.Result == ModelResult.RequestInvalid)
             {
@@ -113,7 +113,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else if (response.Result == ModelResult.RequestInvalid)
             {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.FeatureManagement;
 using Moq;
 using SpyderByteAPI.Controllers;
+using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
 using SpyderByteResources.Responses;
@@ -45,7 +46,16 @@ namespace SpyderByteTest.API.DataControllerTests.Helpers
                 return Task.FromResult(false);
             });
 
-            Controller = new(dataService.Object, featureManager.Object);
+            var modelResources = new Mock<IStringLookup<ModelResult>>();
+            modelResources.Setup(x =>
+                x.GetResource(
+                    It.IsAny<ModelResult>()
+                )
+            ).Returns((ModelResult modelResult) => {
+                return string.Empty;
+            });
+
+            Controller = new(dataService.Object, featureManager.Object, modelResources.Object);
         }
 
         public void SetCurrentModelResult(ModelResult currentModelResult)

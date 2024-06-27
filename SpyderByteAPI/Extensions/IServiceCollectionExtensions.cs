@@ -62,7 +62,7 @@ namespace SpyderByteResources.Extensions
             services.AddScoped<IPasswordService, PasswordService>();
 
             services.AddScoped<IEncodingService, EncodingService>();
-            services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
+            services.AddScoped<IStringLookup<ModelResult>, HttpErrorMessageLookup>();
         }
 
         public static void AddProjectDatabase(this IServiceCollection services, ConfigurationManager configuration)
