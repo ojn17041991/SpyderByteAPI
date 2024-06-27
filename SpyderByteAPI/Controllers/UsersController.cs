@@ -63,7 +63,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return BadRequest(modelResources.GetResource(ModelResult.NotFound));
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else if (response.Result == ModelResult.RequestInvalid)
             {
