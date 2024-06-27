@@ -13,6 +13,7 @@ using SpyderByteServices.Services.Authentication.Abstract;
 using SpyderByteServices.Services.Encoding.Abstract;
 using SpyderByteServices.Services.Password.Abstract;
 using System.Security.Claims;
+using System.Web;
 
 namespace SpyderByteServices.Services.Authentication
 {
@@ -31,7 +32,7 @@ namespace SpyderByteServices.Services.Authentication
             var response = await usersAccessor.GetByUserNameAsync(login.UserName);
             if (response.Result != ModelResult.OK)
             {
-                logger.LogError($"Failed to authenticate user {login.UserName}. Could not find user in database.");
+                logger.LogError($"Failed to authenticate user {HttpUtility.HtmlEncode(login.UserName)}. Could not find user in database.");
                 return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
             }
 
@@ -52,7 +53,7 @@ namespace SpyderByteServices.Services.Authentication
             bool passwordIsValid = passwordService.IsPasswordValid(passwordVerification);
             if (passwordIsValid == false)
             {
-                logger.LogError($"Failed to authenticate user {login.UserName}. Password incorrect.");
+                logger.LogError($"Failed to authenticate user {HttpUtility.HtmlEncode(login.UserName)}. Password incorrect.");
                 return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
             }
 
@@ -77,7 +78,7 @@ namespace SpyderByteServices.Services.Authentication
             var token = encodingService.Encode(claims);
             if (token.IsNullOrEmpty())
             {
-                logger.LogError($"Failed to authenticate {login.UserName} user. Unable to generate token.");
+                logger.LogError($"Failed to authenticate {HttpUtility.HtmlEncode(login.UserName)} user. Unable to generate token.");
                 return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
             }
 
