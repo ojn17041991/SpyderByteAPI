@@ -8,6 +8,7 @@ namespace SpyderByteAPI.Models.Leaderboards
         public Guid LeaderboardId { get; set; }
 
         [Required]
+        [RegularExpression(@"[^<>\\/]{1,50}", ErrorMessage = "Player does not meet validation requirements.")]
         public string Player { get; set; } = string.Empty;
 
         [Required]

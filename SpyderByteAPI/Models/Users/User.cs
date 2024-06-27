@@ -1,5 +1,4 @@
 ﻿using SpyderByteResources.Enums;
-using System.Text.Json.Serialization;
 
 namespace SpyderByteAPI.Models.Users
 {
