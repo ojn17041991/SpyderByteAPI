@@ -15,6 +15,7 @@ namespace SpyderByteAPI.Models.Games
 
         public string? Url { get; set; }
 
+        [FileExtensions(Extensions = "png")]
         public IFormFile? Image { get; set; }
 
         public DateTime? PublishDate { get; set; }

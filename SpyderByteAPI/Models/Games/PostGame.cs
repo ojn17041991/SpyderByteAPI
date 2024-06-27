@@ -16,6 +16,7 @@ namespace SpyderByteAPI.Models.Games
         public string Url { get; set; } = string.Empty;
 
         [Required]
+        [FileExtensions(Extensions = "png")]
         public IFormFile? Image { get; set; }
 
         [Required]
