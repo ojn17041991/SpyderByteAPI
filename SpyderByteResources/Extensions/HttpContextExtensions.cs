@@ -23,7 +23,7 @@ namespace SpyderByteResources.Extensions
         public static Guid GetLoggedInUserId(this HttpContext? httpContext)
         {
             var token = httpContext.GetToken();
-            if (token == null) return Guid.Empty;
+            if (token.IsNullOrEmpty()) return Guid.Empty;
 
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);

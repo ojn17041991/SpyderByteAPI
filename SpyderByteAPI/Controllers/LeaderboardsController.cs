@@ -18,20 +18,17 @@ namespace SpyderByteAPI.Controllers
         private readonly SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService;
         private readonly IMapper mapper;
         private readonly IStringLookup<ModelResult> modelResources;
-        private readonly IConfiguration configuration;
 
         public LeaderboardsController(
             ILeaderboardsService leaderboardsService,
             SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService,
             IMapper mapper,
-            IStringLookup<ModelResult> modelResources,
-            IConfiguration configuration)
+            IStringLookup<ModelResult> modelResources)
         {
             this.leaderboardsService = leaderboardsService;
             this.authorizationService = authorizationService;
             this.mapper = mapper;
             this.modelResources = modelResources;
-            this.configuration = configuration;
         }
 
         [HttpGet("{id}")]
@@ -42,6 +39,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(Guid id)
         {
+            // OJN: Can this be cleaned up? As in, not implemented in the controller code.
             var authorizationResponse = await authorizationService.UserHasAccessToLeaderboard(HttpContext.GetLoggedInUserId(), id);
             if (authorizationResponse.Result == ModelResult.Unauthorized)
             {
