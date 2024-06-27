@@ -50,7 +50,7 @@ namespace SpyderByteServices.Services.Games
             var duplicateGame = storedGames.Data!.SingleOrDefault(g => g.Name == game.Name);
             if (duplicateGame != null)
             {
-                logger.LogInformation($"Unable to post game. A game of name \"{game.Name}\" already exists.");
+                logger.LogInformation($"Unable to post game. A game of name \"{HttpUtility.HtmlEncode(game.Name)}\" already exists.");
                 return new DataResponse<Game?>(mapper.Map<SpyderByteServices.Models.Games.Game>(duplicateGame), ModelResult.AlreadyExists);
             }
 

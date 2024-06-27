@@ -6,6 +6,7 @@ using SpyderByteResources.Enums;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Services.Storage.Abstract;
+using System.Web;
 
 namespace SpyderByteServices.Services.Storage
 {
@@ -24,7 +25,7 @@ namespace SpyderByteServices.Services.Storage
             var container = client.GetBlobContainerClient(containerName);
             if (!await container.ExistsAsync())
             {
-                logger.LogError($"Failed to find container {containerName} in Storage Account.");
+                logger.LogError($"Failed to find container {HttpUtility.HtmlEncode(containerName)} in Storage Account.");
                 return new DataResponse<bool>(false, ModelResult.NotFound);
             }
 
@@ -34,7 +35,7 @@ namespace SpyderByteServices.Services.Storage
             var rawResponse = response.GetRawResponse();
             if (rawResponse.IsError)
             {
-                logger.LogError($"Failed to upload file {fileName} to Storage Account.");
+                logger.LogError($"Failed to upload file {HttpUtility.HtmlEncode(fileName)} to Storage Account.");
                 return new DataResponse<bool>(false, ModelResult.Error);
             }
 

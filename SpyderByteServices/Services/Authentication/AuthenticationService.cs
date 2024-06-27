@@ -83,7 +83,7 @@ namespace SpyderByteServices.Services.Authentication
             }
 
             // Login successful. Return token.
-            logger.LogInformation($"Authenticated {login.UserName} user.");
+            logger.LogInformation($"Authenticated {HttpUtility.HtmlEncode(login.UserName)} user.");
             return new DataResponse<string>(token, ModelResult.OK);
         }
 

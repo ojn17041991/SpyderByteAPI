@@ -7,6 +7,7 @@ using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Services.Data.Abstract;
 using SpyderByteServices.Services.Storage.Abstract;
 using System.IO.Compression;
+using System.Web;
 
 namespace SpyderByteServices.Services.Data
 {
@@ -32,7 +33,7 @@ namespace SpyderByteServices.Services.Data
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), DATABASE_FOLDER_NAME);
             if (!Directory.Exists(filePath))
             {
-                logger.LogError($"Failed to find file directory {filePath}.");
+                logger.LogError($"Failed to find file directory {HttpUtility.HtmlEncode(filePath)}.");
                 return new DataResponse<bool>(false, ModelResult.NotFound);
             }
 
@@ -40,7 +41,7 @@ namespace SpyderByteServices.Services.Data
             var files = Directory.GetFiles(filePath);
             if (files.IsNullOrEmpty())
             {
-                logger.LogError($"Failed to find any files in directory {filePath}.");
+                logger.LogError($"Failed to find any files in directory {HttpUtility.HtmlEncode(filePath)}.");
                 return new DataResponse<bool>(false, ModelResult.NotFound);
             }
 
