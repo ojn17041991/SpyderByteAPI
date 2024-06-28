@@ -6,14 +6,9 @@ using System.Security.Claims;
 
 namespace SpyderByteServices.Services.Encoding
 {
-    public class EncodingService : IEncodingService
+    public class EncodingService(IConfiguration configuration) : IEncodingService
     {
-        private readonly IConfiguration configuration;
-
-        public EncodingService(IConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
+        private readonly IConfiguration configuration = configuration;
 
         public string Encode(IEnumerable<Claim> claims)
         {
