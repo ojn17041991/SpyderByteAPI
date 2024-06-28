@@ -11,18 +11,11 @@ namespace SpyderByteAPI.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController(IAuthenticationService authenticationService, IMapper mapper, IFeatureManager featureManager) : ControllerBase
     {
-        private readonly IAuthenticationService authenticationService;
-        private readonly IMapper mapper;
-        private readonly IFeatureManager featureManager;
-
-        public AuthenticationController(IAuthenticationService authenticationService, IMapper mapper, IFeatureManager featureManager)
-        {
-            this.authenticationService = authenticationService;
-            this.mapper = mapper;
-            this.featureManager = featureManager;
-        }
+        private readonly IAuthenticationService authenticationService = authenticationService;
+        private readonly IMapper mapper = mapper;
+        private readonly IFeatureManager featureManager = featureManager;
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]

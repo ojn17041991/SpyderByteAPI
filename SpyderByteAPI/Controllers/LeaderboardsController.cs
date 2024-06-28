@@ -12,24 +12,12 @@ namespace SpyderByteAPI.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    public class LeaderboardsController : ControllerBase
+    public class LeaderboardsController(ILeaderboardsService leaderboardsService, SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
     {
-        private readonly ILeaderboardsService leaderboardsService;
-        private readonly SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService;
-        private readonly IMapper mapper;
-        private readonly IStringLookup<ModelResult> modelResources;
-
-        public LeaderboardsController(
-            ILeaderboardsService leaderboardsService,
-            SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService,
-            IMapper mapper,
-            IStringLookup<ModelResult> modelResources)
-        {
-            this.leaderboardsService = leaderboardsService;
-            this.authorizationService = authorizationService;
-            this.mapper = mapper;
-            this.modelResources = modelResources;
-        }
+        private readonly ILeaderboardsService leaderboardsService = leaderboardsService;
+        private readonly SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService = authorizationService;
+        private readonly IMapper mapper = mapper;
+        private readonly IStringLookup<ModelResult> modelResources = modelResources;
 
         [HttpGet("{id}")]
         [Authorize]
