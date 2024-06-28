@@ -10,16 +10,10 @@ using System.Web;
 
 namespace SpyderByteDataAccess.Accessors.Users
 {
-    public class UsersAccessor : IUsersAccessor
+    public class UsersAccessor(ApplicationDbContext context, ILogger<UsersAccessor> logger) : IUsersAccessor
     {
-        private readonly ApplicationDbContext context;
-        private readonly ILogger<UsersAccessor> logger;
-
-        public UsersAccessor(ApplicationDbContext context, ILogger<UsersAccessor> logger)
-        {
-            this.context = context;
-            this.logger = logger;
-        }
+        private readonly ApplicationDbContext context = context;
+        private readonly ILogger<UsersAccessor> logger = logger;
 
         public async Task<IDataResponse<User?>> GetAsync(Guid id)
         {

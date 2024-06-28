@@ -10,18 +10,11 @@ namespace SpyderByteAPI.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    public class DataController : ControllerBase
+    public class DataController(IDataService dataService, IFeatureManager featureManager, IStringLookup<ModelResult> modelResources) : ControllerBase
     {
-        private readonly IDataService dataService;
-        private readonly IFeatureManager featureManager;
-        private readonly IStringLookup<ModelResult> modelResources;
-
-        public DataController(IDataService dataService, IFeatureManager featureManager, IStringLookup<ModelResult> modelResources)
-        {
-            this.dataService = dataService;
-            this.featureManager = featureManager;
-            this.modelResources = modelResources;
-        }
+        private readonly IDataService dataService = dataService;
+        private readonly IFeatureManager featureManager = featureManager;
+        private readonly IStringLookup<ModelResult> modelResources = modelResources;
 
         [HttpPost("Backup")]
         [Authorize]

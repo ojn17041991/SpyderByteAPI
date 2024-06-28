@@ -11,16 +11,10 @@ using SpyderByteResources.Responses.Abstract;
 
 namespace SpyderByteDataAccess.Accessors.Games
 {
-    public class GamesAccessor : IGamesAccessor
+    public class GamesAccessor(ApplicationDbContext context, ILogger<GamesAccessor> logger) : IGamesAccessor
     {
-        private readonly ApplicationDbContext context;
-        private readonly ILogger<GamesAccessor> logger;
-
-        public GamesAccessor(ApplicationDbContext context, ILogger<GamesAccessor> logger)
-        {
-            this.context = context;
-            this.logger = logger;
-        }
+        private readonly ApplicationDbContext context = context;
+        private readonly ILogger<GamesAccessor> logger = logger;
 
         public async Task<IDataResponse<IList<Game>?>> GetAllAsync()
         {

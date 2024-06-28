@@ -10,16 +10,10 @@ using SpyderByteResources.Responses.Abstract;
 
 namespace SpyderByteDataAccess.Accessors.Leaderboards
 {
-    public class LeaderboardsAccessor : ILeaderboardsAccessor
+    public class LeaderboardsAccessor(ApplicationDbContext context, ILogger<LeaderboardsAccessor> logger) : ILeaderboardsAccessor
     {
-        private readonly ApplicationDbContext context;
-        private readonly ILogger<LeaderboardsAccessor> logger;
-
-        public LeaderboardsAccessor(ApplicationDbContext context, ILogger<LeaderboardsAccessor> logger)
-        {
-            this.context = context;
-            this.logger = logger;
-        }
+        private readonly ApplicationDbContext context = context;
+        private readonly ILogger<LeaderboardsAccessor> logger = logger;
 
         public async Task<IDataResponse<Leaderboard?>> GetAsync(Guid id)
         {

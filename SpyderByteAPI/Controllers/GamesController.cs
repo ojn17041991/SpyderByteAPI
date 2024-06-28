@@ -11,18 +11,11 @@ namespace SpyderByteAPI.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    public class GamesController : ControllerBase
+    public class GamesController(IGamesService gamesService, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
     {
-        private readonly IGamesService gamesService;
-        private readonly IMapper mapper;
-        private readonly IStringLookup<ModelResult> modelResources;
-
-        public GamesController(IGamesService gamesService, IMapper mapper, IStringLookup<ModelResult> modelResources)
-        {
-            this.gamesService = gamesService;
-            this.mapper = mapper;
-            this.modelResources = modelResources;
-        }
+        private readonly IGamesService gamesService = gamesService;
+        private readonly IMapper mapper = mapper;
+        private readonly IStringLookup<ModelResult> modelResources = modelResources;
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
