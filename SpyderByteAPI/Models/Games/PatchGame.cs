@@ -1,4 +1,5 @@
-﻿using SpyderByteResources.Enums;
+﻿using SpyderByteAPI.Attributes;
+using SpyderByteResources.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace SpyderByteAPI.Models.Games
@@ -15,7 +16,7 @@ namespace SpyderByteAPI.Models.Games
 
         public string? Url { get; set; }
 
-        [FileExtensions(Extensions = "png")]
+        [FileUploadValidation(ErrorMessage = "Image file can only be of type png.")]
         public IFormFile? Image { get; set; }
 
         public DateTime? PublishDate { get; set; }
