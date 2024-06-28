@@ -9,7 +9,7 @@ namespace SpyderByteAPI.Models.Games
         [Required]
         public Guid Id { get; set; }
 
-        [RegularExpression(@"[^<>\\/]{1,50}", ErrorMessage = "Name does not meet validation requirements.")]
+        [RegularExpression(@"[^<>\\\/\r\n]{1,50}", ErrorMessage = "Name does not meet validation requirements.")]
         public string? Name { get; set; }
 
         public GameType? Type { get; set; }

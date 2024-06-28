@@ -3,12 +3,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Models.Games;
 using SpyderByteServices.Services.Games.Abstract;
 using SpyderByteServices.Services.Imgur.Abstract;
-using System.Web;
 
 namespace SpyderByteServices.Services.Games
 {
@@ -50,7 +50,7 @@ namespace SpyderByteServices.Services.Games
             var duplicateGame = storedGames.Data!.SingleOrDefault(g => g.Name == game.Name);
             if (duplicateGame != null)
             {
-                logger.LogInformation($"Unable to post game. A game of name \"{HttpUtility.HtmlEncode(game.Name)}\" already exists.");
+                logger.LogInformation($"Unable to post game. A game of name \"{LogEncoder.Encode(game.Name)}\" already exists.");
                 return new DataResponse<Game?>(mapper.Map<SpyderByteServices.Models.Games.Game>(duplicateGame), ModelResult.AlreadyExists);
             }
 
@@ -90,7 +90,7 @@ namespace SpyderByteServices.Services.Games
                 var duplicateGame = storedGames.Data!.SingleOrDefault(g => g.Name == game.Name && g.Id != game.Id);
                 if (duplicateGame != null)
                 {
-                    logger.LogInformation($"Unable to patch game. A game of name \"{HttpUtility.HtmlEncode(game.Name)}\" already exists.");
+                    logger.LogInformation($"Unable to patch game. A game of name \"{LogEncoder.Encode(game.Name)}\" already exists.");
                     return new DataResponse<Game?>(null, ModelResult.AlreadyExists);
                 }
             }

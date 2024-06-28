@@ -5,7 +5,7 @@ namespace SpyderByteAPI.Models.Authentication
     public class Login
     {
         [Required]
-        [RegularExpression(@"[^<>\\/]{1,50}", ErrorMessage = "UserName does not meet validation requirements.")]
+        [RegularExpression(@"[^<>\\\/\r\n]{1,50}", ErrorMessage = "UserName does not meet validation requirements.")]
         public string UserName { get; set; } = string.Empty;
 
         [Required]

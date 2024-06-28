@@ -4,9 +4,9 @@ using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteDataAccess.Contexts;
 using SpyderByteDataAccess.Models.Users;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
-using System.Web;
 
 namespace SpyderByteDataAccess.Accessors.Users
 {
@@ -44,7 +44,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Failed to get user {HttpUtility.HtmlEncode(userName)}.");
+                logger.LogError(e, $"Failed to get user {LogEncoder.Encode(userName)}.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -73,7 +73,7 @@ namespace SpyderByteDataAccess.Accessors.Users
                     var game = await context.Games.SingleOrDefaultAsync(g => g.Id == user.GameId);
                     if (game == null)
                     {
-                        logger.LogInformation($"Unable to post user {HttpUtility.HtmlEncode(user.UserName)}. There is no game for the ID {user.GameId}.");
+                        logger.LogInformation($"Unable to post user {LogEncoder.Encode(user.UserName)}. There is no game for the ID {user.GameId}.");
                         return new DataResponse<User?>(null, ModelResult.NotFound);
                     }
 

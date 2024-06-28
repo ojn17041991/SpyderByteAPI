@@ -4,12 +4,12 @@ using Microsoft.FeatureManagement;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
+using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Models.Users;
 using SpyderByteServices.Services.Password.Abstract;
 using SpyderByteServices.Services.Users.Abstract;
-using System.Web;
 
 namespace SpyderByteServices.Services.Users
 {
@@ -38,7 +38,7 @@ namespace SpyderByteServices.Services.Users
             var userResponse = await usersAccessor.GetByUserNameAsync(user.UserName);
             if (userResponse.Result != ModelResult.NotFound)
             {
-                logger.LogError($"Failed to post user {HttpUtility.HtmlEncode(user.UserName)}. A user of this user name already exists.");
+                logger.LogError($"Failed to post user {LogEncoder.Encode(user.UserName)}. A user of this user name already exists.");
                 return new DataResponse<User?>(null, ModelResult.AlreadyExists);
             }
 
@@ -47,7 +47,7 @@ namespace SpyderByteServices.Services.Users
             {
                 if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
                 {
-                    logger.LogError($"Failed to post user {HttpUtility.HtmlEncode(user.UserName)}. A user of type Admin or Utility cannot be created.");
+                    logger.LogError($"Failed to post user {LogEncoder.Encode(user.UserName)}. A user of type Admin or Utility cannot be created.");
                     return new DataResponse<User?>(null, ModelResult.RequestInvalid);
                 }
             }
@@ -78,7 +78,7 @@ namespace SpyderByteServices.Services.Users
                 var storedUser = userResponse.Data!;
                 if (storedUser.UserType == UserType.Admin || storedUser.UserType == UserType.Utility)
                 {
-                    logger.LogError($"Failed to patch user {HttpUtility.HtmlEncode(storedUser.UserName)}. A user of type Admin or Utility cannot be patched.");
+                    logger.LogError($"Failed to patch user {LogEncoder.Encode(storedUser.UserName)}. A user of type Admin or Utility cannot be patched.");
                     return new DataResponse<User?>(null, ModelResult.RequestInvalid);
                 }
             }
@@ -104,7 +104,7 @@ namespace SpyderByteServices.Services.Users
                 var user = userResponse.Data!;
                 if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
                 {
-                    logger.LogError($"Failed to delete user {HttpUtility.HtmlEncode(user.UserName)}. A user of type Admin or Utility cannot be deleted.");
+                    logger.LogError($"Failed to delete user {LogEncoder.Encode(user.UserName)}. A user of type Admin or Utility cannot be deleted.");
                     return new DataResponse<User?>(null, ModelResult.RequestInvalid);
                 }
             }

@@ -7,7 +7,7 @@ namespace SpyderByteAPI.Models.Games
     public class PostGame
     {
         [Required]
-        [RegularExpression(@"[^<>\\/]{1,50}", ErrorMessage = "Name does not meet validation requirements.")]
+        [RegularExpression(@"[^<>\\\/\r\n]{1,50}", ErrorMessage = "Name does not meet validation requirements.")]
         public string Name { get; set; } = string.Empty;
 
         [Required]
