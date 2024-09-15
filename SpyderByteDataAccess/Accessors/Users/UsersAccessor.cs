@@ -4,21 +4,16 @@ using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteDataAccess.Contexts;
 using SpyderByteDataAccess.Models.Users;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 
 namespace SpyderByteDataAccess.Accessors.Users
 {
-    public class UsersAccessor : IUsersAccessor
+    public class UsersAccessor(ApplicationDbContext context, ILogger<UsersAccessor> logger) : IUsersAccessor
     {
-        private ApplicationDbContext context;
-        private ILogger<UsersAccessor> logger;
-
-        public UsersAccessor(ApplicationDbContext context, ILogger<UsersAccessor> logger)
-        {
-            this.context = context;
-            this.logger = logger;
-        }
+        private readonly ApplicationDbContext context = context;
+        private readonly ILogger<UsersAccessor> logger = logger;
 
         public async Task<IDataResponse<User?>> GetAsync(Guid id)
         {
@@ -32,7 +27,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError($"Failed to get user {id}.", e);
+                logger.LogError(e, $"Failed to get user {id}.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -49,7 +44,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError($"Failed to get user {userName}.", e);
+                logger.LogError(e, $"Failed to get user {LogEncoder.Encode(userName)}.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -65,7 +60,7 @@ namespace SpyderByteDataAccess.Accessors.Users
                     return new DataResponse<User?>(null, ModelResult.AlreadyExists);
                 }
 
-                User mappedUser = new User
+                User mappedUser = new()
                 {
                     UserName = user.UserName,
                     Hash = user.HashData.Hash,
@@ -78,7 +73,7 @@ namespace SpyderByteDataAccess.Accessors.Users
                     var game = await context.Games.SingleOrDefaultAsync(g => g.Id == user.GameId);
                     if (game == null)
                     {
-                        logger.LogInformation($"Unable to post user {user.UserName}. There is no game for the ID {user.GameId}.");
+                        logger.LogInformation($"Unable to post user {LogEncoder.Encode(user.UserName)}. There is no game for the ID {user.GameId}.");
                         return new DataResponse<User?>(null, ModelResult.NotFound);
                     }
 
@@ -108,7 +103,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to post user.", e);
+                logger.LogError(e, "Failed to post user.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -166,7 +161,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to patch user.", e);
+                logger.LogError(e, "Failed to patch user.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }
@@ -199,7 +194,7 @@ namespace SpyderByteDataAccess.Accessors.Users
             }
             catch (Exception e)
             {
-                logger.LogError($"Failed to delete user {id}.", e);
+                logger.LogError(e, $"Failed to delete user {id}.");
                 return new DataResponse<User?>(null, ModelResult.Error);
             }
         }

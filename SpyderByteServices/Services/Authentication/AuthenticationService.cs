@@ -1,37 +1,28 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Extensions;
 using SpyderByteResources.Helpers.Authorization;
+using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Helpers.Authentication;
 using SpyderByteServices.Models.Authentication;
 using SpyderByteServices.Services.Authentication.Abstract;
+using SpyderByteServices.Services.Encoding.Abstract;
 using SpyderByteServices.Services.Password.Abstract;
 using System.Security.Claims;
 
 namespace SpyderByteServices.Services.Authentication
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService(IUsersAccessor usersAccessor, ILogger<AuthenticationService> logger, IEncodingService encodingService, IPasswordService passwordService) : IAuthenticationService
     {
-        private readonly IUsersAccessor usersAccessor;
-        private readonly IMapper mapper;
-        private readonly ILogger<AuthenticationService> logger;
-        private readonly TokenEncoder tokenEncoder;
-        private readonly IPasswordService passwordService;
-
-        public AuthenticationService(IUsersAccessor usersAccessor, IMapper mapper, ILogger<AuthenticationService> logger, TokenEncoder tokenEncoder, IPasswordService passwordService)
-        {
-            this.usersAccessor = usersAccessor;
-            this.mapper = mapper;
-            this.logger = logger;
-            this.tokenEncoder = tokenEncoder;
-            this.passwordService = passwordService;
-        }
+        private readonly IUsersAccessor usersAccessor = usersAccessor;
+        private readonly ILogger<AuthenticationService> logger = logger;
+        private readonly IEncodingService encodingService = encodingService;
+        private readonly IPasswordService passwordService = passwordService;
 
         public async Task<IDataResponse<string>> AuthenticateAsync(Login login)
         {
@@ -41,7 +32,7 @@ namespace SpyderByteServices.Services.Authentication
             var response = await usersAccessor.GetByUserNameAsync(login.UserName);
             if (response.Result != ModelResult.OK)
             {
-                logger.LogError($"Failed to authenticate user {login.UserName}. Could not find user in database.");
+                logger.LogError($"Failed to authenticate user {LogEncoder.Encode(login.UserName)}. Could not find user in database.");
                 return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
             }
 
@@ -62,7 +53,7 @@ namespace SpyderByteServices.Services.Authentication
             bool passwordIsValid = passwordService.IsPasswordValid(passwordVerification);
             if (passwordIsValid == false)
             {
-                logger.LogError($"Failed to authenticate user {login.UserName}. Password incorrect.");
+                logger.LogError($"Failed to authenticate user {LogEncoder.Encode(login.UserName)}. Password incorrect.");
                 return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
             }
 
@@ -84,15 +75,15 @@ namespace SpyderByteServices.Services.Authentication
             }
 
             // Encode the claims to produce the token.
-            var token = tokenEncoder.Encode(claims);
+            var token = encodingService.Encode(claims);
             if (token.IsNullOrEmpty())
             {
-                logger.LogError($"Failed to authenticate {login.UserName} user. Unable to generate token.");
-                return new DataResponse<string>(string.Empty, ModelResult.Error);
+                logger.LogError($"Failed to authenticate {LogEncoder.Encode(login.UserName)} user. Unable to generate token.");
+                return new DataResponse<string>(string.Empty, ModelResult.Unauthorized);
             }
 
             // Login successful. Return token.
-            logger.LogInformation($"Authenticated {login.UserName} user.");
+            logger.LogInformation($"Authenticated {LogEncoder.Encode(login.UserName)} user.");
             return new DataResponse<string>(token, ModelResult.OK);
         }
 
@@ -118,14 +109,14 @@ namespace SpyderByteServices.Services.Authentication
                 return new DataResponse<string>(string.Empty, ModelResult.Error);
             }
 
-            var claims = tokenEncoder.Decode(token);
+            var claims = encodingService.Decode(token);
             if (claims.IsNullOrEmpty())
             {
                 logger.LogError($"Failed to refresh token. Unable to extract claims from token.");
                 return new DataResponse<string>(string.Empty, ModelResult.Error);
             }
 
-            var refreshToken = tokenEncoder.Encode(claims);
+            var refreshToken = encodingService.Encode(claims);
             if (refreshToken.IsNullOrEmpty())
             {
                 logger.LogError($"Failed to refresh token. Unable to generate token.");

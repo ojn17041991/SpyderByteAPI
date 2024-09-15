@@ -3,7 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Helpers.FeatureFlags;
+using SpyderByteResources.Flags;
+using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Models.Users;
@@ -12,27 +13,18 @@ using SpyderByteServices.Services.Users.Abstract;
 
 namespace SpyderByteServices.Services.Users
 {
-    public class UsersService : IUsersService
+    public class UsersService(
+        IUsersAccessor usersAccessor,
+        IMapper mapper,
+        ILogger<UsersService> logger,
+        IPasswordService passwordService,
+        IFeatureManager featureManager) : IUsersService
     {
-        private readonly IUsersAccessor usersAccessor;
-        private readonly IMapper mapper;
-        private readonly ILogger<UsersService> logger;
-        private readonly IPasswordService passwordService;
-        private readonly IFeatureManager featureManager;
-
-        public UsersService(
-            IUsersAccessor usersAccessor,
-            IMapper mapper,
-            ILogger<UsersService> logger,
-            IPasswordService passwordService,
-            IFeatureManager featureManager)
-        {
-            this.usersAccessor = usersAccessor;
-            this.mapper = mapper;
-            this.logger = logger;
-            this.passwordService = passwordService;
-            this.featureManager = featureManager;
-        }
+        private readonly IUsersAccessor usersAccessor = usersAccessor;
+        private readonly IMapper mapper = mapper;
+        private readonly ILogger<UsersService> logger = logger;
+        private readonly IPasswordService passwordService = passwordService;
+        private readonly IFeatureManager featureManager = featureManager;
 
         public async Task<IDataResponse<User?>> GetAsync(Guid id)
         {
@@ -46,7 +38,7 @@ namespace SpyderByteServices.Services.Users
             var userResponse = await usersAccessor.GetByUserNameAsync(user.UserName);
             if (userResponse.Result != ModelResult.NotFound)
             {
-                logger.LogError($"Failed to post user {user.UserName}. A user of this user name already exists.");
+                logger.LogError($"Failed to post user {LogEncoder.Encode(user.UserName)}. A user of this user name already exists.");
                 return new DataResponse<User?>(null, ModelResult.AlreadyExists);
             }
 
@@ -55,7 +47,7 @@ namespace SpyderByteServices.Services.Users
             {
                 if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
                 {
-                    logger.LogError($"Failed to post user {user.UserName}. A user of type Admin or Utility cannot be created.");
+                    logger.LogError($"Failed to post user {LogEncoder.Encode(user.UserName)}. A user of type Admin or Utility cannot be created.");
                     return new DataResponse<User?>(null, ModelResult.RequestInvalid);
                 }
             }
@@ -86,7 +78,7 @@ namespace SpyderByteServices.Services.Users
                 var storedUser = userResponse.Data!;
                 if (storedUser.UserType == UserType.Admin || storedUser.UserType == UserType.Utility)
                 {
-                    logger.LogError($"Failed to patch user {storedUser.UserName}. A user of type Admin or Utility cannot be patched.");
+                    logger.LogError($"Failed to patch user {LogEncoder.Encode(storedUser.UserName)}. A user of type Admin or Utility cannot be patched.");
                     return new DataResponse<User?>(null, ModelResult.RequestInvalid);
                 }
             }
@@ -112,7 +104,7 @@ namespace SpyderByteServices.Services.Users
                 var user = userResponse.Data!;
                 if (user.UserType == UserType.Admin || user.UserType == UserType.Utility)
                 {
-                    logger.LogError($"Failed to delete user {user.UserName}. A user of type Admin or Utility cannot be deleted.");
+                    logger.LogError($"Failed to delete user {LogEncoder.Encode(user.UserName)}. A user of type Admin or Utility cannot be deleted.");
                     return new DataResponse<User?>(null, ModelResult.RequestInvalid);
                 }
             }

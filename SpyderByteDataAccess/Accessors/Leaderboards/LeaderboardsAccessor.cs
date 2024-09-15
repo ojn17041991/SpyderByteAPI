@@ -10,16 +10,10 @@ using SpyderByteResources.Responses.Abstract;
 
 namespace SpyderByteDataAccess.Accessors.Leaderboards
 {
-    public class LeaderboardsAccessor : ILeaderboardsAccessor
+    public class LeaderboardsAccessor(ApplicationDbContext context, ILogger<LeaderboardsAccessor> logger) : ILeaderboardsAccessor
     {
-        private ApplicationDbContext context;
-        private ILogger<LeaderboardsAccessor> logger;
-
-        public LeaderboardsAccessor(ApplicationDbContext context, ILogger<LeaderboardsAccessor> logger)
-        {
-            this.context = context;
-            this.logger = logger;
-        }
+        private readonly ApplicationDbContext context = context;
+        private readonly ILogger<LeaderboardsAccessor> logger = logger;
 
         public async Task<IDataResponse<Leaderboard?>> GetAsync(Guid id)
         {
@@ -35,7 +29,7 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
             }
             catch (Exception e)
             {
-                logger.LogError($"Failed to get leaderboard records for ID {id}.", e);
+                logger.LogError(e, $"Failed to get leaderboard records for ID {id}.");
                 return new DataResponse<Leaderboard?>(null, ModelResult.Error);
             }
         }
@@ -60,11 +54,11 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
                     return new DataResponse<Leaderboard?>(null, ModelResult.AlreadyExists);
                 }
 
-                Leaderboard mappedLeaderboard = new Leaderboard();
+                Leaderboard mappedLeaderboard = new();
 
                 await context.Leaderboards.AddAsync(mappedLeaderboard);
 
-                LeaderboardGame mappedLeaderboardGame = new LeaderboardGame
+                LeaderboardGame mappedLeaderboardGame = new()
                 {
                     LeaderboardId = mappedLeaderboard.Id,
                     Leaderboard = mappedLeaderboard,
@@ -80,7 +74,7 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to post leaderboard record.", e);
+                logger.LogError(e, "Failed to post leaderboard record.");
                 return new DataResponse<Leaderboard?>(null, ModelResult.Error);
             }
         }
@@ -96,7 +90,7 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
                     return new DataResponse<LeaderboardRecord?>(null, ModelResult.NotFound);
                 }
 
-                LeaderboardRecord mappedLeaderboardRecord = new LeaderboardRecord
+                LeaderboardRecord mappedLeaderboardRecord = new()
                 {
                     LeaderboardId = leaderboard.Id,
                     Leaderboard = leaderboard,
@@ -112,7 +106,7 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to post leaderboard record.", e);
+                logger.LogError(e, "Failed to post leaderboard record.");
                 return new DataResponse<LeaderboardRecord?>(null, ModelResult.Error);
             }
         }
@@ -157,7 +151,7 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to patch leaderboard.", e);
+                logger.LogError(e, "Failed to patch leaderboard.");
                 return new DataResponse<Leaderboard?>(null, ModelResult.Error);
             }
         }
@@ -186,7 +180,7 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to delete leaderboard.", e);
+                logger.LogError(e, "Failed to delete leaderboard.");
                 return new DataResponse<Leaderboard?>(null, ModelResult.Error);
             }
         }
@@ -209,7 +203,7 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
             }
             catch (Exception e)
             {
-                logger.LogError("Failed to delete leaderboard record.", e);
+                logger.LogError(e, "Failed to delete leaderboard record.");
                 return new DataResponse<LeaderboardRecord?>(null, ModelResult.Error);
             }
         }

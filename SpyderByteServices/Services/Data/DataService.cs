@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Services.Data.Abstract;
@@ -10,20 +11,13 @@ using System.IO.Compression;
 
 namespace SpyderByteServices.Services.Data
 {
-    public class DataService : IDataService
+    public class DataService(ILogger<DataService> logger, IConfiguration configuration, IStorageService storageService) : IDataService
     {
         private const string DATABASE_FOLDER_NAME = "Databases"; // OJN: Shouldn't really be hard-coded.
 
-        private readonly ILogger<DataService> logger;
-        private readonly IConfiguration configuration;
-        private readonly IStorageService storageService;
-
-        public DataService(ILogger<DataService> logger, IConfiguration configuration, IStorageService storageService)
-        {
-            this.logger = logger;
-            this.configuration = configuration;
-            this.storageService = storageService;
-        }
+        private readonly ILogger<DataService> logger = logger;
+        private readonly IConfiguration configuration = configuration;
+        private readonly IStorageService storageService = storageService;
 
         public async Task<IDataResponse<bool>> Backup()
         {
@@ -39,7 +33,7 @@ namespace SpyderByteServices.Services.Data
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), DATABASE_FOLDER_NAME);
             if (!Directory.Exists(filePath))
             {
-                logger.LogError($"Failed to find file directory {filePath}.");
+                logger.LogError($"Failed to find file directory {LogEncoder.Encode(filePath)}.");
                 return new DataResponse<bool>(false, ModelResult.NotFound);
             }
 
@@ -47,7 +41,7 @@ namespace SpyderByteServices.Services.Data
             var files = Directory.GetFiles(filePath);
             if (files.IsNullOrEmpty())
             {
-                logger.LogError($"Failed to find any files in directory {filePath}.");
+                logger.LogError($"Failed to find any files in directory {LogEncoder.Encode(filePath)}.");
                 return new DataResponse<bool>(false, ModelResult.NotFound);
             }
 
@@ -77,7 +71,7 @@ namespace SpyderByteServices.Services.Data
                     }
 
                     // Upload the ZIP to storage.
-                    var response = await storageService.Upload($"{DateTime.UtcNow.ToString("yyyy-MM-ddThh:mm:ss.fffZ")}.zip", memoryStream);
+                    var response = await storageService.UploadAsync($"{DateTime.UtcNow:yyyy-MM-ddThh:mm:ss.fffZ}.zip", memoryStream);
                     if (response.Result != ModelResult.OK)
                     {
                         logger.LogError($"Failed to upload ZIP file.");
@@ -89,7 +83,7 @@ namespace SpyderByteServices.Services.Data
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Failed to find database backup file extension in configuration.");
+                logger.LogError(e, $"Failed to create ZIP file.");
                 return new DataResponse<bool>(false, ModelResult.Error);
             }
             finally

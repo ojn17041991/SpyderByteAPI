@@ -12,30 +12,18 @@ using System.Net.Http.Headers;
 
 namespace SpyderByteServices.Services.Imgur
 {
-    public class ImgurService : IImgurService
+    public class ImgurService(IConfiguration configuration, IHttpClientFactory httpClientFactory) : IImgurService
     {
-        private readonly IConfiguration configuration;
-        private IHttpClientFactory httpClientFactory;
+        private readonly IConfiguration configuration = configuration;
+        private IHttpClientFactory httpClientFactory = httpClientFactory;
 
-        private string url;
-        private string version;
+        private string url = configuration["Imgur:Url"] ?? string.Empty;
+        private string version = configuration["Imgur:Version"] ?? string.Empty;
         private string imageEndpoint = "image";
         private string authEndpoint = "oauth2/token";
 
-        private string accessToken;
-        private string refreshToken;
-
-        public ImgurService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
-        {
-            this.configuration = configuration;
-            this.httpClientFactory = httpClientFactory;
-
-            url = configuration["Imgur:Url"] ?? string.Empty;
-            version = configuration["Imgur:Version"] ?? string.Empty;
-
-            accessToken = string.Empty;
-            refreshToken = configuration["Imgur:RefreshToken"] ?? string.Empty;
-        }
+        private string accessToken = string.Empty;
+        private string refreshToken = configuration["Imgur:RefreshToken"] ?? string.Empty;
 
         public async Task<IDataResponse<PostImageResponse>> PostImageAsync(IFormFile file, string albumHash, string title)
         {

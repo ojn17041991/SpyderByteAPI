@@ -27,7 +27,6 @@ using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Resources;
 using SpyderByteDataAccess.Contexts;
-using SpyderByteServices.Helpers.Authentication;
 using SpyderByteResources.Helpers.Authorization;
 using SpyderByteServices.Services.Games.Abstract;
 using SpyderByteServices.Services.Games;
@@ -37,6 +36,10 @@ using SpyderByteServices.Services.Password;
 using SpyderByteServices.Services.Password.Abstract;
 using Microsoft.FeatureManagement;
 using Asp.Versioning;
+using Microsoft.Extensions.Azure;
+using SpyderByteServices.Services.Encoding;
+using SpyderByteServices.Services.Encoding.Abstract;
+using SpyderByteResources.Flags;
 
 namespace SpyderByteResources.Extensions
 {
@@ -58,8 +61,8 @@ namespace SpyderByteResources.Extensions
             services.AddSingleton<IImgurService, ImgurService>();
             services.AddScoped<IPasswordService, PasswordService>();
 
-            services.AddScoped<TokenEncoder, TokenEncoder>();
-            services.AddScoped<IStringLookup<ModelResult>, ModelResources>();
+            services.AddScoped<IEncodingService, EncodingService>();
+            services.AddScoped<IStringLookup<ModelResult>, HttpErrorMessageLookup>();
         }
 
         public static void AddProjectDatabase(this IServiceCollection services, ConfigurationManager configuration)
@@ -100,6 +103,11 @@ namespace SpyderByteResources.Extensions
                     new DefaultAzureCredential()
                 );
             #endif
+
+            services.AddAzureClients(builder =>
+            {
+                builder.AddBlobServiceClient(configuration.GetConnectionString("Storage")).WithName(configuration["Storage:ClientName"]);
+            });
         }
 
         public static void AddProjectRateLimiting(this IServiceCollection services)

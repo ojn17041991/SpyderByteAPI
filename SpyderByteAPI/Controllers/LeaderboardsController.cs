@@ -4,35 +4,20 @@ using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.Models.Leaderboards;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Helpers.Authorization;
 using SpyderByteServices.Services.Leaderboards.Abstract;
 using SpyderByteResources.Extensions;
+using SpyderByteResources.Flags;
 
 namespace SpyderByteAPI.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    public class LeaderboardsController : ControllerBase
+    public class LeaderboardsController(ILeaderboardsService leaderboardsService, SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
     {
-        private readonly ILeaderboardsService leaderboardsService;
-        private readonly SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService;
-        private readonly IMapper mapper;
-        private readonly IStringLookup<ModelResult> modelResources;
-        private readonly IConfiguration configuration;
-
-        public LeaderboardsController(
-            ILeaderboardsService leaderboardsService,
-            SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService,
-            IMapper mapper,
-            IStringLookup<ModelResult> modelResources,
-            IConfiguration configuration)
-        {
-            this.leaderboardsService = leaderboardsService;
-            this.authorizationService = authorizationService;
-            this.mapper = mapper;
-            this.modelResources = modelResources;
-            this.configuration = configuration;
-        }
+        private readonly ILeaderboardsService leaderboardsService = leaderboardsService;
+        private readonly SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService = authorizationService;
+        private readonly IMapper mapper = mapper;
+        private readonly IStringLookup<ModelResult> modelResources = modelResources;
 
         [HttpGet("{id}")]
         [Authorize]
@@ -42,6 +27,7 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(Guid id)
         {
+            // OJN: Can this be cleaned up? As in, not implemented in the controller code.
             var authorizationResponse = await authorizationService.UserHasAccessToLeaderboard(HttpContext.GetLoggedInUserId(), id);
             if (authorizationResponse.Result == ModelResult.Unauthorized)
             {
@@ -57,7 +43,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {
@@ -82,7 +68,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else if (response.Result == ModelResult.AlreadyExists)
             {
@@ -117,7 +103,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {
@@ -142,7 +128,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {
@@ -168,7 +154,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {
@@ -194,7 +180,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {

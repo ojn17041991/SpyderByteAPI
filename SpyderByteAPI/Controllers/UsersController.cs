@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.Models.Users;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Helpers.Authorization;
+using SpyderByteResources.Flags;
 using SpyderByteServices.Services.Users.Abstract;
 
 namespace SpyderByteAPI.Controllers
@@ -12,18 +12,11 @@ namespace SpyderByteAPI.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     [Authorize]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController(IUsersService usersService, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
     {
-        private readonly IUsersService usersService;
-        private readonly IMapper mapper;
-        private readonly IStringLookup<ModelResult> modelResources;
-
-        public UsersController(IUsersService usersService, IMapper mapper, IStringLookup<ModelResult> modelResources)
-        {
-            this.usersService = usersService;
-            this.mapper = mapper;
-            this.modelResources = modelResources;
-        }
+        private readonly IUsersService usersService = usersService;
+        private readonly IMapper mapper = mapper;
+        private readonly IStringLookup<ModelResult> modelResources = modelResources;
 
         [HttpGet("{id}")]
         [Authorize(PolicyType.ReadUsers)]
@@ -38,7 +31,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {
@@ -63,7 +56,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return BadRequest(modelResources.GetResource(ModelResult.NotFound));
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else if (response.Result == ModelResult.RequestInvalid)
             {
@@ -88,7 +81,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else if (response.Result == ModelResult.RequestInvalid)
             {
@@ -113,7 +106,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else if (response.Result == ModelResult.RequestInvalid)
             {

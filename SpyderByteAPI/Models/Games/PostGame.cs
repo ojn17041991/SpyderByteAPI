@@ -1,4 +1,5 @@
-﻿using SpyderByteResources.Enums;
+﻿using SpyderByteAPI.Attributes;
+using SpyderByteResources.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace SpyderByteAPI.Models.Games
@@ -6,6 +7,7 @@ namespace SpyderByteAPI.Models.Games
     public class PostGame
     {
         [Required]
+        [RegularExpression(@"[^<>\\\/\r\n]{1,50}", ErrorMessage = "Name does not meet validation requirements.")]
         public string Name { get; set; } = string.Empty;
 
         [Required]
@@ -15,6 +17,7 @@ namespace SpyderByteAPI.Models.Games
         public string Url { get; set; } = string.Empty;
 
         [Required]
+        [FileUploadValidation(ErrorMessage = "Image file can only be of type png.")]
         public IFormFile? Image { get; set; }
 
         [Required]

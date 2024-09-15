@@ -4,6 +4,6 @@ namespace SpyderByteServices.Services.Storage.Abstract
 {
     public interface IStorageService
     {
-        Task<IDataResponse<bool>> Upload(string fileName, Stream stream);
+        Task<IDataResponse<bool>> UploadAsync(string fileName, Stream stream);
     }
 }

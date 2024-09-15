@@ -1,25 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
+using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Helpers.Authorization;
-using SpyderByteResources.Helpers.FeatureFlags;
+using SpyderByteResources.Flags;
 using SpyderByteServices.Services.Data.Abstract;
 
 namespace SpyderByteAPI.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    public class DataController : ControllerBase
+    public class DataController(IDataService dataService, IFeatureManager featureManager, IStringLookup<ModelResult> modelResources) : ControllerBase
     {
-        private readonly IDataService dataService;
-        private readonly IFeatureManager featureManager;
-
-        public DataController(IDataService dataService, IFeatureManager featureManager)
-        {
-            this.dataService = dataService;
-            this.featureManager = featureManager;
-        }
+        private readonly IDataService dataService = dataService;
+        private readonly IFeatureManager featureManager = featureManager;
+        private readonly IStringLookup<ModelResult> modelResources = modelResources;
 
         [HttpPost("Backup")]
         [Authorize]
@@ -43,7 +38,7 @@ namespace SpyderByteAPI.Controllers
             }
             else if (response.Result == ModelResult.NotFound)
             {
-                return NotFound();
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
             else
             {

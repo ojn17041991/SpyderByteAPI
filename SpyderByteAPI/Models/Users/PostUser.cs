@@ -6,6 +6,7 @@ namespace SpyderByteAPI.Models.Users
     public class PostUser
     {
         [Required]
+        [RegularExpression(@"[^<>\\\/\r\n]{1,50}", ErrorMessage = "UserName does not meet validation requirements.")]
         public string UserName { get; set; } = string.Empty;
 
         [Required]

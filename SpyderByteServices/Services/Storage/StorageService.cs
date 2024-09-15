@@ -1,49 +1,41 @@
 ﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
 using SpyderByteServices.Services.Storage.Abstract;
 
 namespace SpyderByteServices.Services.Storage
 {
-    public class StorageService : IStorageService
+    public class StorageService(ILogger<StorageService> logger, IConfiguration configuration, IAzureClientFactory<BlobServiceClient> clientFactory) : IStorageService
     {
-        private readonly ILogger<StorageService> logger;
-        private readonly IConfiguration configuration;
+        private readonly ILogger<StorageService> logger = logger;
+        private readonly IConfiguration configuration = configuration;
+        private IAzureClientFactory<BlobServiceClient> clientFactory = clientFactory;
 
-        private string connectionString;
-        private string containerName;
+        private string containerName = configuration["Storage:Containers:Database"] ?? string.Empty;
+        private string clientName = configuration["Storage:ClientName"] ?? string.Empty;
 
-        private BlobServiceClient client;
-
-        public StorageService(ILogger<StorageService> logger, IConfiguration configuration)
+        public async Task<IDataResponse<bool>> UploadAsync(string fileName, Stream stream)
         {
-            this.logger = logger;
-            this.configuration = configuration;
-
-            this.connectionString = this.configuration.GetConnectionString("Storage") ?? string.Empty;
-            this.containerName = this.configuration["Storage:Containers:Database"] ?? string.Empty;
-
-            client = new BlobServiceClient(this.connectionString);
-        }
-
-        public async Task<IDataResponse<bool>> Upload(string fileName, Stream stream)
-        {
+            var client = clientFactory.CreateClient(clientName);
             var container = client.GetBlobContainerClient(containerName);
             if (!await container.ExistsAsync())
             {
-                logger.LogError($"Failed to find container {containerName} in Storage Account.");
+                logger.LogError($"Failed to find container {LogEncoder.Encode(containerName)} in Storage Account.");
                 return new DataResponse<bool>(false, ModelResult.NotFound);
             }
 
             stream.Position = 0;
             var blob = container.GetBlobClient(fileName);
-            var response = await blob.UploadAsync(stream, true);
-            if (response.GetRawResponse().IsError)
+            var response = await blob.UploadAsync(stream, true, CancellationToken.None);
+            var rawResponse = response.GetRawResponse();
+            if (rawResponse.IsError)
             {
-                logger.LogError($"Failed to upload file {fileName} to Storage Account.");
+                logger.LogError($"Failed to upload file {LogEncoder.Encode(fileName)} to Storage Account.");
                 return new DataResponse<bool>(false, ModelResult.Error);
             }
 

@@ -28,26 +28,7 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
 
             var logger = new Mock<ILogger<GamesAccessor>>();
 
-            var configurationContents = new Dictionary<string, string?>();
-            var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(configurationContents)
-                .Build();
-
-            //var imgurService = new Mock<IImgurService>();
-            //imgurService.Setup(i => i.PostImageAsync(
-            //    It.IsAny<IFormFile>(),
-            //    It.IsAny<string>(),
-            //    It.IsAny<string>()
-            //)).ReturnsAsync((IFormFile file, string albumHash, string title) =>
-            //    new DataResponse<PostImageResponse>(_fixture.Create<PostImageResponse>(), ModelResult.OK)
-            //);
-            //imgurService.Setup(i => i.DeleteImageAsync(
-            //    It.IsAny<string>()
-            //)).ReturnsAsync((string imageHash) =>
-            //    new DataResponse<bool>(true, ModelResult.OK)
-            //);
-
-            Accessor = new GamesAccessor(_context, logger.Object, configuration);
+            Accessor = new GamesAccessor(_context, logger.Object);
         }
 
         public async Task<Game> AddGame()
