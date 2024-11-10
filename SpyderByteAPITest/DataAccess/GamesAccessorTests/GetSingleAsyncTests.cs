@@ -33,7 +33,20 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests
                 returnedGame.Should().NotBeNull();
                 returnedGame.Result.Should().Be(ModelResult.OK);
                 returnedGame.Data.Should().NotBeNull();
-                returnedGame.Data.Should().BeEquivalentTo(storedGame);
+                returnedGame.Data.Should().BeEquivalentTo
+                (
+                    storedGame,
+                    options => options
+                        .Excluding(g => g.LeaderboardGame)
+                        .Excluding(g => g.UserGame)
+                );
+                returnedGame.Data!.UserGame.Should().BeEquivalentTo
+                (
+                    storedGame.UserGame!,
+                    options => options
+                        .Excluding(ug => ug.User)
+                        .Excluding(ug => ug.Game)
+                );
             }
         }
 

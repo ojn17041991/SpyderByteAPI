@@ -33,7 +33,19 @@ namespace SpyderByteTest.DataAccess.UsersAccessorTests
                 returnedUser.Should().NotBeNull();
                 returnedUser.Result.Should().Be(ModelResult.OK);
                 returnedUser.Data.Should().NotBeNull();
-                returnedUser.Data.Should().BeEquivalentTo(storedUser);
+                returnedUser.Data.Should().BeEquivalentTo
+                (
+                    storedUser,
+                    options => options
+                        .Excluding(u => u.UserGame)
+                );
+                returnedUser.Data!.UserGame.Should().BeEquivalentTo
+                (
+                    storedUser.UserGame,
+                    options => options
+                        .Excluding(ug => ug.Game)
+                        .Excluding(ug => ug.User)
+                );
             }
         }
 
