@@ -22,6 +22,7 @@ namespace SpyderByteDataAccess.Accessors.Users
                 User? user = await context.Users
                     .Include(u => u.UserGame)
                         .ThenInclude(uj => uj!.Game)
+                    .AsNoTracking()
                     .SingleOrDefaultAsync(u => u.Id == id);
                 return new DataResponse<User?>(user, user == null ? ModelResult.NotFound : ModelResult.OK);
             }
@@ -39,6 +40,7 @@ namespace SpyderByteDataAccess.Accessors.Users
                 User? user = await context.Users
                     .Include(u => u.UserGame)
                         .ThenInclude(uj => uj!.Game)
+                    .AsNoTracking()
                     .SingleOrDefaultAsync(u => u.UserName == userName);
                 return new DataResponse<User?>(user, user == null ? ModelResult.NotFound : ModelResult.OK);
             }
@@ -180,6 +182,7 @@ namespace SpyderByteDataAccess.Accessors.Users
                     return new DataResponse<User?>(null, ModelResult.NotFound);
                 }
 
+                // OJN: Can't this be configured in the DbContext to automatically delete these records?
                 // If the user has a user-game relationship, we need to delete that too.
                 if (user.UserGame != null)
                 {

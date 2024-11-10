@@ -1,9 +1,11 @@
-﻿using SpyderByteDataAccess.Models.Leaderboards;
+﻿using Microsoft.EntityFrameworkCore;
+using SpyderByteDataAccess.Models.Leaderboards;
 using SpyderByteDataAccess.Models.Users;
 using SpyderByteResources.Enums;
 
 namespace SpyderByteDataAccess.Models.Games
 {
+    [Index(nameof(Type))]
     public class Game
     {
         public Guid Id { get; set; }

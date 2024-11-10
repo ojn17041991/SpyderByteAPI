@@ -33,10 +33,23 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
                 returnedLeaderboard.Should().NotBeNull();
                 returnedLeaderboard.Result.Should().Be(ModelResult.OK);
                 returnedLeaderboard.Data.Should().NotBeNull();
-                returnedLeaderboard.Data!.LeaderboardRecords.Count().Should().Be(storedLeaderboard.LeaderboardRecords.Count());
-                returnedLeaderboard.Data.Should().BeEquivalentTo(storedLeaderboard);
+                returnedLeaderboard.Data.Should().BeEquivalentTo
+                (
+                    storedLeaderboard,
+                    options => options
+                        .Excluding(l => l.LeaderboardGame)
+                        .Excluding(l => l.LeaderboardRecords)
+                );
+                returnedLeaderboard.Data!.LeaderboardRecords.Should().BeEquivalentTo
+                (
+                    storedLeaderboard.LeaderboardRecords,
+                    options => options
+                        .Excluding(lr => lr.Leaderboard)
+                );
             }
         }
+
+        // OJN: New code path. Need a new test to cover leaderboard == null.
 
         [Fact]
         public async Task Exceptions_Are_Caught_And_Handled()

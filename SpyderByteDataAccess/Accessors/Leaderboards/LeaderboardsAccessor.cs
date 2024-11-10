@@ -19,13 +19,31 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
         {
             try
             {
-                Leaderboard? data = await context.Leaderboards
+                // Get the leaderboard.
+                Leaderboard? leaderboard = await context.Leaderboards
                     .Include(l => l.LeaderboardGame)
-                        .ThenInclude(l => l.Game)
-                    .Include(l => l.LeaderboardRecords)
-                    .Where(l => l.Id == id)
-                    .SingleOrDefaultAsync();
-                return new DataResponse<Leaderboard?>(data, data == null ? ModelResult.NotFound : ModelResult.OK);
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(l => l.Id == id);
+
+                if (leaderboard == null)
+                {
+                    logger.LogInformation($"Unable to get leaderboard. Could not find a leaderboard of ID {id}.");
+                    return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                }
+
+                // Get the records separately.
+                ICollection<LeaderboardRecord> records = await context.LeaderboardRecords
+                    .Include(lr => lr.Leaderboard)
+                    .AsNoTracking()
+                    .Where(r => r.LeaderboardId == id)
+                    .ToListAsync();
+
+                // Join the records to the leaderboard.
+                // This is quicker than letting EF core do the join.
+                leaderboard.LeaderboardRecords = records;
+
+
+                return new DataResponse<Leaderboard?>(leaderboard, leaderboard == null ? ModelResult.NotFound : ModelResult.OK);
             }
             catch (Exception e)
             {
