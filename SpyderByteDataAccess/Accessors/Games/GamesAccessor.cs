@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
@@ -25,7 +24,9 @@ namespace SpyderByteDataAccess.Accessors.Games
                         .ThenInclude(ug => ug!.User)
                     .Include(g => g.LeaderboardGame)
                         .ThenInclude(lg => lg!.Leaderboard)
-                    .OrderBy(g => g.PublishDate).ToListAsync();
+                    .AsNoTracking()
+                    .OrderBy(g => g.PublishDate)
+                    .ToListAsync();
                 return new DataResponse<IList<Game>?>(data, ModelResult.OK);
             }
             catch (Exception e)
@@ -42,6 +43,7 @@ namespace SpyderByteDataAccess.Accessors.Games
                 Game? game = await context.Games
                     .Include(j => j.UserGame)
                         .ThenInclude(uj => uj!.User)
+                    .AsNoTracking()
                     .SingleOrDefaultAsync(j => j.Id == id);
                 return new DataResponse<Game?>(game, game == null ? ModelResult.NotFound : ModelResult.OK);
             }
