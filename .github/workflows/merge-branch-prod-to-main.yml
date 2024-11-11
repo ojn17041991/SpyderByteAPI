@@ -15,6 +15,6 @@ jobs:
         uses: devmasx/merge-branch@master
         with:
           type: now
-          target_branch: test
+          target_branch: main
           message: Merge PROD branch into MAIN branch following PROD update.
           github_token: ${{ secrets.GITHUB_TOKEN }}
