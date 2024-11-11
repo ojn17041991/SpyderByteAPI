@@ -1,0 +1,20 @@
+name: Merge PROD branch into MAIN branch
+
+on:
+  push:
+    branches: [ "prod" ]
+
+jobs:
+  merge-branch:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Merge PROD into MAIN
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: test
+          message: Merge PROD branch into MAIN branch following PROD update.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
