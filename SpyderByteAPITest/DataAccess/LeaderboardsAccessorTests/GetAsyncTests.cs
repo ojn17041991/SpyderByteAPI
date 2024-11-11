@@ -49,7 +49,23 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
             }
         }
 
-        // OJN: New code path. Need a new test to cover leaderboard == null.
+        [Fact]
+        public async Task Can_Not_Get_Leaderboard_Records_From_Accessor_With_Invalid_Id()
+        {
+            // Arrange
+            Guid leaderboardId = Guid.NewGuid();
+
+            // Act
+            var returnedLeaderboard = await _helper.Accessor.GetAsync(leaderboardId);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                returnedLeaderboard.Should().NotBeNull();
+                returnedLeaderboard.Result.Should().Be(ModelResult.NotFound);
+                returnedLeaderboard.Data.Should().BeNull();
+            }
+        }
 
         [Fact]
         public async Task Exceptions_Are_Caught_And_Handled()
