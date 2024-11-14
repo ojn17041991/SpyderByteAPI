@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
 using SpyderByteAPI.Models.Authentication;
+using SpyderByteResources;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
 using SpyderByteServices.Services.Authentication.Abstract;
@@ -22,7 +23,7 @@ namespace SpyderByteAPI.Controllers
         {
             await authenticationService.Test();
             //ojn
-            return Ok();
+            return Ok(Class1.Name);
         }
 
         [HttpPost]
