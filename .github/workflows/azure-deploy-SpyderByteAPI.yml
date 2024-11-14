@@ -1,4 +1,4 @@
-name: Deploy SpyderByte API Project to Azure
+name: Deploy SpyderByte Resources Project to Azure
 
 env:
   AZURE_WEBAPP_NAME: SpyderByteAPI-AppService
@@ -8,7 +8,7 @@ env:
 on:
   push:
     branches: [ "prod" ]
-    paths: [ "SpyderByteAPI/**" ]
+    paths: [ "SpyderByteResources/**" ]
   workflow_dispatch:
 
 permissions:
@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build -target:SpyderByteAPI --configuration Release
+        run: dotnet build -target:SpyderByteResources --configuration Release
 
       - name: dotnet publish
         run: dotnet publish -c Release --property:PublishDir=${{env.DOTNET_ROOT}}/myapp
