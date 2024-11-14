@@ -17,6 +17,14 @@ namespace SpyderByteAPI.Controllers
         private readonly IMapper mapper = mapper;
         private readonly IFeatureManager featureManager = featureManager;
 
+        [HttpGet]
+        public async Task<IActionResult> Test()
+        {
+            await authenticationService.Test();
+
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
