@@ -46,6 +46,6 @@ jobs:
       with:
         server: waws-prod-blu-343.ftp.azurewebsites.windows.net
         server-dir: site/wwwroot/
-        local-dir: ${{env.DOTNET_ROOT}}/myapp
+        local-dir: ${{env.DOTNET_ROOT}}/myapp/
         username: SpyderByteAPI-AppService\SpyderByteAPI-AppService-FTPS
         password: ${{ secrets.FTP_PASSWORD }}
