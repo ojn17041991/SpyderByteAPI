@@ -1,0 +1,21 @@
+name: Azure FTP Deployment
+
+on:
+  push:
+    branches: [ "prod" ]
+    
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout latest code
+      uses: actions/checkout@v4
+    
+    - name: Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: waws-prod-blu-343.ftp.azurewebsites.windows.net
+        server-dir: site/wwwroot/
+        username: SpyderByteAPI-AppService\SpyderByteAPI-AppService-FTPS
+        password: ${{ secrets.FTP_PASSWORD }}
