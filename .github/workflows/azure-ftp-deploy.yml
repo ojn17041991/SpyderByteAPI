@@ -8,6 +8,10 @@ env:
 on:
   push:
     branches: [ "prod" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
     
 jobs:
   web-deploy:
@@ -16,10 +20,23 @@ jobs:
     
     steps:
     - name: Checkout latest code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
+
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Set up dependency caching for faster builds
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
 
     - name: Build with dotnet
-      run: dotnet build --configuration Release
+      run: dotnet build --target:SpyderByteAPI --configuration Release
 
     - name: dotnet publish
       run: dotnet publish -c Release --property:PublishDir=${{env.DOTNET_ROOT}}/myapp
