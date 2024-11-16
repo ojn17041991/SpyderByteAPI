@@ -29,6 +29,10 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
+
+    - name: Give the Azure Web App time to wake up.
+      run: Start-Sleep -s 10
+      shell: powershell
   
     - name: Checkout latest code.
       uses: actions/checkout@v3
