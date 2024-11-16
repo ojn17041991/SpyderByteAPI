@@ -32,7 +32,6 @@ jobs:
 
     - name: Give the Azure Web App time to wake up.
       run: Start-Sleep -s 10
-      shell: powershell
   
     - name: Checkout latest code.
       uses: actions/checkout@v3
