@@ -1,14 +1,14 @@
 name: Deploy to Azure Web App (FTP)
 
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+  
 env:
   AZURE_WEBAPP_NAME: SpyderByteAPI-AppService
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   DOTNET_VERSION: '8.x'
-
-on:
-  push:
-    branches: [ "main_block" ]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -19,9 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Login to Azure
-      run: |
-        az login --identity --username ${{ secrets.API_IDENTITY }}
+    #- name: Login to Azure
+      #run: |
+        #az login --identity --username ${{ secrets.API_IDENTITY }}
         
     - name: Restart web app to unlock files
       run: |
