@@ -31,7 +31,8 @@ jobs:
           az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
 
     - name: Give the Azure Web App time to wake up.
-      run: Start-Sleep -s 10
+      run: sleep 10s
+      shell: bash
   
     - name: Checkout latest code.
       uses: actions/checkout@v3
