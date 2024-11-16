@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Run Unit Tests
 
 on:
   push:
@@ -7,8 +7,7 @@ on:
 
 jobs:
   build:
-
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -18,11 +17,11 @@ jobs:
         with:
           dotnet-version: '8.x'
           
-      - name: Install dependencies
+      - name: Restore dependencies.
         run: dotnet restore
         
-      - name: Build
+      - name: Create build.
         run: dotnet build --configuration Release --no-restore
         
-      - name: Test
+      - name: Run unit tests.
         run: dotnet test --no-restore --verbosity normal
