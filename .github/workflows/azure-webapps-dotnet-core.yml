@@ -61,10 +61,10 @@ jobs:
           name: .net-app
 
       - name: Extract archive
-        run: tar -xf ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/net-app.zip
+        run: tar -xf ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/.net-app.zip
 
       - name: Delete archive
-        run: del ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/net-app.zip
+        run: del ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/.net-app.zip
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
