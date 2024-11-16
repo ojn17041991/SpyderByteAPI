@@ -7,7 +7,7 @@ env:
 
 on:
   push:
-    branches: [ "prod_test" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -48,7 +48,7 @@ jobs:
   deploy:
     permissions:
       contents: none
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
@@ -59,6 +59,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
+
+      - name: Extract archive
+        run: tar -xf net-app.zip
+
+      - name: Delete archive
+        run: del net-app.zip
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
