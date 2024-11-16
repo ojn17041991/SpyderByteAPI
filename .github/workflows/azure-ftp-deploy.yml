@@ -19,6 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Restart web app to unlock files
+      run: |
+        az appservice web restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
+  
     - name: Checkout latest code
       uses: actions/checkout@v3
 
