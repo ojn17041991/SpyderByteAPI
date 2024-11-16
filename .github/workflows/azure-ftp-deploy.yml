@@ -21,7 +21,7 @@ jobs:
     steps:
     - name: Login to Azure
       run: |
-        az login --username olivernicholls91@hotmail.com --password ${{ secrets.ADMIN_PASSWORD }}
+        az login --username --identity ${{ secrets.API_IDENTITY }}
         
     - name: Restart web app to unlock files
       run: |
