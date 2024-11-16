@@ -1,4 +1,4 @@
-name: FTP Deploy to Azure Web App
+name: Deploy to Azure Web App (FTP)
 
 env:
   AZURE_WEBAPP_NAME: SpyderByteAPI-AppService
