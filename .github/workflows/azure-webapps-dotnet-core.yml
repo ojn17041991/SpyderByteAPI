@@ -1,31 +1,32 @@
 name: Deploy to Azure Web App
 
+on:
+  push:
+    branches: [ "prod" ]
+  workflow_dispatch:
+
 env:
   AZURE_WEBAPP_NAME: SpyderByteAPI-AppService
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   DOTNET_VERSION: '8.x'
-
-on:
-  push:
-    branches: [ "main_block" ]
-  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout the git repo.
+        uses: actions/checkout@v3
 
-      - name: Set up .NET Core
+      - name: Set up .NET Core SDK.
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Set up dependency caching for faster builds
+      - name: Set up dependency caching for faster builds.
         uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
@@ -33,34 +34,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Build with dotnet
+      - name: Create the build.
         run: dotnet build --target:SpyderByteAPI --configuration Release
 
-      - name: dotnet publish
+      - name: Create the publish output.
         run: dotnet publish -c Release --property:PublishDir=${{env.DOTNET_ROOT}}/myapp
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
-
-  deploy:
-    permissions:
-      contents: none
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: .net-app
-
-      - name: Deploy to Azure Web App
+      - name: ZIP deploy to Azure Web App.
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
