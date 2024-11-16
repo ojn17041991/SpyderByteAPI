@@ -21,7 +21,7 @@ jobs:
     steps:
     - name: Restart web app to unlock files
       run: |
-        az appservice web restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
+        az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
   
     - name: Checkout latest code
       uses: actions/checkout@v3
