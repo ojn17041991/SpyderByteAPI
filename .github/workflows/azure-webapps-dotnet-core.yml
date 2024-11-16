@@ -60,6 +60,9 @@ jobs:
         with:
           name: .net-app
 
+      - name: See contents
+        run: dir ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
       - name: Extract archive
         run: tar -xf ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/.net-app.zip
 
