@@ -49,12 +49,6 @@
     <None Update="Databases\sbapi.db-wal">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="large-file">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="large-file - Copy %285%29">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

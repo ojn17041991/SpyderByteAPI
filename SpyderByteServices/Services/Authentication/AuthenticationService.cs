@@ -24,11 +24,6 @@ namespace SpyderByteServices.Services.Authentication
         private readonly IEncodingService encodingService = encodingService;
         private readonly IPasswordService passwordService = passwordService;
 
-        public async Task<bool> Test()
-        {
-            return true;
-        }
-
         public async Task<IDataResponse<string>> AuthenticateAsync(Login login)
         {
             IEnumerable<Claim> claims;

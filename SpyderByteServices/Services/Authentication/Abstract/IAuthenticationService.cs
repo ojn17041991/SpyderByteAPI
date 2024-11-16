@@ -6,8 +6,6 @@ namespace SpyderByteServices.Services.Authentication.Abstract
 {
     public interface IAuthenticationService
     {
-        Task<bool> Test();
-
         Task<IDataResponse<string>> AuthenticateAsync(Login login);
 
         IDataResponse<string> Refresh(HttpContext context);
