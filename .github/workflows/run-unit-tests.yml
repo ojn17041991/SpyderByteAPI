@@ -3,6 +3,7 @@ name: Unit Tests
 on:
   push:
     branches: [ "main" ]
+    paths: [ "**.cs" ]
 
 jobs:
   build:
