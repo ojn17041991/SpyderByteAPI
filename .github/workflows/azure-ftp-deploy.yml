@@ -19,6 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Login to Azure
+      run: |
+        az login --username olivernicholls91@hotmail.com --password ${{ secrets.ADMIN_PASSWORD }}
+        
     - name: Restart web app to unlock files
       run: |
         az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
