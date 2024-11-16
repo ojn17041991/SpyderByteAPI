@@ -16,6 +16,6 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: waws-prod-blu-343.ftp.azurewebsites.windows.net
-        server-dir: site\wwwroot\
+        server-dir: site/wwwroot/
         username: SpyderByteAPI-AppService\SpyderByteAPI-AppService-FTPS
         password: ${{ secrets.FTP_PASSWORD }}
