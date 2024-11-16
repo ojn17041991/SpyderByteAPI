@@ -1,4 +1,7 @@
-on: push
+on:
+  push:
+    branches: [ "prod" ]
+    
 name: Azure FTP Deployment
 jobs:
   web-deploy:
