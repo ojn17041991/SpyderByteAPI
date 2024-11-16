@@ -20,7 +20,7 @@ jobs:
     
     steps:
     - name: Azure login
-    - uses: azure/login@v2
+      uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
