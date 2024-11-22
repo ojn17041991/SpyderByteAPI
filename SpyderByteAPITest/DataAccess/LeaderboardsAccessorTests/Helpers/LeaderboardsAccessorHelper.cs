@@ -48,21 +48,34 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers
             return game;
         }
 
-        public async Task<Leaderboard> AddLeaderboardWithRecords()
+        public async Task<Leaderboard> AddLeaderboardWithRecords(bool deepClone = true)
         {
             var leaderboard = _fixture.Create<Leaderboard>();
             _context.Leaderboards.Add(leaderboard);
             await _context.SaveChangesAsync();
-            return DeepClone(leaderboard);
+            return deepClone ? DeepClone(leaderboard) : leaderboard;
         }
         
-        public async Task<Leaderboard> AddLeaderboardWithoutRecords()
+        public async Task<Leaderboard> AddLeaderboardWithoutRecords(bool deepClone = true)
         {
             var leaderboard = _fixture.Create<Leaderboard>();
             leaderboard.LeaderboardRecords = new List<LeaderboardRecord>();
             _context.Leaderboards.Add(leaderboard);
             await _context.SaveChangesAsync();
-            return DeepClone(leaderboard);
+            return deepClone ? DeepClone(leaderboard) : leaderboard;
+        }
+        
+        public async Task<Leaderboard> AddRecordsToLeaderboard(Leaderboard leaderboard, int numRecords, bool deepClone = true)
+        {
+            for (int i = 0; i < numRecords; ++i)
+            {
+                var leaderboardRecord = _fixture.Create<LeaderboardRecord>();
+                leaderboardRecord.Leaderboard = leaderboard;
+                leaderboardRecord.LeaderboardId = leaderboard.Id;
+                _context.LeaderboardRecords.Add(leaderboardRecord);
+            }
+            await _context.SaveChangesAsync();
+            return deepClone ? DeepClone(leaderboard) : leaderboard;
         }
 
         public async Task<List<Leaderboard>> GetLeaderboards()

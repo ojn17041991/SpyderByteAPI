@@ -4,6 +4,7 @@ using SpyderByteTest.DataAccess.GamesAccessorTests.Helpers;
 using SpyderByteDataAccess.Models.Games;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Responses.Abstract;
+using System.Diagnostics;
 
 namespace SpyderByteTest.DataAccess.GamesAccessorTests
 {
@@ -48,6 +49,32 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests
                         .Excluding(ug => ug.User)
                         .Excluding(ug => ug.Game)
                 );
+            }
+        }
+
+        [Fact]
+        [Trait("Category", "Performance")]
+        public async Task All_Games_Are_Returned_Within_Expected_Time_Frame()
+        {
+            // Arrange
+            const int numGames = 1000;
+            const int thresholdMs = 1000;
+
+            _ = await _helper.AddGames(numGames);
+
+            // Act
+            Stopwatch stopWatch = Stopwatch.StartNew();
+            var returnedGames = await _helper.Accessor.GetAllAsync();
+            stopWatch.Stop();
+
+            // Assert
+            using (new AssertionScope())
+            {
+                returnedGames.Should().NotBeNull();
+                returnedGames.Result.Should().Be(ModelResult.OK);
+                returnedGames.Data.Should().NotBeNull();
+                returnedGames.Data.Should().HaveCount(numGames);
+                stopWatch.ElapsedMilliseconds.Should().BeLessThan(thresholdMs);
             }
         }
 

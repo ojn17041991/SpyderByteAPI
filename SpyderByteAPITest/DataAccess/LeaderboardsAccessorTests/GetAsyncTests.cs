@@ -4,6 +4,7 @@ using SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers;
 using SpyderByteDataAccess.Models.Leaderboards;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Responses.Abstract;
+using System.Diagnostics;
 
 namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
 {
@@ -64,6 +65,34 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
                 returnedLeaderboard.Should().NotBeNull();
                 returnedLeaderboard.Result.Should().Be(ModelResult.NotFound);
                 returnedLeaderboard.Data.Should().BeNull();
+            }
+        }
+
+        [Fact]
+        [Trait("Category", "Performance")]
+        public async Task All_Leaderboard_Records_Are_Returned_Within_Expected_Time_Frame()
+        {
+            // Arrange
+            const int numRecords = 1000;
+            const int thresholdMs = 1000;
+
+            var storedLeaderboard = await _helper.AddLeaderboardWithoutRecords(deepClone: false);
+            
+            _ = await _helper.AddRecordsToLeaderboard(storedLeaderboard, numRecords);
+
+            // Act
+            Stopwatch stopWatch = Stopwatch.StartNew();
+            var returnedLeaderboard = await _helper.Accessor.GetAsync(storedLeaderboard.Id);
+            stopWatch.Stop();
+
+            // Assert
+            using (new AssertionScope())
+            {
+                returnedLeaderboard.Should().NotBeNull();
+                returnedLeaderboard.Result.Should().Be(ModelResult.OK);
+                returnedLeaderboard.Data.Should().NotBeNull();
+                returnedLeaderboard.Data!.LeaderboardRecords.Should().HaveCount(numRecords);
+                stopWatch.ElapsedMilliseconds.Should().BeLessThan(thresholdMs);
             }
         }
 

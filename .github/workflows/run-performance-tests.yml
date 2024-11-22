@@ -23,5 +23,5 @@ jobs:
       - name: Create build.
         run: dotnet build --configuration Release --no-restore
         
-      - name: Run unit tests.
-        run: dotnet test --no-restore --verbosity normal --filter TestCategory!=Performance
+      - name: Run performance tests.
+        run: dotnet test --no-restore --verbosity normal --filter TestCategory=Performance

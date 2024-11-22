@@ -31,14 +31,32 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
             Accessor = new GamesAccessor(_context, logger.Object);
         }
 
-        public async Task<Game> AddGame()
+        public async Task<Game> AddGame(bool deepClone = true)
         {
             var game = _fixture.Create<Game>();
             _context.Games.Add(game);
             _context.UserGames.Add(game.UserGame!);
             _context.LeaderboardGames.Add(game.LeaderboardGame!);
             await _context.SaveChangesAsync();
-            return DeepClone(game);
+            return deepClone ? DeepClone(game) : game;
+        }
+
+        public async Task<IEnumerable<Game>> AddGames(int numGames, bool deepClone = true)
+        {
+            IList<Game> games = new List<Game>();
+
+            for (int i = 0; i < numGames; ++i)
+            {
+                var game = _fixture.Create<Game>();
+                _context.Games.Add(game);
+                _context.UserGames.Add(game.UserGame!);
+                _context.LeaderboardGames.Add(game.LeaderboardGame!);
+                games.Add(deepClone ? DeepClone(game) : game);
+            }
+
+            await _context.SaveChangesAsync();
+            
+            return games;
         }
 
         public async Task<IList<Game>> GetGames()
