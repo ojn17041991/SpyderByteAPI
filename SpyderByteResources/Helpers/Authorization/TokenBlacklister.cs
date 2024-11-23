@@ -2,16 +2,28 @@
 {
     public class TokenBlacklister
     {
-        private static int MAX_TOKENS_STORED = 100;
-        private static HashSet<string> blacklist = new HashSet<string>();
+        public static int MaxTokensStored { get; } = 100;
+
+        private static Queue<string> blacklist = new Queue<string>();
 
         public static void AddTokenToBlacklist(string token)
         {
-            blacklist.Add(token);
-            if (blacklist.Count > MAX_TOKENS_STORED)
+            blacklist.Enqueue(token);
+
+            if (blacklist.Count > MaxTokensStored)
             {
-                blacklist.Remove(blacklist.First());
+                _ = blacklist.Dequeue();
             }
+        }
+
+        public static void ClearBlacklist()
+        {
+            blacklist.Clear(); 
+        }
+
+        public static IList<string> GetBlacklistedTokens()
+        {
+            return blacklist.ToList();
         }
 
         public static bool IsTokenBlacklisted(string token)
