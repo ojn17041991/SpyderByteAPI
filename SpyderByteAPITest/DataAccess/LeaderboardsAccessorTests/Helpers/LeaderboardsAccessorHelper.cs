@@ -79,7 +79,16 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers
             _context.ChangeTracker.Clear();
             return leaderboard;
         }
-        
+
+        public async Task<Leaderboard> AddLeaderboardWithGame()
+        {
+            var leaderboard = _fixture.Create<Leaderboard>();
+            _context.Leaderboards.Add(leaderboard);
+            await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
+            return leaderboard;
+        }
+
         public async Task<Leaderboard> AddLeaderboardWithoutGame()
         {
             var leaderboard = _fixture.Create<Leaderboard>();

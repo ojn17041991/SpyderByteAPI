@@ -114,10 +114,7 @@ namespace SpyderByteDataAccess.Accessors.Users
         {
             try
             {
-                User? storedUser = await context.Users
-                    .Include(u => u.UserGame)
-                    .SingleOrDefaultAsync(u => u.Id == user.Id);
-
+                User? storedUser = await context.Users.SingleOrDefaultAsync(u => u.Id == user.Id);
                 if (storedUser == null)
                 {
                     logger.LogInformation($"Unable to patch user. Could not find a user of ID {user.Id}.");
@@ -140,7 +137,8 @@ namespace SpyderByteDataAccess.Accessors.Users
                         return new DataResponse<User?>(null, ModelResult.AlreadyExists);
                     }
 
-                    if (storedUser.UserGame == null)
+                    var storedUserGame = await context.UserGames.SingleOrDefaultAsync(ug => ug.UserId == user.Id);
+                    if (storedUserGame == null)
                     {
                         // Assign the game to the user as a new record.
                         var userGame = new UserGame
@@ -153,7 +151,6 @@ namespace SpyderByteDataAccess.Accessors.Users
                     else
                     {
                         // Update the existing record.
-                        var storedUserGame = await context.UserGames.SingleAsync(ug => ug.UserId == storedUser.UserGame.UserId && ug.GameId == storedUser.UserGame.GameId);
                         storedUserGame.GameId = user.GameId.Value;
                     }
                 }

@@ -19,11 +19,43 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
         }
 
         [Fact]
-        public async Task Can_Patch_Leaderboard_In_Accessor()
+        public async Task Can_Patch_Leaderboard_With_Game_Assignment_In_Accessor()
         {
             // Arrange
             var storedGame = await _helper.AddGameWithoutLeaderboard();
-            var storedLeaderboard = await _helper.AddLeaderboardWithoutRecords();
+            var storedLeaderboard = await _helper.AddLeaderboardWithGame();
+            var patchLeaderboard = _helper.GeneratePatchLeaderboard();
+            patchLeaderboard.GameId = storedGame.Id;
+            patchLeaderboard.Id = storedLeaderboard.Id;
+
+            // Act
+            var returnedLeaderboard = await _helper.Accessor.PatchAsync(patchLeaderboard);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                // Check the response.
+                returnedLeaderboard.Should().NotBeNull();
+                returnedLeaderboard.Result.Should().Be(ModelResult.OK);
+                returnedLeaderboard.Data.Should().NotBeNull();
+                returnedLeaderboard.Data!.LeaderboardGame.LeaderboardId.Should().Be(patchLeaderboard.Id);
+                returnedLeaderboard.Data!.LeaderboardGame.GameId.Should().Be(patchLeaderboard.GameId);
+
+                // Check the database.
+                var updatedStoredLeaderboard = await _helper.GetLeaderboard(returnedLeaderboard.Data!.Id);
+                updatedStoredLeaderboard.Should().NotBeNull();
+                updatedStoredLeaderboard!.Id.Should().Be(returnedLeaderboard.Data!.Id);
+                updatedStoredLeaderboard!.LeaderboardRecords.Should().BeEquivalentTo(returnedLeaderboard.Data!.LeaderboardRecords);
+                updatedStoredLeaderboard!.LeaderboardGame.GameId.Should().Be(patchLeaderboard.GameId);
+            }
+        }
+
+        [Fact]
+        public async Task Can_Patch_Leaderboard_Without_Game_Assignment_In_Accessor()
+        {
+            // Arrange
+            var storedGame = await _helper.AddGameWithoutLeaderboard();
+            var storedLeaderboard = await _helper.AddLeaderboardWithoutGame();
             var patchLeaderboard = _helper.GeneratePatchLeaderboard();
             patchLeaderboard.GameId = storedGame.Id;
             patchLeaderboard.Id = storedLeaderboard.Id;
@@ -111,29 +143,6 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
                 // Check the response.
                 returnedLeaderboard.Should().NotBeNull();
                 returnedLeaderboard.Result.Should().Be(ModelResult.AlreadyExists);
-                returnedLeaderboard.Data.Should().BeNull();
-            }
-        }
-
-        [Fact]
-        public async Task Can_Not_Patch_Leaderboard_In_Accessor_If_Leaderboard_Is_Not_Related_To_Any_Existing_Game()
-        {
-            // Arrange
-            var storedGame = await _helper.AddGameWithoutLeaderboard();
-            var storedLeaderboard = await _helper.AddLeaderboardWithoutGame();
-            var patchLeaderboard = _helper.GeneratePatchLeaderboard();
-            patchLeaderboard.GameId = storedGame.Id;
-            patchLeaderboard.Id = storedLeaderboard.Id;
-
-            // Act
-            var returnedLeaderboard = await _helper.Accessor.PatchAsync(patchLeaderboard);
-
-            // Assert
-            using (new AssertionScope())
-            {
-                // Check the response.
-                returnedLeaderboard.Should().NotBeNull();
-                returnedLeaderboard.Result.Should().Be(ModelResult.NotFound);
                 returnedLeaderboard.Data.Should().BeNull();
             }
         }

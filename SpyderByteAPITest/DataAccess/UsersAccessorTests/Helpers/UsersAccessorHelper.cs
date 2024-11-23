@@ -50,6 +50,16 @@ namespace SpyderByteTest.DataAccess.UsersAccessorTests.Helpers
             return user;
         }
 
+        public async Task<User> AddUserWithoutGame()
+        {
+            var user = _fixture.Create<User>();
+            user.UserGame = null!;
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
+            return user;
+        }
+
         public async Task<Game> AddGame()
         {
             var game = _fixture.Create<Game>();
