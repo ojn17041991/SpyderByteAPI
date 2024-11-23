@@ -73,6 +73,25 @@ namespace SpyderByteTest.Services.AuthenticationServiceTests
         }
 
         [Fact]
+        public async Task Can_Not_Authenticate_Unknown_User_Type()
+        {
+            // Arrange
+            var login = helper.AddLogin(UserType.Unknown);
+            helper.SetUseEmptyEncodingToken(true);
+
+            // Act
+            var authenticationResponse = await helper.Service.AuthenticateAsync(login);
+
+            // Assert
+            authenticationResponse.Should().NotBeNull();
+            authenticationResponse.Result.Should().Be(ModelResult.Error);
+            authenticationResponse.Data.Should().BeEmpty();
+
+            // Cleanup
+            helper.SetUseEmptyEncodingToken(false);
+        }
+
+        [Fact]
         public async Task Can_Authenticate_Utility()
         {
             // Arrange
