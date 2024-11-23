@@ -112,7 +112,8 @@ namespace SpyderByteDataAccess.Accessors.Users
 
         public async Task<IDataResponse<User?>> PatchAsync(PatchUser user)
         {
-            try {
+            try
+            {
                 User? storedUser = await context.Users
                     .Include(u => u.UserGame)
                     .SingleOrDefaultAsync(u => u.Id == user.Id);

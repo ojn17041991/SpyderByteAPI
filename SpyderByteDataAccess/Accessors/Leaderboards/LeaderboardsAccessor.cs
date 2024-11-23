@@ -147,18 +147,18 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
                     return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
                 }
 
-                var gameAllocatedToLeaderboard = await context.LeaderboardGames.AnyAsync(lg => lg.GameId == leaderboard.GameId && lg.LeaderboardId != leaderboard.Id);
-                if (gameAllocatedToLeaderboard == true)
-                {
-                    logger.LogInformation($"Unable to patch leaderboard. A leaderboard is already assigned to game of ID {leaderboard.GameId}.");
-                    return new DataResponse<Leaderboard?>(null, ModelResult.AlreadyExists);
-                }
-
                 LeaderboardGame? storedLeaderboardGame = await context.LeaderboardGames.SingleOrDefaultAsync(lg => lg.LeaderboardId == leaderboard.Id);
                 if (storedLeaderboardGame == null)
                 {
                     logger.LogInformation($"Unable to patch leaderboard. Could not find an existing game associated with leaderboard {leaderboard.Id}.");
                     return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                }
+
+                bool gameAllocatedToLeaderboard = await context.LeaderboardGames.AnyAsync(lg => lg.GameId == leaderboard.GameId && lg.LeaderboardId != leaderboard.Id);
+                if (gameAllocatedToLeaderboard == true)
+                {
+                    logger.LogInformation($"Unable to patch leaderboard. A leaderboard is already assigned to game of ID {leaderboard.GameId}.");
+                    return new DataResponse<Leaderboard?>(null, ModelResult.AlreadyExists);
                 }
 
                 storedLeaderboardGame.GameId = leaderboard.GameId;

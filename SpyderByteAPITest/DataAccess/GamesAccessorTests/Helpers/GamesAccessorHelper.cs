@@ -1,6 +1,5 @@
 ﻿using AutoFixture;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteDataAccess.Accessors.Games;
@@ -31,17 +30,18 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
             Accessor = new GamesAccessor(_context, logger.Object);
         }
 
-        public async Task<Game> AddGame(bool deepClone = true)
+        public async Task<Game> AddGame()
         {
             var game = _fixture.Create<Game>();
             _context.Games.Add(game);
             _context.UserGames.Add(game.UserGame!);
             _context.LeaderboardGames.Add(game.LeaderboardGame!);
             await _context.SaveChangesAsync();
-            return deepClone ? DeepClone(game) : game;
+            _context.ChangeTracker.Clear();
+            return game;
         }
 
-        public async Task<IEnumerable<Game>> AddGames(int numGames, bool deepClone = true)
+        public async Task<IEnumerable<Game>> AddGames(int numGames)
         {
             IList<Game> games = new List<Game>();
 
@@ -51,11 +51,11 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
                 _context.Games.Add(game);
                 _context.UserGames.Add(game.UserGame!);
                 _context.LeaderboardGames.Add(game.LeaderboardGame!);
-                games.Add(deepClone ? DeepClone(game) : game);
+                games.Add(game);
             }
 
             await _context.SaveChangesAsync();
-            
+            _context.ChangeTracker.Clear();
             return games;
         }
 
@@ -105,21 +105,6 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
             }
 
             await _context.SaveChangesAsync();
-        }
-
-        private Game DeepClone(Game game)
-        {
-            return new Game
-            {
-                Id = game.Id,
-                Name = game.Name,
-                Url = game.Url,
-                ImgurUrl = game.ImgurUrl,
-                ImgurImageId = game.ImgurImageId,
-                PublishDate = game.PublishDate,
-                LeaderboardGame = game.LeaderboardGame,
-                UserGame = game.UserGame
-            };
         }
     }
 }

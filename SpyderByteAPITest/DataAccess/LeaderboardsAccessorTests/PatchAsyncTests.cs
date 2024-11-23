@@ -70,6 +70,29 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
         }
 
         [Fact]
+        public async Task Can_Not_Patch_Leaderboard_In_Accessor_If_Game_Does_Not_Exist()
+        {
+            // Arrange
+            var storedGame = await _helper.AddGameWithoutLeaderboard();
+            var storedLeaderboard = await _helper.AddLeaderboardWithoutRecords();
+            var patchLeaderboard = _helper.GeneratePatchLeaderboard();
+            patchLeaderboard.GameId = Guid.NewGuid();
+            patchLeaderboard.Id = storedLeaderboard.Id;
+
+            // Act
+            var returnedLeaderboard = await _helper.Accessor.PatchAsync(patchLeaderboard);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                // Check the response.
+                returnedLeaderboard.Should().NotBeNull();
+                returnedLeaderboard.Result.Should().Be(ModelResult.NotFound);
+                returnedLeaderboard.Data.Should().BeNull();
+            }
+        }
+
+        [Fact]
         public async Task Can_Not_Patch_Leaderboard_In_Accessor_With_Game_That_Already_Has_A_Leaderboard()
         {
             // Arrange
@@ -88,6 +111,29 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
                 // Check the response.
                 returnedLeaderboard.Should().NotBeNull();
                 returnedLeaderboard.Result.Should().Be(ModelResult.AlreadyExists);
+                returnedLeaderboard.Data.Should().BeNull();
+            }
+        }
+
+        [Fact]
+        public async Task Can_Not_Patch_Leaderboard_In_Accessor_If_Leaderboard_Is_Not_Related_To_Any_Existing_Game()
+        {
+            // Arrange
+            var storedGame = await _helper.AddGameWithoutLeaderboard();
+            var storedLeaderboard = await _helper.AddLeaderboardWithoutGame();
+            var patchLeaderboard = _helper.GeneratePatchLeaderboard();
+            patchLeaderboard.GameId = storedGame.Id;
+            patchLeaderboard.Id = storedLeaderboard.Id;
+
+            // Act
+            var returnedLeaderboard = await _helper.Accessor.PatchAsync(patchLeaderboard);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                // Check the response.
+                returnedLeaderboard.Should().NotBeNull();
+                returnedLeaderboard.Result.Should().Be(ModelResult.NotFound);
                 returnedLeaderboard.Data.Should().BeNull();
             }
         }

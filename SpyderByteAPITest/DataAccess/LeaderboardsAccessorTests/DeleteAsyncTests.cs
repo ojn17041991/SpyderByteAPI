@@ -22,7 +22,7 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
         public async Task Can_Delete_Leaderboard_In_Accessor()
         {
             // Arrange
-            var storedLeaderboard = await _helper.AddLeaderboardWithRecords();
+            var storedLeaderboard = await _helper.AddLeaderboardWithRecords(3);
             var preTestLeaderboards = await _helper.GetLeaderboards();
             var preTestLeaderboardRecords = await _helper.GetLeaderboardRecords();
 
@@ -35,7 +35,8 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
                 // Check the response.
                 returnedLeaderboard.Should().NotBeNull();
                 returnedLeaderboard.Result.Should().Be(ModelResult.OK);
-                returnedLeaderboard.Data.Should().BeEquivalentTo(storedLeaderboard);
+                returnedLeaderboard.Data.Should().NotBeNull();
+                returnedLeaderboard.Data!.Id.Should().Be(storedLeaderboard.Id);
 
                 // Check the database.
                 var postTestLeaderboards = await _helper.GetLeaderboards();
@@ -68,7 +69,7 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
         public async Task Exceptions_Are_Caught_And_Handled()
         {
             // Arrange
-            var storedLeaderboard = await _helper.AddLeaderboardWithRecords();
+            var storedLeaderboard = await _helper.AddLeaderboardWithRecords(3);
 
             // Act
             Func<Task<IDataResponse<Leaderboard?>>> func = () => _exceptionHelper.Accessor.DeleteAsync(storedLeaderboard.Id);

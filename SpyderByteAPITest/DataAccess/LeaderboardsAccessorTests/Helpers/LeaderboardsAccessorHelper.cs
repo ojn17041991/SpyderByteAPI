@@ -36,6 +36,7 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers
             var game = _fixture.Create<Game>();
             _context.Games.Add(game);
             await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
             return game;
         }
 
@@ -45,28 +46,17 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers
             game.LeaderboardGame = null;
             _context.Games.Add(game);
             await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
             return game;
         }
 
-        public async Task<Leaderboard> AddLeaderboardWithRecords(bool deepClone = true)
+        public async Task<Leaderboard> AddLeaderboardWithRecords(int numRecords)
         {
             var leaderboard = _fixture.Create<Leaderboard>();
+            leaderboard.LeaderboardRecords.Clear();
             _context.Leaderboards.Add(leaderboard);
             await _context.SaveChangesAsync();
-            return deepClone ? DeepClone(leaderboard) : leaderboard;
-        }
-        
-        public async Task<Leaderboard> AddLeaderboardWithoutRecords(bool deepClone = true)
-        {
-            var leaderboard = _fixture.Create<Leaderboard>();
-            leaderboard.LeaderboardRecords = new List<LeaderboardRecord>();
-            _context.Leaderboards.Add(leaderboard);
-            await _context.SaveChangesAsync();
-            return deepClone ? DeepClone(leaderboard) : leaderboard;
-        }
-        
-        public async Task<Leaderboard> AddRecordsToLeaderboard(Leaderboard leaderboard, int numRecords, bool deepClone = true)
-        {
+
             for (int i = 0; i < numRecords; ++i)
             {
                 var leaderboardRecord = _fixture.Create<LeaderboardRecord>();
@@ -74,8 +64,30 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers
                 leaderboardRecord.LeaderboardId = leaderboard.Id;
                 _context.LeaderboardRecords.Add(leaderboardRecord);
             }
+
             await _context.SaveChangesAsync();
-            return deepClone ? DeepClone(leaderboard) : leaderboard;
+            _context.ChangeTracker.Clear();
+            return leaderboard;
+        }
+        
+        public async Task<Leaderboard> AddLeaderboardWithoutRecords()
+        {
+            var leaderboard = _fixture.Create<Leaderboard>();
+            leaderboard.LeaderboardRecords = new List<LeaderboardRecord>();
+            _context.Leaderboards.Add(leaderboard);
+            await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
+            return leaderboard;
+        }
+        
+        public async Task<Leaderboard> AddLeaderboardWithoutGame()
+        {
+            var leaderboard = _fixture.Create<Leaderboard>();
+            leaderboard.LeaderboardGame = null!;
+            _context.Leaderboards.Add(leaderboard);
+            await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
+            return leaderboard;
         }
 
         public async Task<List<Leaderboard>> GetLeaderboards()
@@ -111,16 +123,6 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers
         public async Task<LeaderboardRecord?> GetLeaderboardRecord(Guid id)
         {
             return await _context.LeaderboardRecords.SingleOrDefaultAsync(lr => lr.Id == id);
-        }
-
-        private Leaderboard DeepClone(Leaderboard leaderboard)
-        {
-            return new Leaderboard
-            {
-                Id = leaderboard.Id,
-                LeaderboardGame = leaderboard.LeaderboardGame,
-                LeaderboardRecords = leaderboard.LeaderboardRecords
-            };
         }
     }
 }

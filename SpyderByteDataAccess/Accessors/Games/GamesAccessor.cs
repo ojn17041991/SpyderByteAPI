@@ -41,10 +41,10 @@ namespace SpyderByteDataAccess.Accessors.Games
             try
             {
                 Game? game = await context.Games
-                    .Include(j => j.UserGame)
-                        .ThenInclude(uj => uj!.User)
+                    .Include(g => g.UserGame)
+                        .ThenInclude(ug => ug!.User)
                     .AsNoTracking()
-                    .SingleOrDefaultAsync(j => j.Id == id);
+                    .SingleOrDefaultAsync(g => g.Id == id);
                 return new DataResponse<Game?>(game, game == null ? ModelResult.NotFound : ModelResult.OK);
             }
             catch (Exception e)

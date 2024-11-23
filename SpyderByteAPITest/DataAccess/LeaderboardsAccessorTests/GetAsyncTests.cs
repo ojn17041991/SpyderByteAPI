@@ -23,7 +23,7 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
         public async Task Can_Get_Leaderboard_Records_From_Accessor()
         {
             // Arrange
-            var storedLeaderboard = await _helper.AddLeaderboardWithRecords();
+            var storedLeaderboard = await _helper.AddLeaderboardWithRecords(3);
 
             // Act
             var returnedLeaderboard = await _helper.Accessor.GetAsync(storedLeaderboard.Id);
@@ -76,9 +76,7 @@ namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
             const int numRecords = 1000;
             const int thresholdMs = 1000;
 
-            var storedLeaderboard = await _helper.AddLeaderboardWithoutRecords(deepClone: false);
-            
-            _ = await _helper.AddRecordsToLeaderboard(storedLeaderboard, numRecords);
+            var storedLeaderboard = await _helper.AddLeaderboardWithRecords(numRecords);
 
             // Act
             Stopwatch stopWatch = Stopwatch.StartNew();
