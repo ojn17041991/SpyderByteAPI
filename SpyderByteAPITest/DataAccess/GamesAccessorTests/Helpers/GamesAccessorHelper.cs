@@ -34,8 +34,6 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
         {
             var game = _fixture.Create<Game>();
             _context.Games.Add(game);
-            _context.UserGames.Add(game.UserGame!);
-            _context.LeaderboardGames.Add(game.LeaderboardGame!);
             await _context.SaveChangesAsync();
             _context.ChangeTracker.Clear();
             return game;
@@ -49,8 +47,6 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
             {
                 var game = _fixture.Create<Game>();
                 _context.Games.Add(game);
-                _context.UserGames.Add(game.UserGame!);
-                _context.LeaderboardGames.Add(game.LeaderboardGame!);
                 games.Add(game);
             }
 
