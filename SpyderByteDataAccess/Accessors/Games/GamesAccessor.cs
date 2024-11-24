@@ -16,10 +16,11 @@ namespace SpyderByteDataAccess.Accessors.Games
         private readonly ApplicationDbContext context = context;
         private readonly ILogger<GamesAccessor> logger = logger;
 
-        public async Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string order, string direction)
+        public async Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string? order, string? direction)
         {
             try
             {
+                // Get all games.
                 IQueryable<Game> query = context.Games
                     .Include(g => g.UserGame)
                         .ThenInclude(ug => ug!.User)
@@ -27,14 +28,33 @@ namespace SpyderByteDataAccess.Accessors.Games
                         .ThenInclude(lg => lg!.Leaderboard)
                     .AsNoTracking();
 
+                // Apply the filter if one is provided.
                 if (filter.IsNullOrEmpty() == false)
                 {
+                    filter = filter!.ToLower();
                     query = query.Where(g => g.Name.ToLower().Contains(filter!));
                 }
 
-                IList<Game>? games = await query
-                    .OrderBy(g => g.PublishDate)
-                    .ToListAsync();
+                // Set up the ordering function.
+                Expression<Func<Game, object>> orderKeySelector = order?.ToLower() switch
+                {
+                    "name" => g => g.Name.ToLower(),
+                    "date" => g => g.PublishDate,
+                    _ => g => g.PublishDate
+                };
+
+                // Apply the ordering function with direction.
+                if (direction?.ToLower() == "desc")
+                {
+                    query = query.OrderByDescending(orderKeySelector);
+                }
+                else
+                {
+                    query = query.OrderBy(orderKeySelector);
+                }
+
+                // Convert to list.
+                IList<Game>? games = await query.ToListAsync();
 
                 return new DataResponse<IList<Game>?>(games, ModelResult.OK);
             }

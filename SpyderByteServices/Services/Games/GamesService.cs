@@ -20,7 +20,7 @@ namespace SpyderByteServices.Services.Games
         private readonly ILogger<GamesService> logger = logger;
         private readonly IConfiguration configuration = configuration;
 
-        public async Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string order, string direction)
+        public async Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string? order, string? direction)
         {
             var response = await gamesAccessor.GetAllAsync(filter, page, count, order, direction);
             return mapper.Map<DataResponse<IList<SpyderByteServices.Models.Games.Game>?>>(response);

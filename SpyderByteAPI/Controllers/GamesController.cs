@@ -25,8 +25,8 @@ namespace SpyderByteAPI.Controllers
             [FromQuery] string? filter,
             [FromQuery] int page,
             [FromQuery] int count,
-            [FromQuery] string order,
-            [FromQuery] string direction)
+            [FromQuery] string? order,
+            [FromQuery] string? direction)
         {
             var response = await gamesService.GetAllAsync(filter, page, count, order, direction);
 

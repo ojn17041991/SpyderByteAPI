@@ -5,7 +5,7 @@ namespace SpyderByteServices.Services.Games.Abstract
 {
     public interface IGamesService
     {
-        Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string order, string direction);
+        Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string? order, string? direction);
 
         Task<IDataResponse<Game?>> GetSingleAsync(Guid id);
 
