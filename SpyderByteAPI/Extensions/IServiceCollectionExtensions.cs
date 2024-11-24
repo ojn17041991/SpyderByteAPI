@@ -254,14 +254,14 @@ namespace SpyderByteResources.Extensions
             int minor = Convert.ToInt32(versionMetadata["Minor"]);
             int patch = Convert.ToInt32(versionMetadata["Patch"]);
 
-            var apiResources = new APIResources();
+            var apiResources = new ApiResources();
             services.AddSwaggerGen(options =>
             {
                 options.EnableAnnotations();
                 options.SwaggerDoc($"v{major}", new OpenApiInfo
                 {
-                    Title = apiResources.GetResource("Title"),
-                    Description = apiResources.GetResource("Description"),
+                    Title = apiResources.GetResource("title"),
+                    Description = apiResources.GetResource("description"),
                     Version = $"{major}.{minor}.{patch}"
                 });
             });
