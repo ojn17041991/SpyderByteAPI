@@ -4,22 +4,33 @@ using SpyderByteResources.Resources;
 
 namespace SpyderByteTest.API.Text
 {
-    public class ApiResourcesTests
+    public class ApiResourcesLookupTests
     {
         [Fact]
-        public void Can_Get_Api_Resources()
+        public void Can_Get_Api_Title()
         {
             // Arrange
-            IStringLookup<string> apiResources = new ApiResources();
+            IStringLookup<string> apiResources = new ApiResourceLookup();
             string titleKey = "title";
-            string descriptionKey = "description";
 
             // Act
             string title = apiResources.GetResource(titleKey);
-            string description = apiResources.GetResource(descriptionKey);
 
             // Assert
             title.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public void Can_Get_Api_Description()
+        {
+            // Arrange
+            IStringLookup<string> apiResources = new ApiResourceLookup();
+            string descriptionKey = "description";
+
+            // Act
+            string description = apiResources.GetResource(descriptionKey);
+
+            // Assert
             description.Should().NotBeEmpty();
         }
 
@@ -27,7 +38,7 @@ namespace SpyderByteTest.API.Text
         public void Empty_String_Returned_When_Resource_Not_Found()
         {
             // Arrange
-            IStringLookup<string> apiResources = new ApiResources();
+            IStringLookup<string> apiResources = new ApiResourceLookup();
             string versionKey = "version";
 
             // Act

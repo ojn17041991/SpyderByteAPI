@@ -254,7 +254,7 @@ namespace SpyderByteResources.Extensions
             int minor = Convert.ToInt32(versionMetadata["Minor"]);
             int patch = Convert.ToInt32(versionMetadata["Patch"]);
 
-            var apiResources = new ApiResources();
+            var apiResources = new ApiResourceLookup();
             services.AddSwaggerGen(options =>
             {
                 options.EnableAnnotations();

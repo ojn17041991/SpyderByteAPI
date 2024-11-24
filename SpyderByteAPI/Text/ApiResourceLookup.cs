@@ -2,7 +2,7 @@
 
 namespace SpyderByteResources.Resources
 {
-    public class ApiResources : IStringLookup<string>
+    public class ApiResourceLookup : IStringLookup<string>
     {
         private IDictionary<string, string> resources = new Dictionary<string, string>()
         {
