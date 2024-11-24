@@ -21,9 +21,14 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(
+            [FromQuery] string? filter,
+            [FromQuery] int page,
+            [FromQuery] int count,
+            [FromQuery] string order,
+            [FromQuery] string direction)
         {
-            var response = await gamesService.GetAllAsync();
+            var response = await gamesService.GetAllAsync(filter, page, count, order, direction);
 
             if (response.Result == ModelResult.OK)
             {

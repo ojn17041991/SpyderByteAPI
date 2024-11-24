@@ -20,9 +20,9 @@ namespace SpyderByteServices.Services.Games
         private readonly ILogger<GamesService> logger = logger;
         private readonly IConfiguration configuration = configuration;
 
-        public async Task<IDataResponse<IList<Game>?>> GetAllAsync()
+        public async Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string order, string direction)
         {
-            var response = await gamesAccessor.GetAllAsync();
+            var response = await gamesAccessor.GetAllAsync(filter, page, count, order, direction);
             return mapper.Map<DataResponse<IList<SpyderByteServices.Models.Games.Game>?>>(response);
         }
 
@@ -40,7 +40,8 @@ namespace SpyderByteServices.Services.Games
                 return new DataResponse<Game?>(null, ModelResult.RequestDataIncomplete);
             }
 
-            var storedGames = await gamesAccessor.GetAllAsync();
+            // OJN: Need a new function on the accessor to check if a game exists. This is not efficient.
+            var storedGames = await gamesAccessor.GetAllAsync(string.Empty, 1, Int32.MaxValue, string.Empty, string.Empty);
             if (storedGames.Result != ModelResult.OK)
             {
                 logger.LogInformation($"Unable to post game. Failed to check existing games for duplicates.");
@@ -71,7 +72,8 @@ namespace SpyderByteServices.Services.Games
 
         public async Task<IDataResponse<Game?>> PatchAsync(PatchGame game)
         {
-            var storedGames = await gamesAccessor.GetAllAsync();
+            // OJN: ...and here.
+            var storedGames = await gamesAccessor.GetAllAsync(string.Empty, 1, Int32.MaxValue, string.Empty, string.Empty);
             if (storedGames.Result != ModelResult.OK)
             {
                 logger.LogInformation($"Unable to patch game. Failed to check existing games for duplicates.");

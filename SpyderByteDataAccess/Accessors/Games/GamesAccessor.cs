@@ -7,6 +7,7 @@ using SpyderByteDataAccess.Models.Games;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Responses;
 using SpyderByteResources.Responses.Abstract;
+using System.Linq.Expressions;
 
 namespace SpyderByteDataAccess.Accessors.Games
 {
@@ -15,19 +16,27 @@ namespace SpyderByteDataAccess.Accessors.Games
         private readonly ApplicationDbContext context = context;
         private readonly ILogger<GamesAccessor> logger = logger;
 
-        public async Task<IDataResponse<IList<Game>?>> GetAllAsync()
+        public async Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string order, string direction)
         {
             try
             {
-                IList<Game>? data = await context.Games
+                IQueryable<Game> query = context.Games
                     .Include(g => g.UserGame)
                         .ThenInclude(ug => ug!.User)
                     .Include(g => g.LeaderboardGame)
                         .ThenInclude(lg => lg!.Leaderboard)
-                    .AsNoTracking()
+                    .AsNoTracking();
+
+                if (filter.IsNullOrEmpty() == false)
+                {
+                    query = query.Where(g => g.Name.ToLower().Contains(filter!));
+                }
+
+                IList<Game>? games = await query
                     .OrderBy(g => g.PublishDate)
                     .ToListAsync();
-                return new DataResponse<IList<Game>?>(data, ModelResult.OK);
+
+                return new DataResponse<IList<Game>?>(games, ModelResult.OK);
             }
             catch (Exception e)
             {

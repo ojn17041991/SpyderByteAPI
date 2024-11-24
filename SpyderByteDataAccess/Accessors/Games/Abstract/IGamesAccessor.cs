@@ -5,7 +5,7 @@ namespace SpyderByteDataAccess.Accessors.Games.Abstract
 {
     public interface IGamesAccessor
     {
-        Task<IDataResponse<IList<Game>?>> GetAllAsync();
+        Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string order, string direction);
 
         Task<IDataResponse<Game?>> GetSingleAsync(Guid id);
 
