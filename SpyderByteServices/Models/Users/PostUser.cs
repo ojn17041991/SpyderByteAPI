@@ -1,5 +1,4 @@
 ﻿using SpyderByteResources.Enums;
-using SpyderByteServices.Models.Authentication;
 
 namespace SpyderByteServices.Models.Users
 {
