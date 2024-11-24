@@ -53,6 +53,11 @@ namespace SpyderByteDataAccess.Accessors.Games
                     query = query.OrderBy(orderKeySelector);
                 }
 
+                // Apply paging.
+                query = query
+                    .Skip((page - 1) * count)
+                    .Take(count);
+
                 // Convert to list.
                 IList<Game>? games = await query.ToListAsync();
 
