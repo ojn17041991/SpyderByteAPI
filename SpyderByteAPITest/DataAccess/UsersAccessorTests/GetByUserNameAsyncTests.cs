@@ -2,7 +2,7 @@
 using FluentAssertions;
 using SpyderByteResources.Enums;
 using SpyderByteTest.DataAccess.UsersAccessorTests.Helpers;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteDataAccess.Models.Users;
 
 namespace SpyderByteTest.DataAccess.UsersAccessorTests
@@ -43,8 +43,8 @@ namespace SpyderByteTest.DataAccess.UsersAccessorTests
                 (
                     storedUser.UserGame,
                     options => options
-                        .Excluding(ug => ug.Game)
-                        .Excluding(ug => ug.User)
+                        .Excluding(ug => ug!.Game)
+                        .Excluding(ug => ug!.User)
                 );
             }
         }

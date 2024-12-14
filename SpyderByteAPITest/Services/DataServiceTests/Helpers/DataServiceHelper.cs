@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Services.Data;
 using SpyderByteServices.Services.Storage.Abstract;
 

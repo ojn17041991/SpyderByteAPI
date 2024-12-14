@@ -6,8 +6,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Paging;
+using SpyderByteResources.Models.Paging.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Services.Games;
 using SpyderByteServices.Services.Imgur.Abstract;
 
@@ -33,14 +35,25 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
 
             var gamesAccessor = new Mock<IGamesAccessor>();
             gamesAccessor.Setup(s =>
-                s.GetAllAsync()
+                s.GetAllAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<GameType?>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>()
+                )
             ).Returns(
                 Task.FromResult(
-                    new DataResponse<IList<SpyderByteDataAccess.Models.Games.Game>?>(
-                        _games,
+                    new DataResponse<IPagedList<SpyderByteDataAccess.Models.Games.Game>?>(
+                        new PagedList<SpyderByteDataAccess.Models.Games.Game>(
+                            _games,
+                            1,
+                            10
+                        ),
                         ModelResult.OK
                     )
-                    as IDataResponse<IList<SpyderByteDataAccess.Models.Games.Game>?>
+                    as IDataResponse<IPagedList<SpyderByteDataAccess.Models.Games.Game>?>
                 )
             );
             gamesAccessor.Setup(s =>
@@ -147,7 +160,13 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 );
             });
 
-            var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteServices.Mappers.MapperProfile>());
+            var mapperConfiguration = new MapperConfiguration(
+                config =>
+                {
+                    config.AddProfile<SpyderByteResources.Mappers.MapperProfile>();
+                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
+                }
+            );
             _mapper = new Mapper(mapperConfiguration);
 
             var logger = new Mock<ILogger<GamesService>>();

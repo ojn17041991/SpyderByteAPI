@@ -2,7 +2,7 @@
 using FluentAssertions.Execution;
 using SpyderByteDataAccess.Models.Users;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteTest.DataAccess.UsersAccessorTests.Helpers;
 
 namespace SpyderByteTest.DataAccess.UsersAccessorTests

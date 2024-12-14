@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
-using SpyderByteResources.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
 using SpyderByteServices.Services.Password.Abstract;
 using SpyderByteServices.Services.Users;
 using SpyderByteServices.Models.Users;
@@ -109,7 +109,13 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
                 );
             });
 
-            var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteServices.Mappers.MapperProfile>());
+            var mapperConfiguration = new MapperConfiguration(
+                config =>
+                {
+                    config.AddProfile<SpyderByteResources.Mappers.MapperProfile>();
+                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
+                }
+            );
             _mapper = new Mapper(mapperConfiguration);
 
             var logger = new Mock<ILogger<UsersService>>();

@@ -3,7 +3,7 @@ using FluentAssertions.Execution;
 using SpyderByteTest.DataAccess.LeaderboardsAccessorTests.Helpers;
 using SpyderByteDataAccess.Models.Leaderboards;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 
 namespace SpyderByteTest.DataAccess.LeaderboardsAccessorTests
 {

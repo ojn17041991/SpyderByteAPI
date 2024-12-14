@@ -3,7 +3,7 @@ using FluentAssertions.Execution;
 using SpyderByteTest.DataAccess.GamesAccessorTests.Helpers;
 using SpyderByteDataAccess.Models.Games;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 
 namespace SpyderByteTest.DataAccess.GamesAccessorTests
 {

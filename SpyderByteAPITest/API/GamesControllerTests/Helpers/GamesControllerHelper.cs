@@ -6,8 +6,10 @@ using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Paging;
+using SpyderByteResources.Models.Paging.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Services.Games.Abstract;
 
 namespace SpyderByteTest.API.GamesControllerTests.Helpers
@@ -24,18 +26,29 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
         {
             var gamesService = new Mock<IGamesService>();
             gamesService.Setup(x =>
-                x.GetAllAsync()
-            ).Returns(() =>
+                x.GetAllAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<GameType?>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>()
+                )
+            ).Returns((string? name, GameType? type, int page, int pageSize, string? order, string? direction) =>
             {
                 return Task.FromResult(
-                    new DataResponse<IList<SpyderByteServices.Models.Games.Game>>(
-                        new List<SpyderByteServices.Models.Games.Game>
-                        {
-                            fixture.Create<SpyderByteServices.Models.Games.Game>()
-                        },
+                    new DataResponse<IPagedList<SpyderByteServices.Models.Games.Game>>(
+                        new PagedList<SpyderByteServices.Models.Games.Game>(
+                            new List<SpyderByteServices.Models.Games.Game>
+                            {
+                                fixture.Create<SpyderByteServices.Models.Games.Game>()
+                            },
+                            1,
+                            10
+                        ),
                         currentModelResult
                     )
-                    as IDataResponse<IList<SpyderByteServices.Models.Games.Game>?>
+                    as IDataResponse<IPagedList<SpyderByteServices.Models.Games.Game>?>
                 );
             });
             gamesService.Setup(x =>
@@ -108,7 +121,13 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
             fixture.Behaviors.Add(new OmitOnRecursionBehavior());
             fixture.Customize<IFormFile>(f => f.FromFactory(() => new Mock<IFormFile>().Object));
 
-            var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteAPI.Mappers.MapperProfile>());
+            var mapperConfiguration = new MapperConfiguration(
+                config =>
+                {
+                    config.AddProfile<SpyderByteResources.Mappers.MapperProfile>();
+                    config.AddProfile<SpyderByteAPI.Mappers.MapperProfile>();
+                }
+            );
             var mapper = new Mapper(mapperConfiguration);
 
             Controller = new(gamesService.Object, mapper, modelResources.Object);

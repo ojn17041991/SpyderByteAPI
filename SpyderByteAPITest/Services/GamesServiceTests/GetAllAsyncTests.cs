@@ -19,15 +19,22 @@ namespace SpyderByteTest.Services.GamesServiceTests
             // Arrange
             var storedGame = _helper.AddGame();
 
+            string? name = null;
+            GameType? type = null;
+            int page = 1;
+            int pageSize = 10;
+            string? order = null;
+            string? direction = null;
+
             // Act
-            var returnedGames = await _helper.Service.GetAllAsync();
+            var returnedGames = await _helper.Service.GetAllAsync(name, type, page, pageSize, order, direction);
 
             // Assert
             returnedGames.Should().NotBeNull();
             returnedGames.Result.Should().Be(ModelResult.OK);
             returnedGames.Data.Should().NotBeNull();
-            returnedGames.Data!.Count().Should().Be(1);
-            returnedGames.Data!.Should().ContainEquivalentOf(storedGame);
+            returnedGames.Data!.Items.Count().Should().Be(1);
+            returnedGames.Data!.Items.Should().ContainEquivalentOf(storedGame);
         }
     }
 }

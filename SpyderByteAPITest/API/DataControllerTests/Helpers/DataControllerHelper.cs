@@ -4,8 +4,8 @@ using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Services.Data.Abstract;
 
 namespace SpyderByteTest.API.DataControllerTests.Helpers
