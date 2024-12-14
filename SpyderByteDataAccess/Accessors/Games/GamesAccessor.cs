@@ -4,19 +4,22 @@ using Microsoft.IdentityModel.Tokens;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
 using SpyderByteDataAccess.Contexts;
 using SpyderByteDataAccess.Models.Games;
+using SpyderByteDataAccess.Paging.Factories.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Paging.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using System.Linq.Expressions;
 
 namespace SpyderByteDataAccess.Accessors.Games
 {
-    public class GamesAccessor(ApplicationDbContext context, ILogger<GamesAccessor> logger) : IGamesAccessor
+    public class GamesAccessor(ApplicationDbContext context, IPagedListFactory pagedListFactory, ILogger<GamesAccessor> logger) : IGamesAccessor
     {
         private readonly ApplicationDbContext context = context;
+        private readonly IPagedListFactory pagedListFactory = pagedListFactory;
         private readonly ILogger<GamesAccessor> logger = logger;
 
-        public async Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string? order, string? direction)
+        public async Task<IDataResponse<IPagedList<Game>?>> GetAllAsync(string? name, GameType? type, int page, int pageSize, string? order, string? direction)
         {
             try
             {
@@ -28,45 +31,43 @@ namespace SpyderByteDataAccess.Accessors.Games
                         .ThenInclude(lg => lg!.Leaderboard)
                     .AsNoTracking();
 
-                // Apply the filter if one is provided.
-                if (filter.IsNullOrEmpty() == false)
-                {
-                    filter = filter!.ToLower();
-                    query = query.Where(g => g.Name.ToLower().Contains(filter!));
-                }
+                // Check if the filters are available.
+                bool hasNameFilter = name != null;
+                bool hasTypeFilter = type != null;
 
-                // Set up the ordering function.
-                Expression<Func<Game, object>> orderKeySelector = order?.ToLower() switch
+                // Lower case the name to make the search case insensitive.
+                name = name?.ToLower();
+
+                // Set up the filtering function.
+                Expression<Func<Game, bool>> filteringFunction =
+                    (g) =>
+                        (hasTypeFilter == false || g.Type == type) &&
+                        (hasNameFilter == false || g.Name.ToLower().Contains(name!));
+
+                // Pick the ordering expression.
+                Expression<Func<Game, object>> orderingFunction = order?.ToLower() switch
                 {
-                    "name" => g => g.Name.ToLower(),
-                    "date" => g => g.PublishDate,
-                    _ => g => g.PublishDate
+                    "name" => (g) => g.Name.ToLower(),
+                    "date" => (g) => g.PublishDate,
+                    _ => (g) => g.PublishDate
                 };
 
-                // Apply the ordering function with direction.
-                if (direction?.ToLower() == "desc")
-                {
-                    query = query.OrderByDescending(orderKeySelector);
-                }
-                else
-                {
-                    query = query.OrderBy(orderKeySelector);
-                }
+                // Convert to paged list.
+                IPagedList<Game>? games = await pagedListFactory.BuildAsync(
+                    query,
+                    filteringFunction,
+                    orderingFunction,
+                    direction,
+                    page,
+                    pageSize
+                );
 
-                // Apply paging.
-                query = query
-                    .Skip((page - 1) * count)
-                    .Take(count);
-
-                // Convert to list.
-                IList<Game>? games = await query.ToListAsync();
-
-                return new DataResponse<IList<Game>?>(games, ModelResult.OK);
+                return new DataResponse<IPagedList<Game>?>(games, ModelResult.OK);
             }
             catch (Exception e)
             {
                 logger.LogError(e, "Failed to get all games.");
-                return new DataResponse<IList<Game>?>(null, ModelResult.Error);
+                return new DataResponse<IPagedList<Game>?>(null, ModelResult.Error);
             }
         }
 

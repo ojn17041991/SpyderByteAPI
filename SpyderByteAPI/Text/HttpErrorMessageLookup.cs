@@ -11,7 +11,8 @@ namespace SpyderByteResources.Resources
             { ModelResult.AlreadyExists, "This resource already exists." },
             { ModelResult.RequestDataIncomplete, "The request data is incomplete." },
             { ModelResult.RequestInvalid, "The request is invalid." },
-            { ModelResult.RelationshipViolation, "The request would break a relationship." }
+            { ModelResult.RelationshipViolation, "The request would break a relationship." },
+            { ModelResult.FilterInvalid, "The filter text could not be processed." }
         };
 
         public string GetResource(ModelResult modelResult)

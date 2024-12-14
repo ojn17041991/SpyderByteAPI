@@ -5,8 +5,8 @@ using SpyderByteDataAccess.Contexts;
 using SpyderByteDataAccess.Models.Users;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Helpers.Encoding;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 
 namespace SpyderByteDataAccess.Accessors.Users
 {

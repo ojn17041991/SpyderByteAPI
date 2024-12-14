@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using SpyderByteDataAccess.Accessors.Leaderboards.Abstract;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Models.Leaderboards;
 using SpyderByteServices.Services.Leaderboards.Abstract;
 

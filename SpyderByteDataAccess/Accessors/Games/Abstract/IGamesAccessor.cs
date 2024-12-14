@@ -1,11 +1,13 @@
 ﻿using SpyderByteDataAccess.Models.Games;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Enums;
+using SpyderByteResources.Models.Paging.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 
 namespace SpyderByteDataAccess.Accessors.Games.Abstract
 {
     public interface IGamesAccessor
     {
-        Task<IDataResponse<IList<Game>?>> GetAllAsync(string? filter, int page, int count, string? order, string? direction);
+        Task<IDataResponse<IPagedList<Game>?>> GetAllAsync(string? name, GameType? type, int page, int pageSize, string? order, string? direction);
 
         Task<IDataResponse<Game?>> GetSingleAsync(Guid id);
 
