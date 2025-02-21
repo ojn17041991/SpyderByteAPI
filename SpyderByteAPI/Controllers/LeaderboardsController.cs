@@ -130,6 +130,10 @@ namespace SpyderByteAPI.Controllers
             {
                 return NotFound(modelResources.GetResource(ModelResult.NotFound));
             }
+            else if (response.Result == ModelResult.AlreadyExists)
+            {
+                return BadRequest(modelResources.GetResource(ModelResult.AlreadyExists));
+            }
             else
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);

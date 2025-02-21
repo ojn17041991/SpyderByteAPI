@@ -42,6 +42,8 @@ using SpyderByteServices.Services.Encoding.Abstract;
 using SpyderByteResources.Flags;
 using SpyderByteResources.Paging.Factories;
 using SpyderByteDataAccess.Paging.Factories.Abstract;
+using SpyderByteDataAccess.Transactions.Factories.Abstract;
+using SpyderByteDataAccess.Transactions.Factories;
 
 namespace SpyderByteResources.Extensions
 {
@@ -49,6 +51,7 @@ namespace SpyderByteResources.Extensions
     {
         public static void AddProjectDependencies(this IServiceCollection services)
         {
+            services.AddScoped<ITransactionFactory, TransactionFactory>();
             services.AddScoped<IGamesAccessor, GamesAccessor>();
             services.AddScoped<ILeaderboardsAccessor, LeaderboardsAccessor>();
             services.AddScoped<IUsersAccessor, UsersAccessor>();

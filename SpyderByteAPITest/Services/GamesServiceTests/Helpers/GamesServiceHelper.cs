@@ -1,10 +1,12 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
+using SpyderByteDataAccess.Transactions.Factories.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Models.Paging;
 using SpyderByteResources.Models.Paging.Abstract;
@@ -32,6 +34,27 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
             _fixture.Customize<IFormFile>(f => f.FromFactory(() => new Mock<IFormFile>().Object));
 
             _games = new List<SpyderByteDataAccess.Models.Games.Game>();
+
+            var transaction = new Mock<IDbContextTransaction>();
+            transaction.Setup(t =>
+                t.CommitAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+            transaction.Setup(t =>
+                t.RollbackAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+
+            var transactionFactory = new Mock<ITransactionFactory>();
+            transactionFactory.Setup(f =>
+                f.CreateAsync()
+            ).Returns(
+                Task.FromResult(
+                    transaction.Object
+                )
+            );
 
             var gamesAccessor = new Mock<IGamesAccessor>();
             gamesAccessor.Setup(s =>
@@ -177,7 +200,14 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 .AddInMemoryCollection(configurationContents)
                 .Build();
 
-            Service = new GamesService(gamesAccessor.Object, imgurService.Object, _mapper, logger.Object, configuration);
+            Service = new GamesService(
+                transactionFactory.Object,
+                gamesAccessor.Object,
+                imgurService.Object,
+                _mapper,
+                logger.Object,
+                configuration
+            );
         }
 
         public SpyderByteServices.Models.Games.Game AddGame()

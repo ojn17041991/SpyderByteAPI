@@ -44,6 +44,20 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
         }
 
         [Fact]
+        public async Task Can_Receive_Already_Exists_Response_From_Patch_Leaderboard_Request()
+        {
+            // Arrange
+            var patchLeaderboard = helper.GeneratePatchLeaderboard();
+            helper.SetCurrentModelResult(ModelResult.AlreadyExists);
+
+            // Act
+            var response = await helper.Controller.PatchLeaderboard(patchLeaderboard);
+
+            // Assert
+            response.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
         public async Task Can_Receive_Error_Response_From_Patch_Leaderboard_Request()
         {
             // Arrange
