@@ -13,6 +13,7 @@
         AlreadyExists,
         RequestDataIncomplete,
         RequestInvalid,
-        RelationshipViolation
+        RelationshipViolation,
+        FilterInvalid
     }
 }

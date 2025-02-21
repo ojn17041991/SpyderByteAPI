@@ -5,6 +5,10 @@ using Moq;
 using SpyderByteDataAccess.Accessors.Games;
 using SpyderByteDataAccess.Contexts;
 using SpyderByteDataAccess.Models.Games;
+using SpyderByteDataAccess.Paging.Factories.Abstract;
+using SpyderByteResources.Models.Paging;
+using System.Linq.Expressions;
+using SpyderByteResources.Models.Paging.Abstract;
 
 namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
 {
@@ -25,9 +29,40 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
                 .Options;
             _context = new ApplicationDbContext(options);
 
+            var pagedListFactory = new Mock<IPagedListFactory>();
+            pagedListFactory.Setup(f =>
+                f.BuildAsync<SpyderByteDataAccess.Models.Games.Game>(
+                    It.IsAny<IQueryable<SpyderByteDataAccess.Models.Games.Game>>(),
+                    It.IsAny<Expression<Func<SpyderByteDataAccess.Models.Games.Game, bool>>>(),
+                    It.IsAny<Expression<Func<SpyderByteDataAccess.Models.Games.Game, object>>>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()
+                )
+            ).Returns((
+                IQueryable<SpyderByteDataAccess.Models.Games.Game> query,
+                Expression<Func<SpyderByteDataAccess.Models.Games.Game, bool>> filteringFunction,
+                Expression<Func<SpyderByteDataAccess.Models.Games.Game, object>> orderingFunction,
+                string? direction,
+                int page,
+                int pageSize) =>
+            {
+                return Task.FromResult<IPagedList<SpyderByteDataAccess.Models.Games.Game>>(
+                    new PagedList<SpyderByteDataAccess.Models.Games.Game>(
+                        _context.Games
+                            .Include(g => g.UserGame)
+                            .Include(g => g.LeaderboardGame)
+                            .ToList(),
+                        _context.Games.Count(),
+                        1,
+                        10
+                    )
+                );
+            });
+
             var logger = new Mock<ILogger<GamesAccessor>>();
 
-            Accessor = new GamesAccessor(_context, logger.Object);
+            Accessor = new GamesAccessor(_context, pagedListFactory.Object, logger.Object);
         }
 
         public async Task<Game> AddGame()

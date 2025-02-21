@@ -7,8 +7,8 @@ using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Models.Authentication;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Services.Authentication.Abstract;
 
 namespace SpyderByteTest.API.AuthenticationControllerTests.Helpers

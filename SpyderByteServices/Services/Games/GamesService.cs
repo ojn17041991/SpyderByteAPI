@@ -4,8 +4,9 @@ using Microsoft.Extensions.Logging;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Helpers.Encoding;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Paging.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Models.Games;
 using SpyderByteServices.Services.Games.Abstract;
 using SpyderByteServices.Services.Imgur.Abstract;
@@ -20,10 +21,10 @@ namespace SpyderByteServices.Services.Games
         private readonly ILogger<GamesService> logger = logger;
         private readonly IConfiguration configuration = configuration;
 
-        public async Task<IDataResponse<IList<Game>?>> GetAllAsync()
+        public async Task<IDataResponse<IPagedList<Game>?>> GetAllAsync(string? name, GameType? type, int page, int pageSize, string? order, string? direction)
         {
-            var response = await gamesAccessor.GetAllAsync();
-            return mapper.Map<DataResponse<IList<SpyderByteServices.Models.Games.Game>?>>(response);
+            var response = await gamesAccessor.GetAllAsync(name, type, page, pageSize, order, direction);
+            return mapper.Map<DataResponse<IPagedList<SpyderByteServices.Models.Games.Game>?>>(response);
         }
 
         public async Task<IDataResponse<Game?>> GetSingleAsync(Guid id)
@@ -40,14 +41,15 @@ namespace SpyderByteServices.Services.Games
                 return new DataResponse<Game?>(null, ModelResult.RequestDataIncomplete);
             }
 
-            var storedGames = await gamesAccessor.GetAllAsync();
+            // OJN: Need a new function on the accessor to check if a game exists. This is not efficient.
+            var storedGames = await gamesAccessor.GetAllAsync(string.Empty, null, 1, Int32.MaxValue, string.Empty, string.Empty);
             if (storedGames.Result != ModelResult.OK)
             {
                 logger.LogInformation($"Unable to post game. Failed to check existing games for duplicates.");
                 return new DataResponse<Game?>(null, ModelResult.Error);
             }
 
-            var duplicateGame = storedGames.Data!.SingleOrDefault(g => g.Name == game.Name);
+            var duplicateGame = storedGames.Data!.Items.SingleOrDefault(g => g.Name == game.Name);
             if (duplicateGame != null)
             {
                 logger.LogInformation($"Unable to post game. A game of name \"{LogEncoder.Encode(game.Name)}\" already exists.");
@@ -71,14 +73,15 @@ namespace SpyderByteServices.Services.Games
 
         public async Task<IDataResponse<Game?>> PatchAsync(PatchGame game)
         {
-            var storedGames = await gamesAccessor.GetAllAsync();
+            // OJN: ...and here.
+            var storedGames = await gamesAccessor.GetAllAsync(string.Empty, null, 1, Int32.MaxValue, string.Empty, string.Empty);
             if (storedGames.Result != ModelResult.OK)
             {
                 logger.LogInformation($"Unable to patch game. Failed to check existing games for duplicates.");
                 return new DataResponse<Game?>(null, ModelResult.Error);
             }
 
-            var storedGame = storedGames.Data!.SingleOrDefault(g => g.Id == game.Id);
+            var storedGame = storedGames.Data!.Items.SingleOrDefault(g => g.Id == game.Id);
             if (storedGame == null)
             {
                 logger.LogInformation($"Unable to patch game. Could not find a game of ID {game.Id}.");
@@ -87,7 +90,7 @@ namespace SpyderByteServices.Services.Games
 
             if (game.Name != null)
             {
-                var duplicateGame = storedGames.Data!.SingleOrDefault(g => g.Name == game.Name && g.Id != game.Id);
+                var duplicateGame = storedGames.Data!.Items.SingleOrDefault(g => g.Name == game.Name && g.Id != game.Id);
                 if (duplicateGame != null)
                 {
                     logger.LogInformation($"Unable to patch game. A game of name \"{LogEncoder.Encode(game.Name)}\" already exists.");

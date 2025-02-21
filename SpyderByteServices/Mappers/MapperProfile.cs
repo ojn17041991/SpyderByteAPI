@@ -8,8 +8,6 @@ namespace SpyderByteServices.Mappers
     {
         public MapperProfile()
         {
-            CreateMap(typeof(SpyderByteResources.Responses.DataResponse<>), typeof(SpyderByteResources.Responses.DataResponse<>));
-
             CreateMap<SpyderByteDataAccess.Models.Authentication.Login, SpyderByteServices.Models.Authentication.Login>().ReverseMap();
             CreateMap<SpyderByteServices.Models.Authentication.HashData, SpyderByteDataAccess.Models.Authentication.HashData>();
 

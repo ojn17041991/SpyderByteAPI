@@ -1,5 +1,5 @@
 ﻿using SpyderByteDataAccess.Models.Users;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 
 namespace SpyderByteDataAccess.Accessors.Users.Abstract
 {

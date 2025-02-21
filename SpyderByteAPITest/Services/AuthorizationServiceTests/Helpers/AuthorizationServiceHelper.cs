@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
-using SpyderByteResources.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
 using SpyderByteServices.Services.Authorization;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 

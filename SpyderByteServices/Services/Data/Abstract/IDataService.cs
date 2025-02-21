@@ -1,4 +1,4 @@
-﻿using SpyderByteResources.Responses.Abstract;
+﻿using SpyderByteResources.Models.Responses.Abstract;
 
 namespace SpyderByteServices.Services.Data.Abstract
 {

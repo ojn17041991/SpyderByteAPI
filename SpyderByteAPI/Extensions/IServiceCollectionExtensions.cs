@@ -40,6 +40,8 @@ using Microsoft.Extensions.Azure;
 using SpyderByteServices.Services.Encoding;
 using SpyderByteServices.Services.Encoding.Abstract;
 using SpyderByteResources.Flags;
+using SpyderByteResources.Paging.Factories;
+using SpyderByteDataAccess.Paging.Factories.Abstract;
 
 namespace SpyderByteResources.Extensions
 {
@@ -50,6 +52,7 @@ namespace SpyderByteResources.Extensions
             services.AddScoped<IGamesAccessor, GamesAccessor>();
             services.AddScoped<ILeaderboardsAccessor, LeaderboardsAccessor>();
             services.AddScoped<IUsersAccessor, UsersAccessor>();
+            services.AddScoped<IPagedListFactory, PagedListFactory>();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService, SpyderByteServices.Services.Authorization.AuthorizationService>();
@@ -280,8 +283,9 @@ namespace SpyderByteResources.Extensions
 
         public static void AddProjectMapperProfiles(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(SpyderByteAPI.Mappers.MapperProfile));
-            services.AddAutoMapper(typeof(SpyderByteServices.Mappers.MapperProfile));
+            services.AddAutoMapper(typeof(SpyderByteAPI.Mappers.MapperProfile).Assembly);
+            services.AddAutoMapper(typeof(SpyderByteServices.Mappers.MapperProfile).Assembly);
+            services.AddAutoMapper(typeof(SpyderByteResources.Mappers.MapperProfile).Assembly);
         }
 
         public static void AddProjectFeatureFlags(this IServiceCollection services, ConfigurationManager configuration)

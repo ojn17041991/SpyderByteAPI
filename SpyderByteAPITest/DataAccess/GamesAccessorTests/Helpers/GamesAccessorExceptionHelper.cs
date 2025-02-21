@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
 using Microsoft.EntityFrameworkCore;
 using SpyderByteDataAccess.Contexts;
 using SpyderByteDataAccess.Accessors.Games;
+using SpyderByteDataAccess.Paging.Factories.Abstract;
 
 namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
 {
@@ -17,9 +17,11 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
             var options = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
             var context = new Mock<ApplicationDbContext>(options);
 
+            var pagedListFactory = new Mock<IPagedListFactory>();
+
             var logger = new Mock<ILogger<GamesAccessor>>();
 
-            Accessor = new GamesAccessor(context.Object, logger.Object);
+            Accessor = new GamesAccessor(context.Object, pagedListFactory.Object, logger.Object);
         }
     }
 }

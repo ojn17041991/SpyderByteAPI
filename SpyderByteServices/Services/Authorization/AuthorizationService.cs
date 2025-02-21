@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
-using SpyderByteResources.Responses;
 using SpyderByteServices.Services.Authorization.Abstract;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
 
 namespace SpyderByteServices.Services.Authorization
 {

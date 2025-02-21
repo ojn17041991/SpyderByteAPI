@@ -21,8 +21,15 @@ namespace SpyderByteTest.API.GamesControllerTests
             // Arrange
             helper.SetCurrentModelResult(ModelResult.OK);
 
+            string? name = null;
+            GameType? type = null;
+            int page = 1;
+            int pageSize = 10;
+            string? order = null;
+            string? direction = null;
+
             // Act
-            var response = await helper.Controller.Get();
+            var response = await helper.Controller.Get(name, type, page, pageSize, order, direction);
 
             // Assert
             response.Should().BeOfType<OkObjectResult>();
@@ -34,8 +41,15 @@ namespace SpyderByteTest.API.GamesControllerTests
             // Arrange
             helper.SetCurrentModelResult(ModelResult.Error);
 
+            string? name = null;
+            GameType? type = null;
+            int page = 1;
+            int pageSize = 10;
+            string? order = null;
+            string? direction = null;
+
             // Act
-            var response = await helper.Controller.Get();
+            var response = await helper.Controller.Get(name, type, page, pageSize, order, direction);
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;

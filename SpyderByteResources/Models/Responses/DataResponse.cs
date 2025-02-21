@@ -1,7 +1,7 @@
 ﻿using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 
-namespace SpyderByteResources.Responses
+namespace SpyderByteResources.Models.Responses
 {
     public class DataResponse<T> : IDataResponse<T>
     {
