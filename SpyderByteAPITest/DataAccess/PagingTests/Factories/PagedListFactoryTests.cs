@@ -23,7 +23,7 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             IQueryable<int> query = collection.ToAsyncQueryable();
             Expression<Func<int, bool>> filteringFunction =
                 (i) =>
-                    query.Any(i => i < 5);
+                    i < 5;
             Expression<Func<int, object>> orderingFunction =
                 string.Empty switch
                 {
@@ -32,6 +32,7 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             string? direction = "asc";
             int page = 1;
             int pageSize = 10;
+            int expectedCount = 5;
 
             // Act.
             var pagedList = await _helper.Factory.BuildAsync(
@@ -47,8 +48,8 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             using (new AssertionScope())
             {
                 pagedList.Should().NotBeNull();
-                pagedList.Items.Should().HaveCount(pageSize);
-                for (int i = 0; i < pageSize; ++i)
+                pagedList.Items.Should().HaveCount(expectedCount);
+                for (int i = 0; i < expectedCount; ++i)
                 {
                     pagedList.Items[i].Should().Be(i);
                 }
@@ -63,7 +64,7 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             IQueryable<int> query = collection.ToAsyncQueryable();
             Expression<Func<int, bool>> filteringFunction =
                 (i) =>
-                    query.Any(i => true);
+                    true;
             Expression<Func<int, object>> orderingFunction =
                 string.Empty switch
                 {
@@ -103,7 +104,7 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             IQueryable<int> query = collection.ToAsyncQueryable();
             Expression<Func<int, bool>> filteringFunction =
                 (i) =>
-                    query.Any(i => true);
+                    true;
             Expression<Func<int, object>> orderingFunction =
                 string.Empty switch
                 {
@@ -143,7 +144,7 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             IQueryable<int> query = collection.ToAsyncQueryable();
             Expression<Func<int, bool>> filteringFunction =
                 (i) =>
-                    query.Any(i => true);
+                    true;
             Expression<Func<int, object>> orderingFunction =
                 string.Empty switch
                 {
@@ -183,7 +184,7 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             IQueryable<int> query = collection.ToAsyncQueryable();
             Expression<Func<int, bool>> filteringFunction =
                 (i) =>
-                    query.Any(i => true);
+                    true;
             Expression<Func<int, object>> orderingFunction =
                 string.Empty switch
                 {
@@ -223,7 +224,7 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             IQueryable<int> query = collection.ToAsyncQueryable();
             Expression<Func<int, bool>> filteringFunction =
                 (i) =>
-                    query.Any(i => true);
+                    true;
             Expression<Func<int, object>> orderingFunction =
                 string.Empty switch
                 {
@@ -262,7 +263,7 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             IQueryable<int> query = collection.ToAsyncQueryable();
             Expression<Func<int, bool>> filteringFunction =
                 (i) =>
-                    query.Any(i => true);
+                    true;
             Expression<Func<int, object>> orderingFunction =
                 string.Empty switch
                 {
@@ -301,7 +302,7 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
             IQueryable<int> query = collection.ToAsyncQueryable();
             Expression<Func<int, bool>> filteringFunction =
                 (i) =>
-                    query.Any(i => true);
+                    true;
             Expression<Func<int, object>> orderingFunction =
                 string.Empty switch
                 {
@@ -329,6 +330,43 @@ namespace SpyderByteTest.DataAccess.PagingTests.Factories
                 pagedList.PageSize.Should().Be(pageSize);
                 pagedList.HasPreviousPage.Should().Be(true);
                 pagedList.HasNextPage.Should().Be(false);
+            }
+        }
+
+        [Fact]
+        public async Task Paged_List_Has_Correct_Count()
+        {
+            // Arrange.
+            IList<int> collection = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            IQueryable<int> query = collection.ToAsyncQueryable();
+            Expression<Func<int, bool>> filteringFunction =
+                (i) =>
+                    i < 5;
+            Expression<Func<int, object>> orderingFunction =
+                string.Empty switch
+                {
+                    _ => (i) => i
+                };
+            string? direction = "asc";
+            int page = 5;
+            int pageSize = 2;
+            int expectedCount = 5;
+
+            // Act.
+            var pagedList = await _helper.Factory.BuildAsync(
+                query,
+                filteringFunction,
+                orderingFunction,
+                direction,
+                page,
+                pageSize
+            );
+
+            // Assert.
+            using (new AssertionScope())
+            {
+                pagedList.Should().NotBeNull();
+                pagedList.Count.Should().Be(expectedCount);
             }
         }
     }

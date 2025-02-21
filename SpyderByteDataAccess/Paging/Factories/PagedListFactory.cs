@@ -16,9 +16,6 @@ namespace SpyderByteResources.Paging.Factories
             int page,
             int pageSize)
         {
-            // Get the total number of items before filtering.
-            int count = query.Count();
-
             // Apply the filtering.
             query = query.Where(filteringFunction);
 
@@ -32,14 +29,19 @@ namespace SpyderByteResources.Paging.Factories
                 query = query.OrderBy(orderingFunction);
             }
 
-            // Apply paging and convert to list.
-            IList<T> items = await query
+            // Apply filtering and ordering.
+            IList<T> filteredItems = await query.ToListAsync();
+
+            // Get the total number of items before paging.
+            int count = filteredItems.Count();
+
+            // Page the results.
+            IList<T> pagedItems = (IList<T>)filteredItems
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+                .Take(pageSize);
 
             // Construct the list.
-            return new PagedList<T>(items, count, page, pageSize);
+            return new PagedList<T>(pagedItems, count, page, pageSize);
         }
     }
 }
