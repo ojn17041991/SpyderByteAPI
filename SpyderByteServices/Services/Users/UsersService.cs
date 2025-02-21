@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
+using SpyderByteDataAccess.Transactions.Factories.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
 using SpyderByteResources.Helpers.Encoding;
@@ -14,12 +15,14 @@ using SpyderByteServices.Services.Users.Abstract;
 namespace SpyderByteServices.Services.Users
 {
     public class UsersService(
+        ITransactionFactory transactionFactory,
         IUsersAccessor usersAccessor,
         IMapper mapper,
         ILogger<UsersService> logger,
         IPasswordService passwordService,
         IFeatureManager featureManager) : IUsersService
     {
+        private readonly ITransactionFactory transactionFactory = transactionFactory;
         private readonly IUsersAccessor usersAccessor = usersAccessor;
         private readonly IMapper mapper = mapper;
         private readonly ILogger<UsersService> logger = logger;
@@ -58,8 +61,20 @@ namespace SpyderByteServices.Services.Users
             dataServiceUser.HashData = mapper.Map<SpyderByteDataAccess.Models.Authentication.HashData>(hashData);
 
             // Save the user with hash data to the database.
-            var response = await usersAccessor.PostAsync(dataServiceUser);
-            return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
+            using (var transaction = await transactionFactory.CreateAsync())
+            {
+                var response = await usersAccessor.PostAsync(dataServiceUser);
+                if (response.Result == ModelResult.OK)
+                {
+                    await transaction.CommitAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
+                }
+            }
         }
 
         public async Task<IDataResponse<User?>> PatchAsync(PatchUser user)
@@ -84,8 +99,20 @@ namespace SpyderByteServices.Services.Users
             }
 
             // Return the patched user.
-            var response = await usersAccessor.PatchAsync(mapper.Map<SpyderByteDataAccess.Models.Users.PatchUser>(user));
-            return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
+            using (var transaction = await transactionFactory.CreateAsync())
+            {
+                var response = await usersAccessor.PatchAsync(mapper.Map<SpyderByteDataAccess.Models.Users.PatchUser>(user));
+                if (response.Result == ModelResult.OK)
+                {
+                    await transaction.CommitAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
+                }
+            }
         }
 
         public async Task<IDataResponse<User?>> DeleteAsync(Guid id)
@@ -110,8 +137,20 @@ namespace SpyderByteServices.Services.Users
             }
 
             // Return the deleted user.
-            var response = await usersAccessor.DeleteAsync(id);
-            return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
+            using (var transaction = await transactionFactory.CreateAsync())
+            {
+                var response = await usersAccessor.DeleteAsync(id);
+                if (response.Result == ModelResult.OK)
+                {
+                    await transaction.CommitAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
+                }
+            }
         }
     }
 }

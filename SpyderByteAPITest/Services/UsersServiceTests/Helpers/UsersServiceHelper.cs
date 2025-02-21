@@ -11,6 +11,8 @@ using SpyderByteServices.Services.Users;
 using SpyderByteServices.Models.Users;
 using SpyderByteServices.Models.Authentication;
 using Microsoft.FeatureManagement;
+using Microsoft.EntityFrameworkCore.Storage;
+using SpyderByteDataAccess.Transactions.Factories.Abstract;
 
 namespace SpyderByteTest.Services.UsersServiceTests.Helpers
 {
@@ -28,6 +30,27 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
 
             _users = new List<SpyderByteDataAccess.Models.Users.User>();
+
+            var transaction = new Mock<IDbContextTransaction>();
+            transaction.Setup(t =>
+                t.CommitAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+            transaction.Setup(t =>
+                t.RollbackAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+
+            var transactionFactory = new Mock<ITransactionFactory>();
+            transactionFactory.Setup(f =>
+                f.CreateAsync()
+            ).Returns(
+                Task.FromResult(
+                    transaction.Object
+                )
+            );
 
             var usersAccessor = new Mock<IUsersAccessor>();
             usersAccessor.Setup(x =>
@@ -142,7 +165,14 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
                 Task.FromResult(false)
             );
 
-            Service = new UsersService(usersAccessor.Object, _mapper, logger.Object, passwordService.Object, featureManager.Object);
+            Service = new UsersService(
+                transactionFactory.Object,
+                usersAccessor.Object,
+                _mapper,
+                logger.Object,
+                passwordService.Object,
+                featureManager.Object
+            );
         }
 
         public SpyderByteDataAccess.Models.Users.User AddUser(UserType userType)
