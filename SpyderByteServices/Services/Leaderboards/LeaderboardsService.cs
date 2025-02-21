@@ -26,7 +26,7 @@ namespace SpyderByteServices.Services.Leaderboards
             using (var transaction = await transactionFactory.CreateAsync())
             {
                 var response = await leaderboardsAccessor.PostAsync(mapper.Map<SpyderByteDataAccess.Models.Leaderboards.PostLeaderboard>(leaderboard));
-                if (response.Result == ModelResult.OK)
+                if (response.Result == ModelResult.Created)
                 {
                     await transaction.CommitAsync();
                     return mapper.Map<DataResponse<SpyderByteServices.Models.Leaderboards.Leaderboard?>>(response);
@@ -44,7 +44,7 @@ namespace SpyderByteServices.Services.Leaderboards
             using (var transaction = await transactionFactory.CreateAsync())
             {
                 var response = await leaderboardsAccessor.PostRecordAsync(mapper.Map<SpyderByteDataAccess.Models.Leaderboards.PostLeaderboardRecord>(leaderboardRecord));
-                if (response.Result == ModelResult.OK)
+                if (response.Result == ModelResult.Created)
                 {
                     await transaction.CommitAsync();
                     return mapper.Map<DataResponse<SpyderByteServices.Models.Leaderboards.LeaderboardRecord?>>(response);
