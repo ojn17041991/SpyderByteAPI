@@ -64,7 +64,7 @@ namespace SpyderByteServices.Services.Users
             using (var transaction = await transactionFactory.CreateAsync())
             {
                 var response = await usersAccessor.PostAsync(dataServiceUser);
-                if (response.Result == ModelResult.OK)
+                if (response.Result == ModelResult.Created)
                 {
                     await transaction.CommitAsync();
                     return mapper.Map<DataResponse<SpyderByteServices.Models.Users.User?>>(response);
