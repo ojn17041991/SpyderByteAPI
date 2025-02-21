@@ -13,6 +13,7 @@ namespace SpyderByteResources.Mappers.Converters
         {
             return new PagedList<TDestination>(
                 source.Items.Select(i => context.Mapper.Map<TDestination>(i)).ToList(),
+                source.Count,
                 source.Page,
                 source.PageSize);
         }

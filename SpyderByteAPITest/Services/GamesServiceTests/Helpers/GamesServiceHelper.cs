@@ -48,6 +48,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                     new DataResponse<IPagedList<SpyderByteDataAccess.Models.Games.Game>?>(
                         new PagedList<SpyderByteDataAccess.Models.Games.Game>(
                             _games,
+                            _games.Count(),
                             1,
                             10
                         ),

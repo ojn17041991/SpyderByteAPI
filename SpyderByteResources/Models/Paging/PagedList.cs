@@ -4,9 +4,10 @@ namespace SpyderByteResources.Models.Paging
 {
     public class PagedList<T> : IPagedList<T>
     {
-        public PagedList(IList<T> items, int page, int pageSize)
+        public PagedList(IList<T> items, int count, int page, int pageSize)
         {
             Items = items;
+            Count = count;
             Page = page;
             PageSize = pageSize;
         }
@@ -21,7 +22,7 @@ namespace SpyderByteResources.Models.Paging
 
         public bool HasPreviousPage => Page > 1;
 
-        public int Count => Items.Count;
+        public int Count { get; }
 
         public bool IsReadOnly => true;
 

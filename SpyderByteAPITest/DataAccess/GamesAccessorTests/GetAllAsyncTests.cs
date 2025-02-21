@@ -66,7 +66,7 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests
 
         [Fact]
         [Trait("Category", "Performance")]
-        public async Task All_Games_Are_Returned_Within_Expected_Time_Frame()
+        public async Task All_Games_Are_Returned_Within_Expected_Time_Frame_For_Small_Page_Size()
         {
             // Arrange
             const int numGames = 1000;
@@ -76,6 +76,39 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests
             GameType? type = null;
             int page = 1;
             int pageSize = 10;
+            string? order = null;
+            string? direction = null;
+
+            _ = await _helper.AddGames(numGames);
+
+            // Act
+            Stopwatch stopWatch = Stopwatch.StartNew();
+            var returnedGames = await _helper.Accessor.GetAllAsync(name, type, page, pageSize, order, direction);
+            stopWatch.Stop();
+
+            // Assert
+            using (new AssertionScope())
+            {
+                returnedGames.Should().NotBeNull();
+                returnedGames.Result.Should().Be(ModelResult.OK);
+                returnedGames.Data.Should().NotBeNull();
+                returnedGames.Data!.Items.Should().HaveCount(numGames);
+                stopWatch.ElapsedMilliseconds.Should().BeLessThan(thresholdMs);
+            }
+        }
+
+        [Fact]
+        [Trait("Category", "Performance")]
+        public async Task All_Games_Are_Returned_Within_Expected_Time_Frame_For_Large_Page_Size()
+        {
+            // Arrange
+            const int numGames = 1000;
+            const int thresholdMs = 1000;
+
+            string? name = null;
+            GameType? type = null;
+            int page = 1;
+            int pageSize = 1000;
             string? order = null;
             string? direction = null;
 

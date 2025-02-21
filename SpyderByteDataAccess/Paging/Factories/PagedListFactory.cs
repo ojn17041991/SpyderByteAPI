@@ -16,6 +16,9 @@ namespace SpyderByteResources.Paging.Factories
             int page,
             int pageSize)
         {
+            // Get the total number of items before filtering.
+            int count = query.Count();
+
             // Apply the filtering.
             query = query.Where(filteringFunction);
 
@@ -36,7 +39,7 @@ namespace SpyderByteResources.Paging.Factories
                 .ToListAsync();
 
             // Construct the list.
-            return new PagedList<T>(items, page, pageSize);
+            return new PagedList<T>(items, count, page, pageSize);
         }
     }
 }

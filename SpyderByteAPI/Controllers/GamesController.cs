@@ -37,10 +37,6 @@ namespace SpyderByteAPI.Controllers
                 var data = mapper.Map<IPagedList<SpyderByteAPI.Models.Games.Game>>(response.Data);
                 return Ok(data);
             }
-            else if (response.Result == ModelResult.FilterInvalid)
-            {
-                return BadRequest(modelResources.GetResource(ModelResult.FilterInvalid));
-            }
             else
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);

@@ -44,6 +44,7 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
                                 fixture.Create<SpyderByteServices.Models.Games.Game>()
                             },
                             1,
+                            1,
                             10
                         ),
                         currentModelResult

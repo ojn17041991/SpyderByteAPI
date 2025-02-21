@@ -4,6 +4,8 @@
     {
         public IList<T> Items { get; }
 
+        public int Count { get; }
+
         public int Page { get; }
 
         public int PageSize { get; }

@@ -53,6 +53,7 @@ namespace SpyderByteTest.DataAccess.GamesAccessorTests.Helpers
                             .Include(g => g.UserGame)
                             .Include(g => g.LeaderboardGame)
                             .ToList(),
+                        _context.Games.Count(),
                         1,
                         10
                     )
