@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
+using SpyderByteDataAccess.Transactions.Factories.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Models.Paging.Abstract;
@@ -13,8 +14,9 @@ using SpyderByteServices.Services.Imgur.Abstract;
 
 namespace SpyderByteServices.Services.Games
 {
-    public class GamesService(IGamesAccessor gamesAccessor, IImgurService imgurService, IMapper mapper, ILogger<GamesService> logger, IConfiguration configuration) : IGamesService
+    public class GamesService(ITransactionFactory transactionFactory, IGamesAccessor gamesAccessor, IImgurService imgurService, IMapper mapper, ILogger<GamesService> logger, IConfiguration configuration) : IGamesService
     {
+        private readonly ITransactionFactory transactionFactory = transactionFactory;
         private readonly IGamesAccessor gamesAccessor = gamesAccessor;
         private readonly IImgurService imgurService = imgurService;
         private readonly IMapper mapper = mapper;
@@ -67,8 +69,20 @@ namespace SpyderByteServices.Services.Games
             dataAccessPostGame.ImgurUrl = imgurResponse.Data!.Url;
             dataAccessPostGame.ImgurImageId = imgurResponse.Data!.ImageId;
 
-            var response = await gamesAccessor.PostAsync(dataAccessPostGame);
-            return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
+            using (var transaction = await transactionFactory.CreateAsync())
+            {
+                var response = await gamesAccessor.PostAsync(dataAccessPostGame);
+                if (response.Result == ModelResult.Created)
+                {
+                    await transaction.CommitAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
+                }
+            }
         }
 
         public async Task<IDataResponse<Game?>> PatchAsync(PatchGame game)
@@ -121,24 +135,46 @@ namespace SpyderByteServices.Services.Games
                 dataAccessPatchGame.ImgurImageId = imgurResponse.Data!.ImageId;
             }
 
-            var response = await gamesAccessor.PatchAsync(dataAccessPatchGame);
-            return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
+            using (var transaction = await transactionFactory.CreateAsync())
+            {
+                var response = await gamesAccessor.PatchAsync(dataAccessPatchGame);
+                if (response.Result == ModelResult.OK)
+                {
+                    await transaction.CommitAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
+                }
+            }
         }
 
         public async Task<IDataResponse<Game?>> DeleteAsync(Guid id)
         {
-            var response = await gamesAccessor.DeleteAsync(id);
-            if (response.Result == ModelResult.OK)
+            using (var transaction = await transactionFactory.CreateAsync())
             {
-                var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(response.Data!.ImgurImageId);
-                if (!imgurDeleteSuccessful.Data)
+                var response = await gamesAccessor.DeleteAsync(id);
+                if (response.Result == ModelResult.OK)
                 {
-                    logger.LogInformation($"Failed to delete image from Imgur during game delete.");
-                    return new DataResponse<Game?>(null, ModelResult.Error);
+                    await transaction.CommitAsync();
+
+                    var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(response.Data!.ImgurImageId);
+                    if (!imgurDeleteSuccessful.Data)
+                    {
+                        logger.LogInformation($"Failed to delete image from Imgur during game delete.");
+                        return new DataResponse<Game?>(null, ModelResult.Error);
+                    }
+
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
                 }
             }
-
-            return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
         }
     }
 }
