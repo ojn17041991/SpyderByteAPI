@@ -54,5 +54,33 @@ namespace SpyderByteTest.API.Attributes.FileUploadValidationAttributeTests
             // Assert
             isValid.Should().BeFalse();
         }
+
+        [Fact]
+        public void Returns_True_If_File_Is_Not_Provided_For_Existing_Resource()
+        {
+            // Arrange
+            var attribute = new FileUploadValidationAttribute();
+            attribute.ExistingResource = true;
+
+            // Act
+            bool isValid = attribute.IsValid(null);
+
+            // Assert
+            isValid.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Returns_False_If_File_Is_Not_Provided_For_New_Resource()
+        {
+            // Arrange
+            var attribute = new FileUploadValidationAttribute();
+            attribute.ExistingResource = false;
+
+            // Act
+            bool isValid = attribute.IsValid(null);
+
+            // Assert
+            isValid.Should().BeFalse();
+        }
     }
 }

@@ -4,6 +4,8 @@ namespace SpyderByteAPI.Attributes
 {
     public class FileUploadValidationAttribute : ValidationAttribute
     {
+        public bool ExistingResource = false;
+
         private readonly string pngExtension = ".png";
         private readonly byte[] pngBytes = new byte[]
         {
@@ -13,7 +15,7 @@ namespace SpyderByteAPI.Attributes
         public override bool IsValid(object? value)
         {
             IFormFile formFile = (IFormFile)value!;
-            if (formFile == null) return false;
+            if (formFile == null) return ExistingResource;
             if (Path.GetExtension(formFile.FileName) != pngExtension) return false;
 
             using (var reader = new BinaryReader(formFile.OpenReadStream()))
