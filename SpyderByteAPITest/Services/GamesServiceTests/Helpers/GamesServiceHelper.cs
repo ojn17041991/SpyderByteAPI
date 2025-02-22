@@ -95,6 +95,20 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 );
             });
             gamesAccessor.Setup(s =>
+                s.GetSingleByNameAsync(
+                    It.IsAny<string>()
+            )).Returns((string name) =>
+            {
+                var game = _games.SingleOrDefault(g => g.Name == name);
+                return Task.FromResult(
+                    new DataResponse<SpyderByteDataAccess.Models.Games.Game?>(
+                        game,
+                        game == null ? ModelResult.NotFound : ModelResult.OK
+                    )
+                    as IDataResponse<SpyderByteDataAccess.Models.Games.Game?>
+                );
+            });
+            gamesAccessor.Setup(s =>
                 s.PostAsync(
                     It.IsAny<SpyderByteDataAccess.Models.Games.PostGame>()
             )).Returns((SpyderByteDataAccess.Models.Games.PostGame postGame) =>

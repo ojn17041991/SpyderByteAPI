@@ -89,6 +89,24 @@ namespace SpyderByteDataAccess.Accessors.Games
             }
         }
 
+        public async Task<IDataResponse<Game?>> GetSingleByNameAsync(string name)
+        {
+            try
+            {
+                Game? game = await context.Games
+                    .Include(g => g.UserGame)
+                        .ThenInclude(ug => ug!.User)
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(g => g.Name == name);
+                return new DataResponse<Game?>(game, game == null ? ModelResult.NotFound : ModelResult.OK);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Failed to check if game exists by name.");
+                return new DataResponse<Game?>(null, ModelResult.Error);
+            }
+        }
+
         public async Task<IDataResponse<Game?>> PostAsync(PostGame game)
         {
             try

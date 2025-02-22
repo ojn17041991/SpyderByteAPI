@@ -11,6 +11,8 @@ namespace SpyderByteDataAccess.Accessors.Games.Abstract
 
         Task<IDataResponse<Game?>> GetSingleAsync(Guid id);
 
+        Task<IDataResponse<Game?>> GetSingleByNameAsync(string name);
+
         Task<IDataResponse<Game?>> PostAsync(PostGame game);
 
         Task<IDataResponse<Game?>> PatchAsync(PatchGame patchedGame);
