@@ -34,6 +34,9 @@ namespace SpyderByteResources.Enums
         [Description("DataBackup")]
         DataBackup,
 
+        [Description("DataCleanup")]
+        DataCleanup,
+
         [Description("AssignedGame")]
         AssignedGame
     }

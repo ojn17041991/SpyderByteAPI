@@ -45,5 +45,35 @@ namespace SpyderByteAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        [HttpDelete("Cleanup")]
+        [Authorize]
+        [Authorize(PolicyType.DataCleanup)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Cleanup()
+        {
+            if (await featureManager.IsEnabledAsync(FeatureFlags.AllowDatabaseCleanups) == false)
+            {
+                return NotFound();
+            }
+
+            var response = await dataService.Cleanup();
+
+            if (response.Result == ModelResult.OK)
+            {
+                return Ok();
+            }
+            else if (response.Result == ModelResult.NotFound)
+            {
+                return NotFound(modelResources.GetResource(ModelResult.NotFound));
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }
