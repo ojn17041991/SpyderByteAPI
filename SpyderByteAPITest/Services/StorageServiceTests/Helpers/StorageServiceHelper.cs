@@ -17,6 +17,8 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
         private bool containerExists = true;
         private bool isResponseError = false;
 
+        private IList<BlobItem> blobs = new List<BlobItem>();
+
         public StorageServiceHelper()
         {
             var logger = new Mock<ILogger<StorageService>>();
@@ -75,6 +77,23 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
             {
                 return blobClient.Object;
             });
+            blobContainerClient.Setup(x =>
+                x.GetBlobsAsync(
+                    It.IsAny<BlobTraits>(),
+                    It.IsAny<BlobStates>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()
+            )).Returns(() =>
+            {
+                return AsyncPageable<BlobItem>
+                    .FromPages
+                    (
+                        new Page<BlobItem>[]
+                        {
+                            Page<BlobItem>.FromValues(blobs.ToArray(), null, Mock.Of<Response>())
+                        }
+                    );
+            });
 
             var blobServiceClient = new Mock<BlobServiceClient>();
             blobServiceClient.Setup(x =>
@@ -107,6 +126,14 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
         public void SetIsResponseError(bool isError)
         {
             isResponseError = isError;
+        }
+
+        public BlobItem AddBlob(string name)
+        {
+            BlobItemProperties properties = BlobsModelFactory.BlobItemProperties(false, createdOn: DateTime.UtcNow);
+            BlobItem blob = BlobsModelFactory.BlobItem(name: name, properties: properties);
+            blobs.Add(blob);
+            return blob;
         }
     }
 }
