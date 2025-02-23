@@ -22,7 +22,6 @@ namespace SpyderByteTest.Services.StorageServiceTests
             var blob3 = helper.AddBlob("blob3");
 
             helper.SetContainerExists(true);
-            helper.SetIsResponseError(false);
 
             // Act
             var getFilesResponse = await helper.Service.GetFilesAsync();
@@ -44,7 +43,6 @@ namespace SpyderByteTest.Services.StorageServiceTests
         {
             // Arrange
             helper.SetContainerExists(false);
-            helper.SetIsResponseError(false);
 
             // Act
             var getFilesResponse = await helper.Service.GetFilesAsync();

@@ -6,7 +6,9 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using SpyderByteServices.Models.Data;
 using SpyderByteServices.Services.Storage;
+using SpyderByteTest.Services.StorageServiceTests.Enums;
 
 namespace SpyderByteTest.Services.StorageServiceTests.Helpers
 {
@@ -14,16 +16,23 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
     {
         public StorageService Service;
 
+        private Mock<ILogger<StorageService>> logger;
+        private Mock<IConfiguration> configuration;
+        private IMapper mapper;
+        private Mock<IAzureClientFactory<BlobServiceClient>> azureClientFactory;
+
+        private IDictionary<StorageFunction, bool> azureSuccessFlags = new Dictionary<StorageFunction, bool>();
         private bool containerExists = true;
-        private bool isResponseError = false;
+        private bool blobExists = true;
 
         private IList<BlobItem> blobs = new List<BlobItem>();
+        private BlobItem? nextBlobForDeletion = null!;
 
         public StorageServiceHelper()
         {
-            var logger = new Mock<ILogger<StorageService>>();
+            logger = new Mock<ILogger<StorageService>>();
 
-            var configuration = new Mock<IConfiguration>();
+            configuration = new Mock<IConfiguration>();
 
             var mapperConfiguration = new MapperConfiguration(
                 config =>
@@ -31,21 +40,28 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
                     config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
                 }
             );
-            var mapper = new Mapper(mapperConfiguration);
+            mapper = new Mapper(mapperConfiguration);
 
-            var response = new Mock<Response>();
-            response.Setup(x =>
+            var uploadResponse = new Mock<Response>();
+            uploadResponse.Setup(x =>
                 x.IsError
             ).Returns(() => {
-                return isResponseError;
+                return azureSuccessFlags[StorageFunction.UploadAsync];
             });
 
-            var azureResponse = new Mock<Response<BlobContentInfo>>();
-            azureResponse.Setup(x =>
-                x.GetRawResponse()
+            var deleteResponse = new Mock<Response>();
+            deleteResponse.Setup(x =>
+                x.IsError
+            ).Returns(() => {
+                return azureSuccessFlags[StorageFunction.DeleteAsync];
+            });
+
+            var existsResponse = new Mock<Response>();
+            existsResponse.Setup(x =>
+                x.IsError
             ).Returns(() =>
             {
-                return response.Object;
+                return azureSuccessFlags[StorageFunction.ExistsAsync];
             });
 
             var blobClient = new Mock<BlobClient>();
@@ -57,7 +73,28 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
                 )
             ).Returns((Stream content, bool overwrite, CancellationToken cancellationToken) =>
             {
-                return Task.FromResult(azureResponse.Object);
+                return Task.FromResult(Response.FromValue<BlobContentInfo>(null!, uploadResponse.Object));
+            });
+            blobClient.Setup(x =>
+                x.DeleteAsync(
+                    It.IsAny<DeleteSnapshotsOption>(),
+                    It.IsAny<BlobRequestConditions>(),
+                    It.IsAny<CancellationToken>()
+                )
+            ).Returns((DeleteSnapshotsOption deleteSnapshotsOption, BlobRequestConditions blobRequestConditions, CancellationToken cancellationToken) =>
+            {
+                // There's no way of knowing which blob is being deleted, so the only way to know is to ask the unit test to...
+                // ...let the helper know in advance which blob it is attempting to delete, so it can be deleted when this function is hit.
+                blobs.Remove(nextBlobForDeletion);
+                return Task.FromResult(deleteResponse.Object);
+            });
+            blobClient.Setup(x =>
+                x.ExistsAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            ).Returns((CancellationToken cancellationToken) =>
+            {
+                return Task.FromResult(Response.FromValue<bool>(blobExists, existsResponse.Object));
             });
 
             var blobContainerClient = new Mock<BlobContainerClient>();
@@ -105,7 +142,7 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
                 return blobContainerClient.Object;
             });
 
-            var azureClientFactory = new Mock<IAzureClientFactory<BlobServiceClient>>();
+            azureClientFactory = new Mock<IAzureClientFactory<BlobServiceClient>>();
             azureClientFactory.Setup(x =>
                 x.CreateClient(
                     It.IsAny<string>()
@@ -123,9 +160,19 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
             containerExists = exists;
         }
 
-        public void SetIsResponseError(bool isError)
+        public void SetBlobExists(bool exists)
         {
-            isResponseError = isError;
+            blobExists = exists;
+        }
+
+        public void SetIsResponseError(StorageFunction function, bool isError)
+        {
+            azureSuccessFlags[function] = isError;
+        }
+
+        public IList<BlobItem> GetBlobs()
+        {
+            return blobs.Select(b => b).ToList();
         }
 
         public BlobItem AddBlob(string name)
@@ -134,6 +181,16 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
             BlobItem blob = BlobsModelFactory.BlobItem(name: name, properties: properties);
             blobs.Add(blob);
             return blob;
+        }
+
+        public void PrepareNextBlobForDeletion(BlobItem blob)
+        {
+            nextBlobForDeletion = blob;
+        }
+
+        public StorageFile ConvertBlobToStorageFile(BlobItem blob)
+        {
+            return mapper.Map<StorageFile>(blob);
         }
     }
 }
