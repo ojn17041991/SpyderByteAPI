@@ -15,6 +15,7 @@ namespace SpyderByteTest.API.DataControllerTests.Helpers
         public DataController Controller;
 
         private bool allowDatabaseBackups = true;
+        private bool allowDatabaseCleanups = true;
         private ModelResult currentModelResult = ModelResult.OK;
 
         public DataControllerHelper()
@@ -55,6 +56,10 @@ namespace SpyderByteTest.API.DataControllerTests.Helpers
                 {
                     return Task.FromResult(allowDatabaseBackups);
                 }
+                else if (featureName == FeatureFlags.AllowDatabaseCleanups)
+                {
+                    return Task.FromResult(allowDatabaseCleanups);
+                }
                 return Task.FromResult(false);
             });
 
@@ -78,6 +83,11 @@ namespace SpyderByteTest.API.DataControllerTests.Helpers
         public void SetAllowDatabaseBackups(bool allowDatabaseBackups)
         {
             this.allowDatabaseBackups = allowDatabaseBackups;
+        }
+
+        public void SetAllowDatabaseCleanups(bool allowDatabaseCleanups)
+        {
+            this.allowDatabaseCleanups = allowDatabaseCleanups;
         }
     }
 }
