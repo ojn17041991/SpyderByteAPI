@@ -21,7 +21,19 @@ namespace SpyderByteTest.API.DataControllerTests.Helpers
         {
             var dataService = new Mock<IDataService>();
             dataService.Setup(x =>
-                x.Backup()
+                x.BackupAsync()
+            ).Returns(() => {
+                return Task.FromResult(
+                    new DataResponse<bool>(
+                        true,
+                        currentModelResult
+                    )
+                    as IDataResponse<bool>
+                );
+            });
+            
+            dataService.Setup(x =>
+                x.CleanupAsync()
             ).Returns(() => {
                 return Task.FromResult(
                     new DataResponse<bool>(

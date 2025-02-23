@@ -40,7 +40,7 @@ namespace SpyderByteServices.Services.Data
             }
         }
 
-        public async Task<IDataResponse<bool>> Backup()
+        public async Task<IDataResponse<bool>> BackupAsync()
         {
             // Get the backup file extension from the configuration.
             if (backupFileExtension.IsNullOrEmpty())
@@ -117,7 +117,7 @@ namespace SpyderByteServices.Services.Data
             }
         }
 
-        public async Task<IDataResponse<bool>> Cleanup()
+        public async Task<IDataResponse<bool>> CleanupAsync()
         {
             // Get all database backups from storage.
             var filesResponse = await storageService.GetFilesAsync();

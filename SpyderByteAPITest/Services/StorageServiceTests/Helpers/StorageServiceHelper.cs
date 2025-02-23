@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using AutoMapper;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Azure;
@@ -21,6 +22,14 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
             var logger = new Mock<ILogger<StorageService>>();
 
             var configuration = new Mock<IConfiguration>();
+
+            var mapperConfiguration = new MapperConfiguration(
+                config =>
+                {
+                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
+                }
+            );
+            var mapper = new Mapper(mapperConfiguration);
 
             var response = new Mock<Response>();
             response.Setup(x =>
@@ -87,7 +96,7 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
                 return blobServiceClient.Object;
             });
 
-            Service = new StorageService(logger.Object, configuration.Object, azureClientFactory.Object);
+            Service = new StorageService(logger.Object, configuration.Object, mapper, azureClientFactory.Object);
         }
 
         public void SetContainerExists(bool exists)

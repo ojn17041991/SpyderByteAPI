@@ -30,7 +30,7 @@ namespace SpyderByteAPI.Controllers
                 return NotFound();
             }
 
-            var response = await dataService.Backup();
+            var response = await dataService.BackupAsync();
 
             if (response.Result == ModelResult.OK)
             {
@@ -60,7 +60,7 @@ namespace SpyderByteAPI.Controllers
                 return NotFound();
             }
 
-            var response = await dataService.Cleanup();
+            var response = await dataService.CleanupAsync();
 
             if (response.Result == ModelResult.OK)
             {
