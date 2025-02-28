@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using SpyderByteResources.Enums;
+using SpyderByteTest.Services.StorageServiceTests.Enums;
 using SpyderByteTest.Services.StorageServiceTests.Helpers;
 using System.Text;
 
@@ -21,7 +22,7 @@ namespace SpyderByteTest.Services.StorageServiceTests
             string fileName = ".txt";
             Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("test"));
             helper.SetContainerExists(true);
-            helper.SetIsResponseError(false);
+            helper.SetIsResponseError(StorageFunction.UploadAsync, false);
 
             // Act
             var uploadResponse = await helper.Service.UploadAsync(fileName, stream);
@@ -39,7 +40,7 @@ namespace SpyderByteTest.Services.StorageServiceTests
             string fileName = ".txt";
             Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("test"));
             helper.SetContainerExists(false);
-            helper.SetIsResponseError(false);
+            helper.SetIsResponseError(StorageFunction.UploadAsync, false);
 
             // Act
             var uploadResponse = await helper.Service.UploadAsync(fileName, stream);
@@ -57,7 +58,7 @@ namespace SpyderByteTest.Services.StorageServiceTests
             string fileName = ".txt";
             Stream stream = new MemoryStream(Encoding.UTF8.GetBytes("test"));
             helper.SetContainerExists(true);
-            helper.SetIsResponseError(true);
+            helper.SetIsResponseError(StorageFunction.UploadAsync, true);
 
             // Act
             var uploadResponse = await helper.Service.UploadAsync(fileName, stream);

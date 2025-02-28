@@ -250,6 +250,12 @@ namespace SpyderByteResources.Extensions
                     .RequireClaim(ClaimType.DataBackup.ToDescription())
                     .Build()
                 );
+
+                options.AddPolicy(PolicyType.DataCleanup,
+                    new AuthorizationPolicyBuilder()
+                    .RequireClaim(ClaimType.DataCleanup.ToDescription())
+                    .Build()
+                );
             });
         }
 

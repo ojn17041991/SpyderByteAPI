@@ -15,5 +15,6 @@
         public const string DeleteLeaderboardRecords = "DeleteLeaderboardRecords";
 
         public const string DataBackup = "DataBackup";
+        public const string DataCleanup = "DataCleanup";
     }
 }

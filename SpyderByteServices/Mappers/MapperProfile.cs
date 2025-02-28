@@ -26,6 +26,20 @@ namespace SpyderByteServices.Mappers
             CreateMap<SpyderByteServices.Models.Leaderboards.PostLeaderboard, SpyderByteDataAccess.Models.Leaderboards.PostLeaderboard>();
             CreateMap<SpyderByteServices.Models.Leaderboards.PostLeaderboardRecord, SpyderByteDataAccess.Models.Leaderboards.PostLeaderboardRecord>();
             CreateMap<SpyderByteServices.Models.Leaderboards.PatchLeaderboard, SpyderByteDataAccess.Models.Leaderboards.PatchLeaderboard>();
+
+            CreateMap<Azure.Storage.Blobs.Models.BlobItem, SpyderByteServices.Models.Data.StorageFile>()
+                .ForMember(
+                    d => d.FileName,
+                    o => o.MapFrom(
+                        s => s.Name
+                    )
+                )
+                .ForMember(
+                    d => d.CreatedDate,
+                    o => o.MapFrom(
+                        s => s.Properties.CreatedOn!.Value.DateTime
+                    )
+                );
         }
     }
 }

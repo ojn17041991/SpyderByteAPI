@@ -11,18 +11,38 @@ using System.IO.Compression;
 
 namespace SpyderByteServices.Services.Data
 {
-    public class DataService(ILogger<DataService> logger, IConfiguration configuration, IStorageService storageService) : IDataService
+    public class DataService : IDataService
     {
         private const string DATABASE_FOLDER_NAME = "Databases"; // OJN: Shouldn't really be hard-coded.
 
-        private readonly ILogger<DataService> logger = logger;
-        private readonly IConfiguration configuration = configuration;
-        private readonly IStorageService storageService = storageService;
+        private readonly ILogger<DataService> logger;
+        private readonly IConfiguration configuration;
+        private readonly IStorageService storageService;
 
-        public async Task<IDataResponse<bool>> Backup()
+        string backupFileExtension;
+        int numberOfHoursToRetainBackup;
+
+        public DataService(
+            ILogger<DataService> logger,
+            IConfiguration configuration,
+            IStorageService storageService)
+        {
+            this.logger = logger;
+            this.configuration = configuration;
+            this.storageService = storageService;
+
+            backupFileExtension = configuration["Database:BackupFileExtension"] ?? string.Empty;
+            string? numberOfHoursToRetainBackupSetting = configuration["Database:NumberOfHoursToRetainBackup"];
+            if (Int32.TryParse(numberOfHoursToRetainBackupSetting, out numberOfHoursToRetainBackup) == false)
+            {
+                this.logger.LogError($"Failed to get number of hours to retain backup from configuration.");
+                numberOfHoursToRetainBackup = Int32.MaxValue;
+            }
+        }
+
+        public async Task<IDataResponse<bool>> BackupAsync()
         {
             // Get the backup file extension from the configuration.
-            var backupFileExtension = configuration["Database:BackupFileExtension"];
             if (backupFileExtension.IsNullOrEmpty())
             {
                 logger.LogError($"Failed to find database backup file extension in configuration.");
@@ -66,7 +86,7 @@ namespace SpyderByteServices.Services.Data
                     {
                         foreach (var file in files)
                         {
-                            _ = archive.CreateEntryFromFile($"{file}{backupFileExtension}", Path.GetFileName(file));
+                            _ = archive.CreateEntryFromFile($"{file}{backupFileExtension}", Path.GetFileName($"{file}{backupFileExtension}"));
                         }
                     }
 
@@ -95,6 +115,32 @@ namespace SpyderByteServices.Services.Data
                     File.Delete(temporaryFile);
                 }
             }
+        }
+
+        public async Task<IDataResponse<bool>> CleanupAsync()
+        {
+            // Get all database backups from storage.
+            var filesResponse = await storageService.GetFilesAsync();
+            if (filesResponse.Result != ModelResult.OK)
+            {
+                logger.LogError($"Failed to get database backup files from storage.");
+                return new DataResponse<bool>(false, filesResponse.Result);
+            }
+
+            // Delete all database backups outside the retention window.
+            foreach (var file in filesResponse.Data!)
+            {
+                if (file.CreatedDate < DateTime.UtcNow.AddHours(-numberOfHoursToRetainBackup))
+                {
+                    var deleteResponse = await storageService.DeleteAsync(file);
+                    if (deleteResponse.Result != ModelResult.OK)
+                    {
+                        logger.LogWarning($"Failed to delete database backup file {file.FileName} from storage.");
+                    }
+                }
+            }
+
+            return new DataResponse<bool>(true, ModelResult.OK);
         }
     }
 }

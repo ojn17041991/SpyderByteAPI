@@ -49,7 +49,8 @@ namespace SpyderByteServices.Helpers.Authentication
             return new List<Claim>
             {
                 new Claim(ClaimType.UserId.ToDescription(), user.Id.ToString()),
-                new Claim(ClaimType.DataBackup.ToDescription(), claimEnabled)
+                new Claim(ClaimType.DataBackup.ToDescription(), claimEnabled),
+                new Claim(ClaimType.DataCleanup.ToDescription(), claimEnabled)
             };
         }
     }
