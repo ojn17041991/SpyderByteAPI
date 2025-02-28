@@ -1,11 +1,13 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
 using SpyderByteDataAccess.Accessors.Leaderboards.Abstract;
+using SpyderByteDataAccess.Transactions.Factories.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Services.Leaderboards;
 
 namespace SpyderByteTest.Services.LeaderboardsServiceTests.Helpers
@@ -29,6 +31,27 @@ namespace SpyderByteTest.Services.LeaderboardsServiceTests.Helpers
             _games = new List<SpyderByteDataAccess.Models.Games.Game>();
             _leaderboards = new List<SpyderByteDataAccess.Models.Leaderboards.Leaderboard>();
             _leaderboardRecords = new List<SpyderByteDataAccess.Models.Leaderboards.LeaderboardRecord>();
+
+            var transaction = new Mock<IDbContextTransaction>();
+            transaction.Setup(t =>
+                t.CommitAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+            transaction.Setup(t =>
+                t.RollbackAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+
+            var transactionFactory = new Mock<ITransactionFactory>();
+            transactionFactory.Setup(f =>
+                f.CreateAsync()
+            ).Returns(
+                Task.FromResult(
+                    transaction.Object
+                )
+            );
 
             var leaderboardsAccessor = new Mock<ILeaderboardsAccessor>();
             leaderboardsAccessor.Setup(s =>
@@ -133,10 +156,16 @@ namespace SpyderByteTest.Services.LeaderboardsServiceTests.Helpers
                 );
             });
 
-            var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteServices.Mappers.MapperProfile>());
+            var mapperConfiguration = new MapperConfiguration(
+                config =>
+                {
+                    config.AddProfile<SpyderByteResources.Mappers.MapperProfile>();
+                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
+                }
+            );
             _mapper = new Mapper(mapperConfiguration);
 
-            Service = new LeaderboardsService(leaderboardsAccessor.Object, _mapper);
+            Service = new LeaderboardsService(transactionFactory.Object, leaderboardsAccessor.Object, _mapper);
         }
 
         public SpyderByteDataAccess.Models.Leaderboards.Leaderboard AddLeaderboard()

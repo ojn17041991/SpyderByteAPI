@@ -1,37 +1,48 @@
-name: Azure FTP Deployment
-
-env:
-  AZURE_WEBAPP_NAME: SpyderByteAPI-AppService
-  AZURE_WEBAPP_PACKAGE_PATH: '.'
-  DOTNET_VERSION: '8.x'
+name: Deploy to Azure Web App (FTP)
 
 on:
   push:
     branches: [ "prod" ]
   workflow_dispatch:
 
+env:
+  AZURE_WEBAPP_NAME: SpyderByteAPI-AppService
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
+  DOTNET_VERSION: '8.x'
+
 permissions:
   contents: read
     
 jobs:
   web-deploy:
-    name: Deploy
     runs-on: ubuntu-latest
     
     steps:
-    - name: Restart web app to unlock files
-      run: |
-        az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
+    - name: Login to Azure as Service Principal.
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Restart Azure web app to unlock resources.
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
+
+    - name: Give the Azure Web App time to wake up.
+      run: sleep 10s
+      shell: bash
   
-    - name: Checkout latest code
+    - name: Checkout latest code.
       uses: actions/checkout@v3
 
-    - name: Set up .NET Core
+    - name: Set up .NET Core SDK.
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Set up dependency caching for faster builds
+    - name: Set up dependency caching for faster builds.
       uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
@@ -39,15 +50,16 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
 
-    - name: Build with dotnet
+    - name: Create build.
       run: dotnet build --target:SpyderByteAPI --configuration Release
 
-    - name: dotnet publish
+    - name: Create publish output.
       run: dotnet publish -c Release --property:PublishDir=${{env.DOTNET_ROOT}}/myapp
     
-    - name: Sync files
+    - name: Deploy files via FTPS
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
+        protocol: ftps
         server: waws-prod-blu-343.ftp.azurewebsites.windows.net
         server-dir: site/wwwroot/
         local-dir: ${{env.DOTNET_ROOT}}/myapp/

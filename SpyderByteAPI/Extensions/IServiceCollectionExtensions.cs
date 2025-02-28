@@ -40,6 +40,10 @@ using Microsoft.Extensions.Azure;
 using SpyderByteServices.Services.Encoding;
 using SpyderByteServices.Services.Encoding.Abstract;
 using SpyderByteResources.Flags;
+using SpyderByteResources.Paging.Factories;
+using SpyderByteDataAccess.Paging.Factories.Abstract;
+using SpyderByteDataAccess.Transactions.Factories.Abstract;
+using SpyderByteDataAccess.Transactions.Factories;
 
 namespace SpyderByteResources.Extensions
 {
@@ -47,9 +51,11 @@ namespace SpyderByteResources.Extensions
     {
         public static void AddProjectDependencies(this IServiceCollection services)
         {
+            services.AddScoped<ITransactionFactory, TransactionFactory>();
             services.AddScoped<IGamesAccessor, GamesAccessor>();
             services.AddScoped<ILeaderboardsAccessor, LeaderboardsAccessor>();
             services.AddScoped<IUsersAccessor, UsersAccessor>();
+            services.AddScoped<IPagedListFactory, PagedListFactory>();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService, SpyderByteServices.Services.Authorization.AuthorizationService>();
@@ -244,6 +250,12 @@ namespace SpyderByteResources.Extensions
                     .RequireClaim(ClaimType.DataBackup.ToDescription())
                     .Build()
                 );
+
+                options.AddPolicy(PolicyType.DataCleanup,
+                    new AuthorizationPolicyBuilder()
+                    .RequireClaim(ClaimType.DataCleanup.ToDescription())
+                    .Build()
+                );
             });
         }
 
@@ -254,14 +266,14 @@ namespace SpyderByteResources.Extensions
             int minor = Convert.ToInt32(versionMetadata["Minor"]);
             int patch = Convert.ToInt32(versionMetadata["Patch"]);
 
-            var apiResources = new APIResources();
+            var apiResources = new ApiResourceLookup();
             services.AddSwaggerGen(options =>
             {
                 options.EnableAnnotations();
                 options.SwaggerDoc($"v{major}", new OpenApiInfo
                 {
-                    Title = apiResources.GetResource("Title"),
-                    Description = apiResources.GetResource("Description"),
+                    Title = apiResources.GetResource("title"),
+                    Description = apiResources.GetResource("description"),
                     Version = $"{major}.{minor}.{patch}"
                 });
             });
@@ -280,8 +292,9 @@ namespace SpyderByteResources.Extensions
 
         public static void AddProjectMapperProfiles(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(SpyderByteAPI.Mappers.MapperProfile));
-            services.AddAutoMapper(typeof(SpyderByteServices.Mappers.MapperProfile));
+            services.AddAutoMapper(typeof(SpyderByteAPI.Mappers.MapperProfile).Assembly);
+            services.AddAutoMapper(typeof(SpyderByteServices.Mappers.MapperProfile).Assembly);
+            services.AddAutoMapper(typeof(SpyderByteResources.Mappers.MapperProfile).Assembly);
         }
 
         public static void AddProjectFeatureFlags(this IServiceCollection services, ConfigurationManager configuration)

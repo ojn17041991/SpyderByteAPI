@@ -5,8 +5,8 @@ using Moq;
 using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
-using SpyderByteResources.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
 using SpyderByteServices.Services.Users.Abstract;
 using SpyderByteAPI.Models.Users;
 

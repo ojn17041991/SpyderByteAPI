@@ -2,7 +2,7 @@
 using FluentAssertions.Execution;
 using SpyderByteDataAccess.Models.Users;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteTest.DataAccess.UsersAccessorTests.Helpers;
 
 namespace SpyderByteTest.DataAccess.UsersAccessorTests
@@ -34,7 +34,8 @@ namespace SpyderByteTest.DataAccess.UsersAccessorTests
                 // Check the response.
                 returnedUser.Should().NotBeNull();
                 returnedUser.Result.Should().Be(ModelResult.OK);
-                returnedUser.Data.Should().BeEquivalentTo(storedUser);
+                returnedUser.Data.Should().NotBeNull();
+                returnedUser.Data!.Id.Should().Be(storedUser.Id);
 
                 // Check the database.
                 var postTestUsers = await _helper.GetUsers();

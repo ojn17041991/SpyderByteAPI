@@ -4,13 +4,15 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteDataAccess.Accessors.Users.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
-using SpyderByteResources.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
 using SpyderByteServices.Services.Password.Abstract;
 using SpyderByteServices.Services.Users;
 using SpyderByteServices.Models.Users;
 using SpyderByteServices.Models.Authentication;
 using Microsoft.FeatureManagement;
+using Microsoft.EntityFrameworkCore.Storage;
+using SpyderByteDataAccess.Transactions.Factories.Abstract;
 
 namespace SpyderByteTest.Services.UsersServiceTests.Helpers
 {
@@ -28,6 +30,27 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
 
             _users = new List<SpyderByteDataAccess.Models.Users.User>();
+
+            var transaction = new Mock<IDbContextTransaction>();
+            transaction.Setup(t =>
+                t.CommitAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+            transaction.Setup(t =>
+                t.RollbackAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+
+            var transactionFactory = new Mock<ITransactionFactory>();
+            transactionFactory.Setup(f =>
+                f.CreateAsync()
+            ).Returns(
+                Task.FromResult(
+                    transaction.Object
+                )
+            );
 
             var usersAccessor = new Mock<IUsersAccessor>();
             usersAccessor.Setup(x =>
@@ -109,7 +132,13 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
                 );
             });
 
-            var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteServices.Mappers.MapperProfile>());
+            var mapperConfiguration = new MapperConfiguration(
+                config =>
+                {
+                    config.AddProfile<SpyderByteResources.Mappers.MapperProfile>();
+                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
+                }
+            );
             _mapper = new Mapper(mapperConfiguration);
 
             var logger = new Mock<ILogger<UsersService>>();
@@ -136,7 +165,14 @@ namespace SpyderByteTest.Services.UsersServiceTests.Helpers
                 Task.FromResult(false)
             );
 
-            Service = new UsersService(usersAccessor.Object, _mapper, logger.Object, passwordService.Object, featureManager.Object);
+            Service = new UsersService(
+                transactionFactory.Object,
+                usersAccessor.Object,
+                _mapper,
+                logger.Object,
+                passwordService.Object,
+                featureManager.Object
+            );
         }
 
         public SpyderByteDataAccess.Models.Users.User AddUser(UserType userType)

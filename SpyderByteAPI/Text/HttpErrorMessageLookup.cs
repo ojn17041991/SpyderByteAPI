@@ -5,7 +5,7 @@ namespace SpyderByteResources.Resources
 {
     public class HttpErrorMessageLookup : IStringLookup<ModelResult>
     {
-        private IDictionary<ModelResult, string> messagesLookup = new Dictionary<ModelResult, string>()
+        private IDictionary<ModelResult, string> resources = new Dictionary<ModelResult, string>()
         {
             { ModelResult.NotFound, "Failed to locate resource." },
             { ModelResult.AlreadyExists, "This resource already exists." },
@@ -16,7 +16,14 @@ namespace SpyderByteResources.Resources
 
         public string GetResource(ModelResult modelResult)
         {
-            return messagesLookup?[modelResult] ?? string.Empty;
+            if (resources.ContainsKey(modelResult))
+            {
+                return resources[modelResult];
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
     }
 }

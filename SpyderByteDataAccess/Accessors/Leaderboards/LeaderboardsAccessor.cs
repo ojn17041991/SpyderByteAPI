@@ -5,8 +5,8 @@ using SpyderByteDataAccess.Contexts;
 using SpyderByteDataAccess.Models.Games;
 using SpyderByteDataAccess.Models.Leaderboards;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 
 namespace SpyderByteDataAccess.Accessors.Leaderboards
 {
@@ -147,21 +147,29 @@ namespace SpyderByteDataAccess.Accessors.Leaderboards
                     return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
                 }
 
-                var gameAllocatedToLeaderboard = await context.LeaderboardGames.AnyAsync(lg => lg.GameId == leaderboard.GameId && lg.LeaderboardId != leaderboard.Id);
+                bool gameAllocatedToLeaderboard = await context.LeaderboardGames.AnyAsync(lg => lg.GameId == leaderboard.GameId && lg.LeaderboardId != leaderboard.Id);
                 if (gameAllocatedToLeaderboard == true)
                 {
                     logger.LogInformation($"Unable to patch leaderboard. A leaderboard is already assigned to game of ID {leaderboard.GameId}.");
                     return new DataResponse<Leaderboard?>(null, ModelResult.AlreadyExists);
                 }
 
-                LeaderboardGame? storedLeaderboardGame = await context.LeaderboardGames.SingleOrDefaultAsync(lg => lg.LeaderboardId == leaderboard.Id);
+                var storedLeaderboardGame = await context.LeaderboardGames.SingleOrDefaultAsync(lg => lg.LeaderboardId == leaderboard.Id);
                 if (storedLeaderboardGame == null)
                 {
-                    logger.LogInformation($"Unable to patch leaderboard. Could not find an existing game associated with leaderboard {leaderboard.Id}.");
-                    return new DataResponse<Leaderboard?>(null, ModelResult.NotFound);
+                    // Assign the leaderboard to the game as a new record.
+                    var leaderboardGame = new LeaderboardGame
+                    {
+                        LeaderboardId = leaderboard.Id,
+                        GameId = leaderboard.GameId
+                    };
+                    await context.LeaderboardGames.AddAsync(leaderboardGame);
                 }
-
-                storedLeaderboardGame.GameId = leaderboard.GameId;
+                else
+                {
+                    // Update the existing record.
+                    storedLeaderboardGame.GameId = leaderboard.GameId;
+                }
 
                 await context.SaveChangesAsync();
 

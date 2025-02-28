@@ -1,11 +1,13 @@
-﻿using SpyderByteResources.Responses.Abstract;
+﻿using SpyderByteResources.Enums;
+using SpyderByteResources.Models.Paging.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Models.Games;
 
 namespace SpyderByteServices.Services.Games.Abstract
 {
     public interface IGamesService
     {
-        Task<IDataResponse<IList<Game>?>> GetAllAsync();
+        Task<IDataResponse<IPagedList<Game>?>> GetAllAsync(string? name, GameType? type, int page, int pageSize, string? order, string? direction);
 
         Task<IDataResponse<Game?>> GetSingleAsync(Guid id);
 

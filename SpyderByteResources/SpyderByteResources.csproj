@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,19 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="large-file - Copy %282%29">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="large-file - Copy %282%29 - Copy">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

@@ -30,7 +30,7 @@ namespace SpyderByteTest.Services.UsersServiceTests
         }
 
         [Fact]
-        public async Task Can_Delete_User_From_Service_If_User_Does_Not_Exist()
+        public async Task Can_Not_Delete_User_From_Service_If_User_Does_Not_Exist()
         {
             // Arrange
 
@@ -44,7 +44,7 @@ namespace SpyderByteTest.Services.UsersServiceTests
         }
 
         [Fact]
-        public async Task Can_Delete_User_From_Service_If_User_Type_Is_Not_Restricted()
+        public async Task Can_Not_Delete_User_From_Service_If_User_Type_Is_Not_Restricted()
         {
             // Arrange
             var storedUser = _helper.AddUser(UserType.Admin);

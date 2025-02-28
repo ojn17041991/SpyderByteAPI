@@ -69,7 +69,8 @@ namespace SpyderByteTest.Services.GamesServiceTests
             // Assert
             returnedGame.Should().NotBeNull();
             returnedGame.Result.Should().Be(ModelResult.AlreadyExists);
-            returnedGame.Data.Should().BeNull();
+            returnedGame.Data.Should().NotBeNull();
+            returnedGame.Data!.Should().BeEquivalentTo(storedGame2);
         }
     }
 }

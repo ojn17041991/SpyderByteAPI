@@ -1,0 +1,27 @@
+name: Run Performance Tests
+
+on:
+  push:
+    branches: [ "main" ]
+    paths: [ "**.cs" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+          
+      - name: Restore dependencies.
+        run: dotnet restore
+        
+      - name: Create build.
+        run: dotnet build --configuration Release --no-restore
+        
+      - name: Run performance tests.
+        run: dotnet test --no-restore --verbosity normal --filter TestCategory=Performance

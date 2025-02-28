@@ -1,13 +1,17 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
+using SpyderByteDataAccess.Transactions.Factories.Abstract;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Paging;
+using SpyderByteResources.Models.Paging.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Services.Games;
 using SpyderByteServices.Services.Imgur.Abstract;
 
@@ -31,16 +35,49 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
 
             _games = new List<SpyderByteDataAccess.Models.Games.Game>();
 
-            var gamesAccessor = new Mock<IGamesAccessor>();
-            gamesAccessor.Setup(s =>
-                s.GetAllAsync()
+            var transaction = new Mock<IDbContextTransaction>();
+            transaction.Setup(t =>
+                t.CommitAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+            transaction.Setup(t =>
+                t.RollbackAsync(
+                    It.IsAny<CancellationToken>()
+                )
+            );
+
+            var transactionFactory = new Mock<ITransactionFactory>();
+            transactionFactory.Setup(f =>
+                f.CreateAsync()
             ).Returns(
                 Task.FromResult(
-                    new DataResponse<IList<SpyderByteDataAccess.Models.Games.Game>?>(
-                        _games,
+                    transaction.Object
+                )
+            );
+
+            var gamesAccessor = new Mock<IGamesAccessor>();
+            gamesAccessor.Setup(s =>
+                s.GetAllAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<GameType?>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<string?>(),
+                    It.IsAny<string?>()
+                )
+            ).Returns(
+                Task.FromResult(
+                    new DataResponse<IPagedList<SpyderByteDataAccess.Models.Games.Game>?>(
+                        new PagedList<SpyderByteDataAccess.Models.Games.Game>(
+                            _games,
+                            _games.Count(),
+                            1,
+                            10
+                        ),
                         ModelResult.OK
                     )
-                    as IDataResponse<IList<SpyderByteDataAccess.Models.Games.Game>?>
+                    as IDataResponse<IPagedList<SpyderByteDataAccess.Models.Games.Game>?>
                 )
             );
             gamesAccessor.Setup(s =>
@@ -49,6 +86,20 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
             )).Returns((Guid id) =>
             {
                 var game = _games.SingleOrDefault(g => g.Id == id);
+                return Task.FromResult(
+                    new DataResponse<SpyderByteDataAccess.Models.Games.Game?>(
+                        game,
+                        game == null ? ModelResult.NotFound : ModelResult.OK
+                    )
+                    as IDataResponse<SpyderByteDataAccess.Models.Games.Game?>
+                );
+            });
+            gamesAccessor.Setup(s =>
+                s.GetSingleByNameAsync(
+                    It.IsAny<string>()
+            )).Returns((string name) =>
+            {
+                var game = _games.SingleOrDefault(g => g.Name == name);
                 return Task.FromResult(
                     new DataResponse<SpyderByteDataAccess.Models.Games.Game?>(
                         game,
@@ -147,7 +198,13 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 );
             });
 
-            var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteServices.Mappers.MapperProfile>());
+            var mapperConfiguration = new MapperConfiguration(
+                config =>
+                {
+                    config.AddProfile<SpyderByteResources.Mappers.MapperProfile>();
+                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
+                }
+            );
             _mapper = new Mapper(mapperConfiguration);
 
             var logger = new Mock<ILogger<GamesService>>();
@@ -157,7 +214,14 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 .AddInMemoryCollection(configurationContents)
                 .Build();
 
-            Service = new GamesService(gamesAccessor.Object, imgurService.Object, _mapper, logger.Object, configuration);
+            Service = new GamesService(
+                transactionFactory.Object,
+                gamesAccessor.Object,
+                imgurService.Object,
+                _mapper,
+                logger.Object,
+                configuration
+            );
         }
 
         public SpyderByteServices.Models.Games.Game AddGame()

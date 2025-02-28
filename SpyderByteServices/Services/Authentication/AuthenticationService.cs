@@ -6,8 +6,8 @@ using SpyderByteResources.Enums;
 using SpyderByteResources.Extensions;
 using SpyderByteResources.Helpers.Authorization;
 using SpyderByteResources.Helpers.Encoding;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Helpers.Authentication;
 using SpyderByteServices.Models.Authentication;
 using SpyderByteServices.Services.Authentication.Abstract;
@@ -23,11 +23,6 @@ namespace SpyderByteServices.Services.Authentication
         private readonly ILogger<AuthenticationService> logger = logger;
         private readonly IEncodingService encodingService = encodingService;
         private readonly IPasswordService passwordService = passwordService;
-
-        public async Task<bool> Test()
-        {
-            return true;
-        }
 
         public async Task<IDataResponse<string>> AuthenticateAsync(Login login)
         {

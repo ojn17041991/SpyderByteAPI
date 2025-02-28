@@ -2,7 +2,7 @@
 using FluentAssertions;
 using SpyderByteResources.Enums;
 using SpyderByteTest.DataAccess.UsersAccessorTests.Helpers;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteDataAccess.Models.Users;
 
 namespace SpyderByteTest.DataAccess.UsersAccessorTests
@@ -19,13 +19,14 @@ namespace SpyderByteTest.DataAccess.UsersAccessorTests
         }
 
         [Fact]
-        public async Task Can_Patch_User_In_Accessor()
+        public async Task Can_Patch_User_With_Game_Assignment_In_Accessor()
         {
             // Arrange
             var storedUser = await _helper.AddUser();
+            var storedGame = await _helper.AddGame();
             var patchUser = _helper.GeneratePatchUser();
             patchUser.Id = storedUser.Id;
-            patchUser.GameId = null!;
+            patchUser.GameId = storedGame.Id;
 
             // Act
             var returnedUser = await _helper.Accessor.PatchAsync(patchUser);
@@ -38,21 +39,23 @@ namespace SpyderByteTest.DataAccess.UsersAccessorTests
                 returnedUser.Result.Should().Be(ModelResult.OK);
                 returnedUser.Data.Should().NotBeNull();
                 returnedUser.Data!.Id.Should().Be(patchUser.Id);
+                returnedUser.Data!.UserGame!.GameId.Should().Be(patchUser.GameId!.Value);
 
                 // Check the database.
                 var updatedStoredUser = await _helper.GetUser(returnedUser.Data!.Id);
                 updatedStoredUser.Should().NotBeNull();
                 updatedStoredUser.Id.Should().Be(patchUser.Id);
+                updatedStoredUser.UserGame!.GameId.Should().Be(patchUser.GameId!.Value);
 
                 updatedStoredUser.Should().BeEquivalentTo(returnedUser.Data);
             }
         }
 
         [Fact]
-        public async Task Can_Patch_User_With_Game_Assignment_In_Accessor()
+        public async Task Can_Patch_User_Without_Existing_Game_Assignment_In_Accessor()
         {
             // Arrange
-            var storedUser = await _helper.AddUser();
+            var storedUser = await _helper.AddUserWithoutGame();
             var storedGame = await _helper.AddGame();
             var patchUser = _helper.GeneratePatchUser();
             patchUser.Id = storedUser.Id;

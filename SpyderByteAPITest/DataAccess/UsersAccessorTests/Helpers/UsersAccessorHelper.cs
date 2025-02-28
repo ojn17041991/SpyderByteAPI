@@ -46,6 +46,17 @@ namespace SpyderByteTest.DataAccess.UsersAccessorTests.Helpers
             var user = _fixture.Create<User>();
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
+            return user;
+        }
+
+        public async Task<User> AddUserWithoutGame()
+        {
+            var user = _fixture.Create<User>();
+            user.UserGame = null!;
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
             return user;
         }
 
@@ -56,6 +67,7 @@ namespace SpyderByteTest.DataAccess.UsersAccessorTests.Helpers
             game.LeaderboardGame = null!;
             _context.Games.Add(game);
             await _context.SaveChangesAsync();
+            _context.ChangeTracker.Clear();
             return game;
         }
 

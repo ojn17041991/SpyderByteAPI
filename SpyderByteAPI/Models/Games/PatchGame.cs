@@ -16,7 +16,7 @@ namespace SpyderByteAPI.Models.Games
 
         public string? Url { get; set; }
 
-        [FileUploadValidation(ErrorMessage = "Image file can only be of type png.")]
+        [FileUploadValidation(ExistingResource = true, ErrorMessage = "Image file can only be of type png.")]
         public IFormFile? Image { get; set; }
 
         public DateTime? PublishDate { get; set; }

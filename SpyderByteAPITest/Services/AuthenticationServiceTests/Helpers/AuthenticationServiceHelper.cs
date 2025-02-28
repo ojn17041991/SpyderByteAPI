@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteResources.Enums;
-using SpyderByteResources.Responses.Abstract;
-using SpyderByteResources.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
 using SpyderByteServices.Services.Authentication;
 using AutoFixture;
 using AutoMapper;

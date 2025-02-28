@@ -4,8 +4,8 @@ using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
-using SpyderByteResources.Responses;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Services.Data.Abstract;
 
 namespace SpyderByteTest.API.DataControllerTests.Helpers
@@ -15,13 +15,26 @@ namespace SpyderByteTest.API.DataControllerTests.Helpers
         public DataController Controller;
 
         private bool allowDatabaseBackups = true;
+        private bool allowDatabaseCleanups = true;
         private ModelResult currentModelResult = ModelResult.OK;
 
         public DataControllerHelper()
         {
             var dataService = new Mock<IDataService>();
             dataService.Setup(x =>
-                x.Backup()
+                x.BackupAsync()
+            ).Returns(() => {
+                return Task.FromResult(
+                    new DataResponse<bool>(
+                        true,
+                        currentModelResult
+                    )
+                    as IDataResponse<bool>
+                );
+            });
+            
+            dataService.Setup(x =>
+                x.CleanupAsync()
             ).Returns(() => {
                 return Task.FromResult(
                     new DataResponse<bool>(
@@ -42,6 +55,10 @@ namespace SpyderByteTest.API.DataControllerTests.Helpers
                 if (featureName == FeatureFlags.AllowDatabaseBackups)
                 {
                     return Task.FromResult(allowDatabaseBackups);
+                }
+                else if (featureName == FeatureFlags.AllowDatabaseCleanups)
+                {
+                    return Task.FromResult(allowDatabaseCleanups);
                 }
                 return Task.FromResult(false);
             });
@@ -66,6 +83,11 @@ namespace SpyderByteTest.API.DataControllerTests.Helpers
         public void SetAllowDatabaseBackups(bool allowDatabaseBackups)
         {
             this.allowDatabaseBackups = allowDatabaseBackups;
+        }
+
+        public void SetAllowDatabaseCleanups(bool allowDatabaseCleanups)
+        {
+            this.allowDatabaseCleanups = allowDatabaseCleanups;
         }
     }
 }

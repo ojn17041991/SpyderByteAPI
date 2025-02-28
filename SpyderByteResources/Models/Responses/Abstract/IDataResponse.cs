@@ -1,6 +1,6 @@
 ﻿using SpyderByteResources.Enums;
 
-namespace SpyderByteResources.Responses.Abstract
+namespace SpyderByteResources.Models.Responses.Abstract
 {
     public interface IDataResponse<T>
     {

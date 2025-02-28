@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using SpyderByteResources.Responses.Abstract;
+using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Models.Imgur;
 
 namespace SpyderByteServices.Services.Imgur.Abstract

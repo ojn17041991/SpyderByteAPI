@@ -5,6 +5,7 @@ using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
+using SpyderByteResources.Models.Paging.Abstract;
 using SpyderByteServices.Services.Games.Abstract;
 
 namespace SpyderByteAPI.Controllers
@@ -21,13 +22,19 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(
+            [FromQuery] string? name,
+            [FromQuery] GameType? type,
+            [FromQuery] int page,
+            [FromQuery] int pageSize,
+            [FromQuery] string? order,
+            [FromQuery] string? direction)
         {
-            var response = await gamesService.GetAllAsync();
+            var response = await gamesService.GetAllAsync(name, type, page, pageSize, order, direction);
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<IList<SpyderByteAPI.Models.Games.Game>>(response.Data);
+                var data = mapper.Map<IPagedList<SpyderByteAPI.Models.Games.Game>>(response.Data);
                 return Ok(data);
             }
             else

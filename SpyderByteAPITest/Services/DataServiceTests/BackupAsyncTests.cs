@@ -1,14 +1,15 @@
 ﻿using FluentAssertions;
 using SpyderByteResources.Enums;
+using SpyderByteTest.Services.DataServiceTests.Enums;
 using SpyderByteTest.Services.DataServiceTests.Helpers;
 
 namespace SpyderByteTest.Services.DataServiceTests
 {
-    public class BackupTests
+    public class BackupAsyncTests
     {
         private readonly DataServiceHelper _helper;
 
-        public BackupTests()
+        public BackupAsyncTests()
         {
             _helper = new DataServiceHelper();
         }
@@ -22,7 +23,7 @@ namespace SpyderByteTest.Services.DataServiceTests
             _helper.BuildDatabaseFile();
 
             // Act
-            var response = await _helper.Service.Backup();
+            var response = await _helper.Service.BackupAsync();
 
             // Assert
             response.Should().NotBeNull();
@@ -40,7 +41,7 @@ namespace SpyderByteTest.Services.DataServiceTests
             // Arrange
 
             // Act
-            var response = await _helper.Service.Backup();
+            var response = await _helper.Service.BackupAsync();
 
             // Assert
             response.Should().NotBeNull();
@@ -55,7 +56,7 @@ namespace SpyderByteTest.Services.DataServiceTests
             _helper.BuildFullConfiguration();
 
             // Act
-            var response = await _helper.Service.Backup();
+            var response = await _helper.Service.BackupAsync();
 
             // Assert
             response.Should().NotBeNull();
@@ -71,7 +72,7 @@ namespace SpyderByteTest.Services.DataServiceTests
             _helper.BuildDatabaseDirectory();
 
             // Act
-            var response = await _helper.Service.Backup();
+            var response = await _helper.Service.BackupAsync();
 
             // Assert
             response.Should().NotBeNull();
@@ -89,10 +90,10 @@ namespace SpyderByteTest.Services.DataServiceTests
             _helper.BuildFullConfiguration();
             _helper.BuildDatabaseDirectory();
             _helper.BuildDatabaseFile();
-            _helper.SetStorageServiceResponse(false);
+            _helper.SetStorageServiceResponse(DataFunction.UploadAsync, false);
 
             // Act
-            var response = await _helper.Service.Backup();
+            var response = await _helper.Service.BackupAsync();
 
             // Assert
             response.Should().NotBeNull();
@@ -102,7 +103,7 @@ namespace SpyderByteTest.Services.DataServiceTests
             // Teardown
             _helper.ClearDatabaseFile();
             _helper.ClearDatabaseDirectory();
-            _helper.SetStorageServiceResponse(true);
+            _helper.SetStorageServiceResponse(DataFunction.UploadAsync, true);
         }
     }
 }

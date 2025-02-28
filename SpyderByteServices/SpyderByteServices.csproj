@@ -25,13 +25,4 @@
     <ProjectReference Include="..\SpyderByteResources\SpyderByteResources.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="large-file - Copy %283%29">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="large-file - Copy %283%29 - Copy">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
