@@ -18,12 +18,7 @@ builder.Services.AddProjectAuthorization();
 builder.Services.AddProjectFeatureFlags(builder.Configuration);
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.AddSwaggerConfiguration(builder.Configuration);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,11 +1,13 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.FeatureManagement;
 using Moq;
-using SpyderByteAPI.Controllers;
+using SpyderByteAPI.Controllers.Games.v1;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Flags;
 using SpyderByteResources.Models.Paging;
 using SpyderByteResources.Models.Paging.Abstract;
 using SpyderByteResources.Models.Responses;
@@ -20,6 +22,7 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
 
         private readonly Fixture fixture;
 
+        private bool allowUseOfNonPaginatedEndpoints = true;
         private ModelResult currentModelResult = ModelResult.OK;
 
         public GamesControllerHelper()
@@ -109,6 +112,20 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
                 );
             });
 
+            var featureManager = new Mock<IFeatureManager>();
+            featureManager.Setup(x =>
+                x.IsEnabledAsync(
+                    It.IsAny<string>()
+                )
+            ).Returns((string featureName) =>
+            {
+                if (featureName == FeatureFlags.AllowUseOfNonPaginatedEndpoints)
+                {
+                    return Task.FromResult(allowUseOfNonPaginatedEndpoints);
+                }
+                return Task.FromResult(false);
+            });
+
             var modelResources = new Mock<IStringLookup<ModelResult>>();
             modelResources.Setup(x =>
                 x.GetResource(
@@ -147,6 +164,10 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
         public PatchGame GeneratePatchGame()
         {
             return fixture.Create<PatchGame>();
+        }
+        public void SetAllowUseOfNonPaginatedEndpoints(bool allowUseOfNonPaginatedEndpoints)
+        {
+            this.allowUseOfNonPaginatedEndpoints = allowUseOfNonPaginatedEndpoints;
         }
     }
 }

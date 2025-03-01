@@ -9,6 +9,7 @@
         Forbidden,
 
         Error,
+        NotImplemented,
         NotFound,
         AlreadyExists,
         RequestDataIncomplete,

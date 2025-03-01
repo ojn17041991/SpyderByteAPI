@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
@@ -8,13 +10,16 @@ using SpyderByteResources.Flags;
 using SpyderByteResources.Models.Paging.Abstract;
 using SpyderByteServices.Services.Games.Abstract;
 
-namespace SpyderByteAPI.Controllers
+namespace SpyderByteAPI.Controllers.Games.V1
 {
+    [Route("api/[controller]")]
     [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1")]
     [ApiController]
-    public class GamesController(IGamesService gamesService, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
+    public class GamesController(IGamesService gamesService, IFeatureManager featureManager, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
     {
         private readonly IGamesService gamesService = gamesService;
+        private readonly IFeatureManager featureManager = featureManager;
         private readonly IMapper mapper = mapper;
         private readonly IStringLookup<ModelResult> modelResources = modelResources;
 
@@ -22,19 +27,18 @@ namespace SpyderByteAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get(
-            [FromQuery] string? name,
-            [FromQuery] GameType? type,
-            [FromQuery] int page,
-            [FromQuery] int pageSize,
-            [FromQuery] string? order,
-            [FromQuery] string? direction)
+        public async Task<IActionResult> Get()
         {
-            var response = await gamesService.GetAllAsync(name, type, page, pageSize, order, direction);
+            if (await featureManager.IsEnabledAsync(FeatureFlags.AllowUseOfNonPaginatedEndpoints) == false)
+            {
+                return StatusCode(StatusCodes.Status501NotImplemented, modelResources.GetResource(ModelResult.NotImplemented));
+            }
+            
+            var response = await gamesService.GetAllAsync(null!, null!, 1, Int32.MaxValue, null!, null!);
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<IPagedList<SpyderByteAPI.Models.Games.Game>>(response.Data);
+                var data = mapper.Map<IPagedList<Game>>(response.Data!.Items);
                 return Ok(data);
             }
             else
@@ -54,7 +58,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                var data = mapper.Map<Game>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -80,7 +84,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.Created)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                var data = mapper.Map<Game>(response.Data);
                 return CreatedAtAction(nameof(GetGame), new { id = data.Id }, data);
             }
             else if (response.Result == ModelResult.AlreadyExists)
@@ -110,7 +114,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                var data = mapper.Map<Game>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -140,7 +144,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                var data = mapper.Map<Game>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.RelationshipViolation)
