@@ -6,5 +6,6 @@
         public const string AllowDatabaseCleanups = "AllowDatabaseCleanups";
         public const string AllowWriteOperationsOnNonRestrictedUsers = "AllowWriteOperationsOnNonRestrictedUsers";
         public const string AllowAuthenticationRefresh = "AllowAuthenticationRefresh";
+        public const string AllowUseOfNonPaginatedEndpoints = "AllowUseOfNonPaginatedEndpoints";
     }
 }

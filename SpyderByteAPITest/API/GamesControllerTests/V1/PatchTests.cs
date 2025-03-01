@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.GamesControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.GamesControllerTests
+namespace SpyderByteTest.API.GamesControllerTests.V1
 {
     public class PatchTests
     {
@@ -23,7 +23,7 @@ namespace SpyderByteTest.API.GamesControllerTests
             helper.SetCurrentModelResult(ModelResult.OK);
 
             // Act
-            var response = await helper.Controller.Patch(patchGame);
+            var response = await helper.ControllerV1.Patch(patchGame);
 
             // Assert
             response.Should().BeOfType<OkObjectResult>();
@@ -37,7 +37,7 @@ namespace SpyderByteTest.API.GamesControllerTests
             helper.SetCurrentModelResult(ModelResult.AlreadyExists);
 
             // Act
-            var response = await helper.Controller.Patch(patchGame);
+            var response = await helper.ControllerV1.Patch(patchGame);
 
             // Assert
             response.Should().BeOfType<BadRequestObjectResult>();
@@ -51,7 +51,7 @@ namespace SpyderByteTest.API.GamesControllerTests
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
-            var response = await helper.Controller.Patch(patchGame);
+            var response = await helper.ControllerV1.Patch(patchGame);
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
@@ -65,7 +65,7 @@ namespace SpyderByteTest.API.GamesControllerTests
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.Controller.Patch(patchGame);
+            var response = await helper.ControllerV1.Patch(patchGame);
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;

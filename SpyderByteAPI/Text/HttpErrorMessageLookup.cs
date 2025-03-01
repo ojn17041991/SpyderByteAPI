@@ -7,6 +7,7 @@ namespace SpyderByteResources.Resources
     {
         private IDictionary<ModelResult, string> resources = new Dictionary<ModelResult, string>()
         {
+            { ModelResult.NotImplemented, "This endpoint is no longer supported." },
             { ModelResult.NotFound, "Failed to locate resource." },
             { ModelResult.AlreadyExists, "This resource already exists." },
             { ModelResult.RequestDataIncomplete, "The request data is incomplete." },
