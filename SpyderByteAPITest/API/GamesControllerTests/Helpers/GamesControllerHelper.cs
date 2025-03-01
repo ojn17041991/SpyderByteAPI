@@ -3,7 +3,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.FeatureManagement;
 using Moq;
-using SpyderByteAPI.Controllers.Games.v1;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
@@ -18,7 +17,8 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
 {
     public class GamesControllerHelper
     {
-        public GamesController Controller;
+        public SpyderByteAPI.Controllers.Games.V1.GamesController ControllerV1;
+        public SpyderByteAPI.Controllers.Games.V1_3.GamesController ControllerV1_3;
 
         private readonly Fixture fixture;
 
@@ -148,7 +148,8 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
             );
             var mapper = new Mapper(mapperConfiguration);
 
-            Controller = new(gamesService.Object, mapper, modelResources.Object);
+            ControllerV1 = new(gamesService.Object, featureManager.Object, mapper, modelResources.Object);
+            ControllerV1_3 = new(gamesService.Object, mapper);
         }
 
         public void SetCurrentModelResult(ModelResult currentModelResult)

@@ -38,7 +38,7 @@ namespace SpyderByteAPI.Controllers.Games.V1
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<IPagedList<Game>>(response.Data!.Items);
+                var data = mapper.Map<IList<Game>>(response.Data!.Items);
                 return Ok(data);
             }
             else

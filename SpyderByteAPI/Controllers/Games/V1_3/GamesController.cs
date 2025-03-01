@@ -5,7 +5,7 @@ using SpyderByteResources.Enums;
 using SpyderByteResources.Models.Paging.Abstract;
 using SpyderByteServices.Services.Games.Abstract;
 
-namespace SpyderByteAPI.Controllers.V1_3
+namespace SpyderByteAPI.Controllers.Games.V1_3
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.3")]
