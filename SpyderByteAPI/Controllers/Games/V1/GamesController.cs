@@ -7,7 +7,6 @@ using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
-using SpyderByteResources.Models.Paging.Abstract;
 using SpyderByteServices.Services.Games.Abstract;
 
 namespace SpyderByteAPI.Controllers.Games.V1
@@ -38,7 +37,7 @@ namespace SpyderByteAPI.Controllers.Games.V1
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<IList<Game>>(response.Data!.Items);
+                var data = mapper.Map<IList<SpyderByteAPI.Models.Games.Game>>(response.Data!.Items);
                 return Ok(data);
             }
             else
@@ -58,7 +57,7 @@ namespace SpyderByteAPI.Controllers.Games.V1
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<Game>(response.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -84,7 +83,7 @@ namespace SpyderByteAPI.Controllers.Games.V1
 
             if (response.Result == ModelResult.Created)
             {
-                var data = mapper.Map<Game>(response.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
                 return CreatedAtAction(nameof(GetGame), new { id = data.Id }, data);
             }
             else if (response.Result == ModelResult.AlreadyExists)
@@ -114,7 +113,7 @@ namespace SpyderByteAPI.Controllers.Games.V1
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<Game>(response.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -144,7 +143,7 @@ namespace SpyderByteAPI.Controllers.Games.V1
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<Game>(response.Data);
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.RelationshipViolation)
