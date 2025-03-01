@@ -2,7 +2,7 @@ name: Merge PROD branch into MAIN branch
 
 on:
   push:
-    branches: [ "prod" ]
+    branches: [ "prod-disabled" ]
 
 jobs:
   merge-branch:
