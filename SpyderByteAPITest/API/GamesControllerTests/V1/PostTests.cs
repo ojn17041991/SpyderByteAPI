@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.GamesControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.GamesControllerTests
+namespace SpyderByteTest.API.GamesControllerTests.V1
 {
     public class PostTests
     {
@@ -23,7 +23,7 @@ namespace SpyderByteTest.API.GamesControllerTests
             helper.SetCurrentModelResult(ModelResult.Created);
 
             // Act
-            var response = await helper.Controller.Post(postGame);
+            var response = await helper.ControllerV1.Post(postGame);
 
             // Assert
             response.Should().BeOfType<CreatedAtActionResult>();
@@ -37,7 +37,7 @@ namespace SpyderByteTest.API.GamesControllerTests
             helper.SetCurrentModelResult(ModelResult.RequestDataIncomplete);
 
             // Act
-            var response = await helper.Controller.Post(postGame);
+            var response = await helper.ControllerV1.Post(postGame);
 
             // Assert
             response.Should().BeOfType<BadRequestObjectResult>();
@@ -51,7 +51,7 @@ namespace SpyderByteTest.API.GamesControllerTests
             helper.SetCurrentModelResult(ModelResult.AlreadyExists);
 
             // Act
-            var response = await helper.Controller.Post(postGame);
+            var response = await helper.ControllerV1.Post(postGame);
 
             // Assert
             response.Should().BeOfType<BadRequestObjectResult>();
@@ -65,7 +65,7 @@ namespace SpyderByteTest.API.GamesControllerTests
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.Controller.Post(postGame);
+            var response = await helper.ControllerV1.Post(postGame);
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;

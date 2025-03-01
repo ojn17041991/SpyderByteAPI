@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.GamesControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.GamesControllerTests
+namespace SpyderByteTest.API.GamesControllerTests.V1
 {
     public class GetTests
     {
@@ -20,19 +20,27 @@ namespace SpyderByteTest.API.GamesControllerTests
         {
             // Arrange
             helper.SetCurrentModelResult(ModelResult.OK);
-
-            string? name = null;
-            GameType? type = null;
-            int page = 1;
-            int pageSize = 10;
-            string? order = null;
-            string? direction = null;
+            helper.SetAllowUseOfNonPaginatedEndpoints(true);
 
             // Act
-            var response = await helper.Controller.Get(name, type, page, pageSize, order, direction);
+            var response = await helper.ControllerV1.Get();
 
             // Assert
             response.Should().BeOfType<OkObjectResult>();
+        }
+
+        [Fact]
+        public async Task Can_Receive_Not_Implemented_Response_From_Get_Games_Request()
+        {
+            // Arrange
+            helper.SetAllowUseOfNonPaginatedEndpoints(false);
+
+            // Act
+            var response = await helper.ControllerV1.Get();
+
+            // Assert
+            var objectResult = (ObjectResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotImplemented);
         }
 
         [Fact]
@@ -40,16 +48,10 @@ namespace SpyderByteTest.API.GamesControllerTests
         {
             // Arrange
             helper.SetCurrentModelResult(ModelResult.Error);
-
-            string? name = null;
-            GameType? type = null;
-            int page = 1;
-            int pageSize = 10;
-            string? order = null;
-            string? direction = null;
+            helper.SetAllowUseOfNonPaginatedEndpoints(true);
 
             // Act
-            var response = await helper.Controller.Get(name, type, page, pageSize, order, direction);
+            var response = await helper.ControllerV1.Get();
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;

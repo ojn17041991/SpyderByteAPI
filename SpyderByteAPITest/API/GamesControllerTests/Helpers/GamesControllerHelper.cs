@@ -1,11 +1,12 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.FeatureManagement;
 using Moq;
-using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Flags;
 using SpyderByteResources.Models.Paging;
 using SpyderByteResources.Models.Paging.Abstract;
 using SpyderByteResources.Models.Responses;
@@ -16,10 +17,12 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
 {
     public class GamesControllerHelper
     {
-        public GamesController Controller;
+        public SpyderByteAPI.Controllers.Games.V1.GamesController ControllerV1;
+        public SpyderByteAPI.Controllers.Games.V1_3.GamesController ControllerV1_3;
 
         private readonly Fixture fixture;
 
+        private bool allowUseOfNonPaginatedEndpoints = true;
         private ModelResult currentModelResult = ModelResult.OK;
 
         public GamesControllerHelper()
@@ -109,6 +112,20 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
                 );
             });
 
+            var featureManager = new Mock<IFeatureManager>();
+            featureManager.Setup(x =>
+                x.IsEnabledAsync(
+                    It.IsAny<string>()
+                )
+            ).Returns((string featureName) =>
+            {
+                if (featureName == FeatureFlags.AllowUseOfNonPaginatedEndpoints)
+                {
+                    return Task.FromResult(allowUseOfNonPaginatedEndpoints);
+                }
+                return Task.FromResult(false);
+            });
+
             var modelResources = new Mock<IStringLookup<ModelResult>>();
             modelResources.Setup(x =>
                 x.GetResource(
@@ -131,7 +148,8 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
             );
             var mapper = new Mapper(mapperConfiguration);
 
-            Controller = new(gamesService.Object, mapper, modelResources.Object);
+            ControllerV1 = new(gamesService.Object, featureManager.Object, mapper, modelResources.Object);
+            ControllerV1_3 = new(gamesService.Object, mapper);
         }
 
         public void SetCurrentModelResult(ModelResult currentModelResult)
@@ -147,6 +165,10 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
         public PatchGame GeneratePatchGame()
         {
             return fixture.Create<PatchGame>();
+        }
+        public void SetAllowUseOfNonPaginatedEndpoints(bool allowUseOfNonPaginatedEndpoints)
+        {
+            this.allowUseOfNonPaginatedEndpoints = allowUseOfNonPaginatedEndpoints;
         }
     }
 }

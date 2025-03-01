@@ -44,6 +44,8 @@ using SpyderByteResources.Paging.Factories;
 using SpyderByteDataAccess.Paging.Factories.Abstract;
 using SpyderByteDataAccess.Transactions.Factories.Abstract;
 using SpyderByteDataAccess.Transactions.Factories;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SpyderByteResources.Extensions
 {
@@ -66,9 +68,11 @@ namespace SpyderByteResources.Extensions
             services.AddSingleton<IStorageService, StorageService>();
             services.AddSingleton<IImgurService, ImgurService>();
             services.AddScoped<IPasswordService, PasswordService>();
-
             services.AddScoped<IEncodingService, EncodingService>();
+
             services.AddScoped<IStringLookup<ModelResult>, HttpErrorMessageLookup>();
+
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
         }
 
         public static void AddProjectDatabase(this IServiceCollection services, ConfigurationManager configuration)
@@ -261,27 +265,16 @@ namespace SpyderByteResources.Extensions
 
         public static void AddProjectVersioning(this IServiceCollection services, ConfigurationManager configuration)
         {
-            var versionMetadata = configuration.GetSection("Version");
-            int major = Convert.ToInt32(versionMetadata["Major"]);
-            int minor = Convert.ToInt32(versionMetadata["Minor"]);
-            int patch = Convert.ToInt32(versionMetadata["Patch"]);
-
-            var apiResources = new ApiResourceLookup();
             services.AddSwaggerGen(options =>
             {
                 options.EnableAnnotations();
-                options.SwaggerDoc($"v{major}", new OpenApiInfo
-                {
-                    Title = apiResources.GetResource("title"),
-                    Description = apiResources.GetResource("description"),
-                    Version = $"{major}.{minor}.{patch}"
-                });
             });
 
             services.AddApiVersioning(options =>
             {
-                options.DefaultApiVersion = new ApiVersion(major, minor);
+                options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
             })
             .AddApiExplorer(options =>
             {
