@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Asp.Versioning.ApiExplorer;
+using Microsoft.EntityFrameworkCore;
 using SpyderByteAPI.Middleware; // Required for release.
 using SpyderByteDataAccess.Contexts;
 using SpyderByteResources.Resources;
@@ -12,22 +13,21 @@ namespace SpyderByteResources.Extensions
             if (webApplication.Environment.IsDevelopment())
             {
                 webApplication.UseSwagger();
-                webApplication.UseSwaggerUI();// x =>
-                //{
-                    //var apiResources = new ApiResourceLookup();
-                    //string apiName = apiResources.GetResource("title");
+                webApplication.UseSwaggerUI(options =>
+                {
+                    var apiResources = new ApiResourceLookup();
+                    string apiName = apiResources.GetResource("title");
 
-                    //IDictionary<string, string>[] versions = configuration.GetSection("Versioning:Supported").Get<Dictionary<string, string>[]>()!;
+                    var apiVersionDescriptionProvider = webApplication.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
-                    //foreach (IDictionary<string, string> version in versions)
-                    //{
-                    //    string major = version["Major"];
-                    //    string minor = version["Minor"];
-                    //    string patch = version["Patch"];
-
-                    //    x.SwaggerEndpoint($"/swagger/v{major}.{minor}/swagger.json", $"{apiName} v{major}.{minor}");
-                    //}
-                //});
+                    foreach (var versionDescriptor in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                    {
+                        options.SwaggerEndpoint(
+                            $"/swagger/{versionDescriptor.GroupName}/swagger.json",
+                            $"{apiName} v{versionDescriptor.ApiVersion.MajorVersion}.{versionDescriptor.ApiVersion.MinorVersion}"
+                        );
+                    }
+                });
             }
         }
 

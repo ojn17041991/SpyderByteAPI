@@ -44,6 +44,8 @@ using SpyderByteResources.Paging.Factories;
 using SpyderByteDataAccess.Paging.Factories.Abstract;
 using SpyderByteDataAccess.Transactions.Factories.Abstract;
 using SpyderByteDataAccess.Transactions.Factories;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SpyderByteResources.Extensions
 {
@@ -66,9 +68,11 @@ namespace SpyderByteResources.Extensions
             services.AddSingleton<IStorageService, StorageService>();
             services.AddSingleton<IImgurService, ImgurService>();
             services.AddScoped<IPasswordService, PasswordService>();
-
             services.AddScoped<IEncodingService, EncodingService>();
+
             services.AddScoped<IStringLookup<ModelResult>, HttpErrorMessageLookup>();
+
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
         }
 
         public static void AddProjectDatabase(this IServiceCollection services, ConfigurationManager configuration)
@@ -264,31 +268,11 @@ namespace SpyderByteResources.Extensions
             services.AddSwaggerGen(options =>
             {
                 options.EnableAnnotations();
-
-                //var apiResources = new ApiResourceLookup();
-                //string apiName = apiResources.GetResource("title");
-                //string apiDescription = apiResources.GetResource("description");
-
-                //IDictionary<string, string>[] versions = configuration.GetSection("Versioning:Supported").Get<Dictionary<string, string>[]>()!;
-
-                //foreach (IDictionary<string, string> version in versions)
-                //{
-                //    string major = version["Major"];
-                //    string minor = version["Minor"];
-                //    string patch = version["Patch"];
-
-                //    options.SwaggerDoc($"v{major}.{minor}", new OpenApiInfo
-                //    {
-                //        Title = apiName,
-                //        Description = apiDescription,
-                //        Version = $"{major}.{minor}"
-                //    });
-                //}
             });
 
             services.AddApiVersioning(options =>
             {
-                options.DefaultApiVersion = new ApiVersion(1, 0); // OJN: Fix later.
+                options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ReportApiVersions = true;
             })
