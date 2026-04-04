@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.AuthenticationControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.AuthenticationControllerTests
+namespace SpyderByteTest.API.AuthenticationControllerTests.V1
 {
     public class PostTests
     {
