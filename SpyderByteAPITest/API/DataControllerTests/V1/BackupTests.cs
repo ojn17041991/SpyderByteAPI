@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.DataControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.DataControllerTests
+namespace SpyderByteTest.API.DataControllerTests.V1
 {
     public class BackupTests
     {
