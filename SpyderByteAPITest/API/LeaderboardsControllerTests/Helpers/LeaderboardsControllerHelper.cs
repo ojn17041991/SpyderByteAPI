@@ -1,7 +1,6 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using Moq;
-using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Models.Responses.Abstract;
@@ -10,6 +9,7 @@ using SpyderByteServices.Services.Leaderboards.Abstract;
 using SpyderByteServices.Services.Authorization.Abstract;
 using SpyderByteTest.API.LeaderboardsControllerTests.Mocks;
 using SpyderByteAPI.Models.Leaderboards;
+using SpyderByteAPI.Controllers.Leaderboards.V1;
 
 namespace SpyderByteTest.API.LeaderboardsControllerTests.Helpers
 {

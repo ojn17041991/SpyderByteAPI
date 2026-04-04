@@ -8,7 +8,7 @@ using SpyderByteServices.Services.Leaderboards.Abstract;
 using SpyderByteResources.Extensions;
 using SpyderByteResources.Flags;
 
-namespace SpyderByteAPI.Controllers
+namespace SpyderByteAPI.Controllers.Leaderboards.V1
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
@@ -38,7 +38,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Leaderboards.Leaderboard>(response.Data);
+                var data = mapper.Map<Leaderboard>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -63,7 +63,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.Created)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Leaderboards.Leaderboard>(response.Data);
+                var data = mapper.Map<Leaderboard>(response.Data);
                 return CreatedAtAction(nameof(Get), new { id = data.Id }, data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -98,7 +98,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.Created)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Leaderboards.LeaderboardRecord>(response.Data);
+                var data = mapper.Map<LeaderboardRecord>(response.Data);
                 return CreatedAtAction(nameof(Get), new { id = data.Id }, data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -123,7 +123,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Leaderboards.Leaderboard>(response.Data);
+                var data = mapper.Map<Leaderboard>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -153,7 +153,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Leaderboards.Leaderboard>(response.Data);
+                var data = mapper.Map<Leaderboard>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -179,7 +179,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Leaderboards.LeaderboardRecord>(response.Data);
+                var data = mapper.Map<LeaderboardRecord>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
