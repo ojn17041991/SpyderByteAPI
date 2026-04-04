@@ -2,13 +2,13 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteResources.Models.Responses;
 using SpyderByteServices.Services.Users.Abstract;
 using SpyderByteAPI.Models.Users;
+using SpyderByteAPI.Controllers.Users.V1;
 
 namespace SpyderByteTest.API.UsersControllerTests.Helpers
 {

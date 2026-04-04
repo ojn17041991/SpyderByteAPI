@@ -7,12 +7,16 @@ using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
 using SpyderByteServices.Services.Users.Abstract;
 
-namespace SpyderByteAPI.Controllers
+namespace SpyderByteAPI.Controllers.Users.V1_4
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [Authorize]
     [ApiController]
-    public class UsersController(IUsersService usersService, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
+    public class UserController(
+        IUsersService usersService,
+        IMapper mapper,
+        IStringLookup<ModelResult> modelResources
+    ) : ControllerBase
     {
         private readonly IUsersService usersService = usersService;
         private readonly IMapper mapper = mapper;
@@ -26,7 +30,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Users.User>(response.Data);
+                var data = mapper.Map<User>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -47,7 +51,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.Created)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Users.User>(response.Data);
+                var data = mapper.Map<User>(response.Data);
                 return CreatedAtAction(nameof(Get), new { id = data.Id }, data);
             }
             else if (response.Result == ModelResult.AlreadyExists)
@@ -76,7 +80,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Users.User>(response.Data);
+                var data = mapper.Map<User>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
@@ -101,7 +105,7 @@ namespace SpyderByteAPI.Controllers
 
             if (response.Result == ModelResult.OK)
             {
-                var data = mapper.Map<SpyderByteAPI.Models.Users.User>(response.Data);
+                var data = mapper.Map<User>(response.Data);
                 return Ok(data);
             }
             else if (response.Result == ModelResult.NotFound)
