@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.UsersControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.UsersControllerTests
+namespace SpyderByteTest.API.UsersControllerTests.V1
 {
     public class PostTests
     {
@@ -23,7 +23,7 @@ namespace SpyderByteTest.API.UsersControllerTests
             helper.SetCurrentModelResult(ModelResult.Created);
 
             // Act
-            var response = await helper.Controller.Post(postUser);
+            var response = await helper.ControllerV1.Post(postUser);
 
             // Assert
             response.Should().BeOfType<CreatedAtActionResult>();
@@ -37,7 +37,7 @@ namespace SpyderByteTest.API.UsersControllerTests
             helper.SetCurrentModelResult(ModelResult.AlreadyExists);
 
             // Act
-            var response = await helper.Controller.Post(postUser);
+            var response = await helper.ControllerV1.Post(postUser);
 
             // Assert
             response.Should().BeOfType<BadRequestObjectResult>();
@@ -51,7 +51,7 @@ namespace SpyderByteTest.API.UsersControllerTests
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
-            var response = await helper.Controller.Post(postUser);
+            var response = await helper.ControllerV1.Post(postUser);
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
@@ -65,7 +65,7 @@ namespace SpyderByteTest.API.UsersControllerTests
             helper.SetCurrentModelResult(ModelResult.RequestInvalid);
 
             // Act
-            var response = await helper.Controller.Post(postUser);
+            var response = await helper.ControllerV1.Post(postUser);
 
             // Assert
             response.Should().BeOfType<BadRequestObjectResult>();
@@ -79,7 +79,7 @@ namespace SpyderByteTest.API.UsersControllerTests
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.Controller.Post(postUser);
+            var response = await helper.ControllerV1.Post(postUser);
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;

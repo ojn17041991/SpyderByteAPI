@@ -4,51 +4,64 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.UsersControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.UsersControllerTests
+namespace SpyderByteTest.API.UsersControllerTests.V1_4
 {
-    public class GetTests
+    public class DeleteTests
     {
         private readonly UsersControllerHelper helper;
 
-        public GetTests()
+        public DeleteTests()
         {
             helper = new UsersControllerHelper();
         }
 
         [Fact]
-        public async Task Can_Receive_Ok_Response_From_Get_User_Request()
+        public async Task Can_Receive_Ok_Response_From_Delete_User_Request()
         {
             // Arrange
             helper.SetCurrentModelResult(ModelResult.OK);
 
             // Act
-            var response = await helper.Controller.Get(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.Delete(Guid.NewGuid());
 
             // Assert
             response.Should().BeOfType<OkObjectResult>();
         }
 
         [Fact]
-        public async Task Can_Receive_Not_Found_Response_From_Get_User_Request()
+        public async Task Can_Receive_Not_Found_Response_From_Delete_User_Request()
         {
             // Arrange
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
-            var response = await helper.Controller.Get(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.Delete(Guid.NewGuid());
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
         }
 
         [Fact]
-        public async Task Can_Receive_Error_Response_From_Get_User_Request()
+        public async Task Can_Receive_Request_Invalid_Response_From_Delete_User_Request()
+        {
+            // Arrange
+            helper.SetCurrentModelResult(ModelResult.RequestInvalid);
+
+            // Act
+            var response = await helper.ControllerV1_4.Delete(Guid.NewGuid());
+
+            // Assert
+            response.Should().BeOfType<BadRequestObjectResult>();
+        }
+
+        [Fact]
+        public async Task Can_Receive_Error_Response_From_Delete_User_Request()
         {
             // Arrange
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.Controller.Get(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.Delete(Guid.NewGuid());
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;

@@ -14,7 +14,8 @@ namespace SpyderByteTest.API.UsersControllerTests.Helpers
 {
     public class UsersControllerHelper
     {
-        public UsersController Controller;
+        public SpyderByteAPI.Controllers.Users.V1.UsersController ControllerV1;
+        public SpyderByteAPI.Controllers.Users.V1_4.UserController ControllerV1_4;
 
         private readonly Fixture fixture;
 
@@ -96,7 +97,8 @@ namespace SpyderByteTest.API.UsersControllerTests.Helpers
             var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteAPI.Mappers.MapperProfile>());
             var mapper = new Mapper(mapperConfiguration);
 
-            Controller = new UsersController(usersService.Object, mapper, modelResources.Object);
+            ControllerV1 = new SpyderByteAPI.Controllers.Users.V1.UsersController(usersService.Object, mapper, modelResources.Object);
+            ControllerV1_4 = new SpyderByteAPI.Controllers.Users.V1_4.UserController(usersService.Object, mapper, modelResources.Object);
         }
 
         public void SetCurrentModelResult(ModelResult currentModelResult)

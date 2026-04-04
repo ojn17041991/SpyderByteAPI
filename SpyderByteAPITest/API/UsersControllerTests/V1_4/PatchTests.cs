@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.UsersControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.UsersControllerTests
+namespace SpyderByteTest.API.UsersControllerTests.V1_4
 {
     public class PatchTests
     {
@@ -23,7 +23,7 @@ namespace SpyderByteTest.API.UsersControllerTests
             helper.SetCurrentModelResult(ModelResult.OK);
 
             // Act
-            var response = await helper.Controller.Patch(patchUser);
+            var response = await helper.ControllerV1_4.Patch(patchUser);
 
             // Assert
             response.Should().BeOfType<OkObjectResult>();
@@ -37,7 +37,7 @@ namespace SpyderByteTest.API.UsersControllerTests
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
-            var response = await helper.Controller.Patch(patchUser);
+            var response = await helper.ControllerV1_4.Patch(patchUser);
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
@@ -51,7 +51,7 @@ namespace SpyderByteTest.API.UsersControllerTests
             helper.SetCurrentModelResult(ModelResult.RequestInvalid);
 
             // Act
-            var response = await helper.Controller.Patch(patchUser);
+            var response = await helper.ControllerV1_4.Patch(patchUser);
 
             // Assert
             response.Should().BeOfType<BadRequestObjectResult>();
@@ -65,7 +65,7 @@ namespace SpyderByteTest.API.UsersControllerTests
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.Controller.Patch(patchUser);
+            var response = await helper.ControllerV1_4.Patch(patchUser);
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;
