@@ -7,7 +7,7 @@ using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
 using SpyderByteServices.Services.Authentication.Abstract;
 
-namespace SpyderByteAPI.Controllers
+namespace SpyderByteAPI.Controllers.Authentication.V1
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
