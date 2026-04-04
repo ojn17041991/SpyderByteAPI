@@ -6,7 +6,7 @@ using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
 using SpyderByteServices.Services.Data.Abstract;
 
-namespace SpyderByteAPI.Controllers
+namespace SpyderByteAPI.Controllers.Data.V1
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
