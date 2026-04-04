@@ -9,7 +9,6 @@ using SpyderByteServices.Services.Leaderboards.Abstract;
 using SpyderByteServices.Services.Authorization.Abstract;
 using SpyderByteTest.API.LeaderboardsControllerTests.Mocks;
 using SpyderByteAPI.Models.Leaderboards;
-using SpyderByteAPI.Controllers.Leaderboards.V1;
 
 namespace SpyderByteTest.API.LeaderboardsControllerTests.Helpers
 {
