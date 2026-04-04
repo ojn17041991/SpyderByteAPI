@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.LeaderboardsControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.LeaderboardsControllerTests
+namespace SpyderByteTest.API.LeaderboardsControllerTests.V1
 {
     public class PatchLeaderboardTests
     {
@@ -23,7 +23,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.OK);
 
             // Act
-            var response = await helper.Controller.PatchLeaderboard(patchLeaderboard);
+            var response = await helper.ControllerV1.PatchLeaderboard(patchLeaderboard);
 
             // Assert
             response.Should().BeOfType<OkObjectResult>();
@@ -37,7 +37,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
-            var response = await helper.Controller.PatchLeaderboard(patchLeaderboard);
+            var response = await helper.ControllerV1.PatchLeaderboard(patchLeaderboard);
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
@@ -51,7 +51,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.AlreadyExists);
 
             // Act
-            var response = await helper.Controller.PatchLeaderboard(patchLeaderboard);
+            var response = await helper.ControllerV1.PatchLeaderboard(patchLeaderboard);
 
             // Assert
             response.Should().BeOfType<BadRequestObjectResult>();
@@ -65,7 +65,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.Controller.PatchLeaderboard(patchLeaderboard);
+            var response = await helper.ControllerV1.PatchLeaderboard(patchLeaderboard);
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;

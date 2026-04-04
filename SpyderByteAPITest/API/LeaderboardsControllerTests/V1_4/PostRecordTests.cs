@@ -4,51 +4,54 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.LeaderboardsControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.LeaderboardsControllerTests
+namespace SpyderByteTest.API.LeaderboardsControllerTests.V1_4
 {
-    public class GetTests
+    public class PostRecordTests
     {
         private readonly LeaderboardsControllerHelper helper;
 
-        public GetTests()
+        public PostRecordTests()
         {
             helper = new LeaderboardsControllerHelper();
         }
 
         [Fact]
-        public async Task Can_Receive_Ok_Response_From_Get_Leaderboard_Request()
+        public async Task Can_Receive_Created_Response_From_Post_Record_Request()
         {
             // Arrange
-            helper.SetCurrentModelResult(ModelResult.OK);
+            var postRecord = helper.GeneratePostRecord();
+            helper.SetCurrentModelResult(ModelResult.Created);
 
             // Act
-            var response = await helper.Controller.Get(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.PostRecord(postRecord);
 
             // Assert
-            response.Should().BeOfType<OkObjectResult>();
+            response.Should().BeOfType<CreatedAtActionResult>();
         }
 
         [Fact]
-        public async Task Can_Receive_Not_Found_Response_From_Get_Leaderboard_Request()
+        public async Task Can_Receive_Not_Found_Response_From_Post_Record_Request()
         {
             // Arrange
+            var postRecord = helper.GeneratePostRecord();
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
-            var response = await helper.Controller.Get(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.PostRecord(postRecord);
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
         }
 
         [Fact]
-        public async Task Can_Receive_Error_Response_From_Get_Leaderboard_Request()
+        public async Task Can_Receive_Error_Response_From_Post_Record_Request()
         {
             // Arrange
+            var postRecord = helper.GeneratePostRecord();
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.Controller.Get(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.PostRecord(postRecord);
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;
@@ -56,13 +59,14 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
         }
 
         [Fact]
-        public async Task Can_Receive_Unauthorized_Response_From_Get_Leaderboard_Request()
+        public async Task Can_Receive_Unauthorized_Response_From_Post_Record_Request()
         {
             // Arrange
+            var postRecord = helper.GeneratePostRecord();
             helper.SetAuthorizeRequests(false);
 
             // Act
-            var response = await helper.Controller.Get(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.PostRecord(postRecord);
 
             // Assert
             response.Should().BeOfType<UnauthorizedResult>();

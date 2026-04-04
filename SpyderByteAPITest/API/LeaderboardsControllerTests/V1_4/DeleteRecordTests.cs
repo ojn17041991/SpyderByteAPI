@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.LeaderboardsControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.LeaderboardsControllerTests
+namespace SpyderByteTest.API.LeaderboardsControllerTests.V1_4
 {
     public class DeleteRecordTests
     {
@@ -22,7 +22,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.OK);
 
             // Act
-            var response = await helper.Controller.DeleteRecord(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.DeleteRecord(Guid.NewGuid());
 
             // Assert
             response.Should().BeOfType<OkObjectResult>();
@@ -35,7 +35,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
-            var response = await helper.Controller.DeleteRecord(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.DeleteRecord(Guid.NewGuid());
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
@@ -48,7 +48,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.Controller.DeleteRecord(Guid.NewGuid());
+            var response = await helper.ControllerV1_4.DeleteRecord(Guid.NewGuid());
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;

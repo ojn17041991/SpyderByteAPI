@@ -4,7 +4,7 @@ using SpyderByteResources.Enums;
 using SpyderByteTest.API.LeaderboardsControllerTests.Helpers;
 using System.Net;
 
-namespace SpyderByteTest.API.LeaderboardsControllerTests
+namespace SpyderByteTest.API.LeaderboardsControllerTests.V1
 {
     public class PostRecordTests
     {
@@ -23,7 +23,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.Created);
 
             // Act
-            var response = await helper.Controller.PostRecord(postRecord);
+            var response = await helper.ControllerV1.PostRecord(postRecord);
 
             // Assert
             response.Should().BeOfType<CreatedAtActionResult>();
@@ -37,7 +37,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
-            var response = await helper.Controller.PostRecord(postRecord);
+            var response = await helper.ControllerV1.PostRecord(postRecord);
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
@@ -51,7 +51,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.Controller.PostRecord(postRecord);
+            var response = await helper.ControllerV1.PostRecord(postRecord);
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;
@@ -66,7 +66,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests
             helper.SetAuthorizeRequests(false);
 
             // Act
-            var response = await helper.Controller.PostRecord(postRecord);
+            var response = await helper.ControllerV1.PostRecord(postRecord);
 
             // Assert
             response.Should().BeOfType<UnauthorizedResult>();
