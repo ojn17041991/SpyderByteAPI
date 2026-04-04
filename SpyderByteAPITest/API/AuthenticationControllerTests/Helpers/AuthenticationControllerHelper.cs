@@ -3,7 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.FeatureManagement;
 using Moq;
-using SpyderByteAPI.Controllers;
+using SpyderByteAPI.Controllers.Authentication.V1;
 using SpyderByteAPI.Models.Authentication;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;

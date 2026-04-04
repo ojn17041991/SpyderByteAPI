@@ -1,7 +1,6 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using Moq;
-using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Models.Responses.Abstract;
@@ -15,7 +14,8 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests.Helpers
 {
     public class LeaderboardsControllerHelper
     {
-        public LeaderboardsController Controller;
+        public SpyderByteAPI.Controllers.Leaderboards.V1.LeaderboardsController ControllerV1;
+        public SpyderByteAPI.Controllers.Leaderboards.V1_4.LeaderboardController ControllerV1_4;
 
         private readonly Fixture fixture;
 
@@ -142,8 +142,11 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests.Helpers
             fixture = new Fixture();
             fixture.Behaviors.Add(new OmitOnRecursionBehavior());
 
-            Controller = new LeaderboardsController(leaderboardsService.Object, authorizationService.Object, mapper, modelResources.Object);
-            Controller.ControllerContext = new MockControllerContext();
+            ControllerV1 = new SpyderByteAPI.Controllers.Leaderboards.V1.LeaderboardsController(leaderboardsService.Object, authorizationService.Object, mapper, modelResources.Object);
+            ControllerV1.ControllerContext = new MockControllerContext();
+
+            ControllerV1_4 = new SpyderByteAPI.Controllers.Leaderboards.V1_4.LeaderboardController(leaderboardsService.Object, authorizationService.Object, mapper, modelResources.Object);
+            ControllerV1_4.ControllerContext = new MockControllerContext();
         }
 
         public void SetCurrentModelResult(ModelResult currentModelResult)
