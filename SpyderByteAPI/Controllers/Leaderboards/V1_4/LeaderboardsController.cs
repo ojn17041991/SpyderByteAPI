@@ -85,7 +85,7 @@ namespace SpyderByteAPI.Controllers.Leaderboards.V1_4
             }
         }
 
-        [HttpPost("Records")]
+        [HttpPost("record")]
         [Authorize]
         [Authorize(PolicyType.WriteLeaderboardRecords)]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -171,7 +171,7 @@ namespace SpyderByteAPI.Controllers.Leaderboards.V1_4
             }
         }
 
-        [HttpDelete("Records/{id}")]
+        [HttpDelete("record/{id}")]
         [Authorize]
         [Authorize(PolicyType.DeleteLeaderboardRecords)]
         [ProducesResponseType(StatusCodes.Status200OK)]
