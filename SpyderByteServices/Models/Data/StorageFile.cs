@@ -1,9 +1,9 @@
 ﻿namespace SpyderByteServices.Models.Data
 {
-    public class StorageFile
+    public record StorageFile
     {
-        public string FileName { get; set; } = string.Empty;
+        public string FileName { get; init; } = string.Empty;
 
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; init; }
     }
 }

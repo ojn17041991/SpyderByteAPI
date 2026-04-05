@@ -2,16 +2,16 @@
 
 namespace SpyderByteServices.Models.Leaderboards
 {
-    public class LeaderboardGame
+    public record LeaderboardGame
     {
-        public int Id { get; set; }
+        public int Id { get; init; }
 
-        public Guid GameId { get; set; }
+        public Guid GameId { get; init; }
 
-        public Game Game { get; set; } = new Game();
+        public Game Game { get; init; } = new Game();
 
-        public Guid LeaderboardId { get; set; }
+        public Guid LeaderboardId { get; init; }
 
-        public Leaderboard Leaderboard { get; set; } = null!;
+        public Leaderboard Leaderboard { get; init; } = null!;
     }
 }

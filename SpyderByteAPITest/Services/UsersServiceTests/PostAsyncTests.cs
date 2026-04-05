@@ -17,8 +17,7 @@ namespace SpyderByteTest.Services.UsersServiceTests
         public async Task Can_Post_User_In_Service()
         {
             // Arrange
-            var postUser = _helper.GeneratePostUser();
-            postUser.UserType = UserType.Restricted;
+            var postUser = _helper.GeneratePostUser() with { UserType = UserType.Restricted };
 
             // Act
             var returnedUser = await _helper.Service.PostAsync(postUser);
@@ -39,8 +38,7 @@ namespace SpyderByteTest.Services.UsersServiceTests
         {
             // Arrange
             var storedUser = _helper.AddUser(UserType.Restricted);
-            var postUser = _helper.GeneratePostUser();
-            postUser.UserName = storedUser.UserName;
+            var postUser = _helper.GeneratePostUser() with { UserName = storedUser.UserName };
 
             // Act
             var returnedUser = await _helper.Service.PostAsync(postUser);
@@ -55,8 +53,7 @@ namespace SpyderByteTest.Services.UsersServiceTests
         public async Task Can_Not_Post_User_In_Service_If_User_Type_Is_Not_Restricted()
         {
             // Arrange
-            var postUser = _helper.GeneratePostUser();
-            postUser.UserType = UserType.Admin;
+            var postUser = _helper.GeneratePostUser() with { UserType = UserType.Admin };
 
             // Act
             var returnedUser = await _helper.Service.PostAsync(postUser);

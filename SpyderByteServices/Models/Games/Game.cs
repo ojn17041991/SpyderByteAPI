@@ -4,24 +4,24 @@ using SpyderByteServices.Models.Users;
 
 namespace SpyderByteServices.Models.Games
 {
-    public class Game
+    public record Game
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; init; } = string.Empty;
 
-        public GameType Type { get; set; }
+        public GameType Type { get; init; }
 
-        public string Url { get; set; } = string.Empty;
+        public string Url { get; init; } = string.Empty;
 
-        public string ImgurUrl { get; set; } = string.Empty;
+        public string ImgurUrl { get; init; } = string.Empty;
 
-        public string ImgurImageId { get; set; } = string.Empty;
+        public string ImgurImageId { get; init; } = string.Empty;
 
-        public DateTime PublishDate { get; set; } = DateTime.MinValue;
+        public DateTime PublishDate { get; init; } = DateTime.MinValue;
 
-        public LeaderboardGame? LeaderboardGame { get; set; } = null!;
+        public LeaderboardGame? LeaderboardGame { get; init; } = null!;
 
-        public UserGame? UserGame { get; set; } = null!;
+        public UserGame? UserGame { get; init; } = null!;
     }
 }

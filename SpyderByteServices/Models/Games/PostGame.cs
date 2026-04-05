@@ -3,16 +3,16 @@ using SpyderByteResources.Enums;
 
 namespace SpyderByteServices.Models.Games
 {
-    public class PostGame
+    public record PostGame
     {
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; init; } = string.Empty;
 
-        public GameType Type { get; set; }
+        public GameType Type { get; init; }
 
-        public string Url { get; set; } = string.Empty;
+        public string Url { get; init; } = string.Empty;
 
-        public IFormFile? Image { get; set; }
+        public IFormFile? Image { get; init; }
 
-        public DateTime PublishDate { get; set; } = DateTime.UtcNow;
+        public DateTime PublishDate { get; init; } = DateTime.UtcNow;
     }
 }

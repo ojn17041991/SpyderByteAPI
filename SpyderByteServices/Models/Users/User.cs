@@ -2,18 +2,18 @@
 
 namespace SpyderByteServices.Models.Users
 {
-    public class User
+    public record User
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
-        public string UserName { get; set; } = string.Empty;
+        public string UserName { get; init; } = string.Empty;
 
-        public string Hash { get; set; } = string.Empty;
+        public string Hash { get; init; } = string.Empty;
 
-        public string Salt { get; set; } = string.Empty;
+        public string Salt { get; init; } = string.Empty;
 
-        public UserType UserType { get; set; } = UserType.Restricted;
+        public UserType UserType { get; init; } = UserType.Restricted;
 
-        public UserGame? UserGame { get; set; } = null!;
+        public UserGame? UserGame { get; init; } = null!;
     }
 }
