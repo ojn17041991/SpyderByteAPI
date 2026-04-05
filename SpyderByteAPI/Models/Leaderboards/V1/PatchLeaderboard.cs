@@ -5,9 +5,9 @@ namespace SpyderByteAPI.Models.Leaderboards.V1
     public record PatchLeaderboard
     {
         [Required]
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
         [Required]
-        public Guid GameId { get; set; }
+        public Guid GameId { get; init; }
     }
 }

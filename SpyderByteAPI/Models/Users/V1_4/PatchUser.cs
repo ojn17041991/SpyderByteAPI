@@ -2,6 +2,6 @@
 {
     public record PatchUser
     {
-        public Guid? GameId { get; set; }
+        public Guid? GameId { get; init; }
     }
 }

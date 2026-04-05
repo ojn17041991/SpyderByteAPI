@@ -5,8 +5,8 @@ namespace SpyderByteAPI.Models.Users.V1
     public record PatchUser
     {
         [Required]
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
-        public Guid? GameId { get; set; }
+        public Guid? GameId { get; init; }
     }
 }

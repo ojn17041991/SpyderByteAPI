@@ -4,22 +4,22 @@ namespace SpyderByteAPI.Models.Games
 {
     public record Game
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; init; } = string.Empty;
 
-        public GameType Type { get; set; }
+        public GameType Type { get; init; }
 
-        public string Url { get; set; } = string.Empty;
+        public string Url { get; init; } = string.Empty;
 
-        public string ImgurUrl { get; set; } = string.Empty;
+        public string ImgurUrl { get; init; } = string.Empty;
 
-        public string ImgurImageId { get; set; } = string.Empty;
+        public string ImgurImageId { get; init; } = string.Empty;
 
-        public DateTime PublishDate { get; set; } = DateTime.MinValue;
+        public DateTime PublishDate { get; init; } = DateTime.MinValue;
 
-        public Guid? LeaderboardId { get; set; }
+        public Guid? LeaderboardId { get; init; }
 
-        public Guid? UserId { get; set; }
+        public Guid? UserId { get; init; }
     }
 }

@@ -4,12 +4,12 @@ namespace SpyderByteAPI.Models.Users
 {
     public record User
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
-        public string UserName { get; set; } = string.Empty;
+        public string UserName { get; init; } = string.Empty;
 
-        public UserType UserType { get; set; } = UserType.Restricted;
+        public UserType UserType { get; init; } = UserType.Restricted;
 
-        public Guid? GameId { get; set; }
+        public Guid? GameId { get; init; }
     }
 }

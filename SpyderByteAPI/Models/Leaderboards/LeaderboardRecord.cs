@@ -2,14 +2,14 @@
 {
     public record LeaderboardRecord
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
-        public Guid LeaderboardId { get; set; }
+        public Guid LeaderboardId { get; init; }
 
-        public string Player { get; set; } = string.Empty;
+        public string Player { get; init; } = string.Empty;
 
-        public long Score { get; set; }
+        public long Score { get; init; }
 
-        public DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; init; }
     }
 }
