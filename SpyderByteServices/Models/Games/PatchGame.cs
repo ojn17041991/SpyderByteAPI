@@ -3,7 +3,7 @@ using SpyderByteResources.Enums;
 
 namespace SpyderByteServices.Models.Games
 {
-    public class PatchGame
+    public record PatchGame
     {
         public Guid Id { get; set; }
 

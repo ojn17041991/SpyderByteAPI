@@ -2,13 +2,10 @@
 using SpyderByteResources.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace SpyderByteAPI.Models.Games
+namespace SpyderByteAPI.Models.Games.V1_4
 {
-    public class PatchGame
+    public record PatchGame
     {
-        [Required]
-        public Guid Id { get; set; }
-
         [RegularExpression(@"[^<>\\\/\r\n]{1,50}", ErrorMessage = "Name does not meet validation requirements.")]
         public string? Name { get; set; }
 

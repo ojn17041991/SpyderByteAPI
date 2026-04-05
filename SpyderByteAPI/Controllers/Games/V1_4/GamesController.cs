@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
 using SpyderByteAPI.Models.Games;
+using SpyderByteAPI.Models.Games.V1_4;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
@@ -106,16 +107,18 @@ namespace SpyderByteAPI.Controllers.Games.V1_4
             }
         }
 
-        [HttpPatch]
+        [HttpPatch("{id}")]
         [Authorize]
         [Authorize(PolicyType.WriteGames)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Patch([FromForm] PatchGame game)
+        public async Task<IActionResult> Patch([FromForm] PatchGame game, [FromRoute] Guid id)
         {
-            var response = await gamesService.PatchAsync(mapper.Map<SpyderByteServices.Models.Games.PatchGame>(game));
+            var dto = mapper.Map<SpyderByteServices.Models.Games.PatchGame>(game) with { Id = id };
+
+            var response = await gamesService.PatchAsync(dto);
 
             if (response.Result == ModelResult.OK)
             {

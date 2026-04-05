@@ -164,10 +164,20 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
             return fixture.Create<PostGame>();
         }
 
-        public PatchGame GeneratePatchGame()
+        public SpyderByteAPI.Models.Games.V1.PatchGame GeneratePatchGameV1()
         {
-            return fixture.Create<PatchGame>();
+            return fixture.Create<SpyderByteAPI.Models.Games.V1.PatchGame>();
         }
+
+        public (SpyderByteAPI.Models.Games.V1_4.PatchGame Dto, Guid Id) GeneratePatchGameV1_4()
+        {
+            return
+            (
+                fixture.Create<SpyderByteAPI.Models.Games.V1_4.PatchGame>(),
+                Guid.NewGuid()
+            );
+        }
+
         public void SetAllowUseOfNonPaginatedEndpoints(bool allowUseOfNonPaginatedEndpoints)
         {
             this.allowUseOfNonPaginatedEndpoints = allowUseOfNonPaginatedEndpoints;

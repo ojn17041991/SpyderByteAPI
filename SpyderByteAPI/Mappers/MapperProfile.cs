@@ -24,7 +24,8 @@ namespace SpyderByteAPI.Mappers
                     )
                 );
             CreateMap<SpyderByteAPI.Models.Games.PostGame, SpyderByteServices.Models.Games.PostGame>();
-            CreateMap<SpyderByteAPI.Models.Games.PatchGame, SpyderByteServices.Models.Games.PatchGame>();
+            CreateMap<SpyderByteAPI.Models.Games.V1.PatchGame, SpyderByteServices.Models.Games.PatchGame>();
+            CreateMap<SpyderByteAPI.Models.Games.V1_4.PatchGame, SpyderByteServices.Models.Games.PatchGame>();
 
             CreateMap<SpyderByteServices.Models.Users.User, SpyderByteAPI.Models.Users.User>()
                 .ForMember(
