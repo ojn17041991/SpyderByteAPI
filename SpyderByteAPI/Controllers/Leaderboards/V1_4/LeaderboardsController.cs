@@ -7,10 +7,13 @@ using SpyderByteResources.Enums;
 using SpyderByteServices.Services.Leaderboards.Abstract;
 using SpyderByteResources.Extensions;
 using SpyderByteResources.Flags;
+using SpyderByteAPI.Models.Leaderboards.V1_4;
+using Asp.Versioning;
 
 namespace SpyderByteAPI.Controllers.Leaderboards.V1_4
 {
     [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.4")]
     [ApiController]
     public class LeaderboardController(
         ILeaderboardsService leaderboardsService,
@@ -116,15 +119,17 @@ namespace SpyderByteAPI.Controllers.Leaderboards.V1_4
             }
         }
 
-        [HttpPatch]
+        [HttpPatch("{id}")]
         [Authorize]
         [Authorize(PolicyType.WriteLeaderboards)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> PatchLeaderboard([FromBody] PatchLeaderboard leaderboard)
+        public async Task<IActionResult> PatchLeaderboard([FromBody] PatchLeaderboard leaderboard, [FromRoute] Guid id)
         {
-            var response = await leaderboardsService.PatchAsync(mapper.Map<SpyderByteServices.Models.Leaderboards.PatchLeaderboard>(leaderboard));
+            var dto = mapper.Map<SpyderByteServices.Models.Leaderboards.PatchLeaderboard>(leaderboard) with { Id = id };
+
+            var response = await leaderboardsService.PatchAsync(dto);
 
             if (response.Result == ModelResult.OK)
             {

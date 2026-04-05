@@ -19,7 +19,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests.V1
         public async Task Can_Receive_Ok_Response_From_Patch_Leaderboard_Request()
         {
             // Arrange
-            var patchLeaderboard = helper.GeneratePatchLeaderboard();
+            var patchLeaderboard = helper.GeneratePatchLeaderboardV1();
             helper.SetCurrentModelResult(ModelResult.OK);
 
             // Act
@@ -33,7 +33,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests.V1
         public async Task Can_Receive_Not_Found_Response_From_Patch_Leaderboard_Request()
         {
             // Arrange
-            var patchLeaderboard = helper.GeneratePatchLeaderboard();
+            var patchLeaderboard = helper.GeneratePatchLeaderboardV1();
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
@@ -47,7 +47,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests.V1
         public async Task Can_Receive_Already_Exists_Response_From_Patch_Leaderboard_Request()
         {
             // Arrange
-            var patchLeaderboard = helper.GeneratePatchLeaderboard();
+            var patchLeaderboard = helper.GeneratePatchLeaderboardV1();
             helper.SetCurrentModelResult(ModelResult.AlreadyExists);
 
             // Act
@@ -61,7 +61,7 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests.V1
         public async Task Can_Receive_Error_Response_From_Patch_Leaderboard_Request()
         {
             // Arrange
-            var patchLeaderboard = helper.GeneratePatchLeaderboard();
+            var patchLeaderboard = helper.GeneratePatchLeaderboardV1();
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act

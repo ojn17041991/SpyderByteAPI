@@ -169,9 +169,18 @@ namespace SpyderByteTest.API.LeaderboardsControllerTests.Helpers
             return fixture.Create<PostLeaderboardRecord>();
         }
 
-        public PatchLeaderboard GeneratePatchLeaderboard()
+        public SpyderByteAPI.Models.Leaderboards.V1.PatchLeaderboard GeneratePatchLeaderboardV1()
         {
-            return fixture.Create<PatchLeaderboard>();
+            return fixture.Create<SpyderByteAPI.Models.Leaderboards.V1.PatchLeaderboard>();
+        }
+
+        public (SpyderByteAPI.Models.Leaderboards.V1_4.PatchLeaderboard Dto, Guid Id) GeneratePatchLeaderboardV1_4()
+        {
+            return
+            (
+                fixture.Create<SpyderByteAPI.Models.Leaderboards.V1_4.PatchLeaderboard>(),
+                Guid.NewGuid()
+            );
         }
     }
 }

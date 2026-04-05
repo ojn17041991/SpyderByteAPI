@@ -47,7 +47,8 @@ namespace SpyderByteAPI.Mappers
             CreateMap<SpyderByteServices.Models.Leaderboards.LeaderboardRecord, SpyderByteAPI.Models.Leaderboards.LeaderboardRecord>();
             CreateMap<SpyderByteAPI.Models.Leaderboards.PostLeaderboard, SpyderByteServices.Models.Leaderboards.PostLeaderboard>();
             CreateMap<SpyderByteAPI.Models.Leaderboards.PostLeaderboardRecord, SpyderByteServices.Models.Leaderboards.PostLeaderboardRecord>();
-            CreateMap<SpyderByteAPI.Models.Leaderboards.PatchLeaderboard, SpyderByteServices.Models.Leaderboards.PatchLeaderboard>();
+            CreateMap<SpyderByteAPI.Models.Leaderboards.V1.PatchLeaderboard, SpyderByteServices.Models.Leaderboards.PatchLeaderboard>();
+            CreateMap<SpyderByteAPI.Models.Leaderboards.V1_4.PatchLeaderboard, SpyderByteServices.Models.Leaderboards.PatchLeaderboard>();
         }
     }
 }

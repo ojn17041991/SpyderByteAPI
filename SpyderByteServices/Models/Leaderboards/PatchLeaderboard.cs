@@ -1,6 +1,6 @@
 ﻿namespace SpyderByteServices.Models.Leaderboards
 {
-    public class PatchLeaderboard
+    public record PatchLeaderboard
     {
         public Guid Id { get; set; }
 

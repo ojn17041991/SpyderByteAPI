@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SpyderByteAPI.Models.Leaderboards
+namespace SpyderByteAPI.Models.Leaderboards.V1
 {
-    public class PatchLeaderboard
+    public record PatchLeaderboard
     {
         [Required]
         public Guid Id { get; set; }
