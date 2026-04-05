@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
@@ -10,6 +11,7 @@ using SpyderByteServices.Services.Authentication.Abstract;
 namespace SpyderByteAPI.Controllers.Authentication.V1
 {
     [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1")]
     [ApiController]
     public class AuthenticationController(IAuthenticationService authenticationService, IMapper mapper, IFeatureManager featureManager) : ControllerBase
     {

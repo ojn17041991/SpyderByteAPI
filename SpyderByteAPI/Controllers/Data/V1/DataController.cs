@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
 using SpyderByteAPI.Text.Abstract;
@@ -9,6 +10,7 @@ using SpyderByteServices.Services.Data.Abstract;
 namespace SpyderByteAPI.Controllers.Data.V1
 {
     [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1")]
     [ApiController]
     public class DataController(IDataService dataService, IFeatureManager featureManager, IStringLookup<ModelResult> modelResources) : ControllerBase
     {
