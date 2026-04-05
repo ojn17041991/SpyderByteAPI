@@ -35,7 +35,8 @@ namespace SpyderByteAPI.Mappers
                     )
                 );
             CreateMap<SpyderByteAPI.Models.Users.PostUser, SpyderByteServices.Models.Users.PostUser>();
-            CreateMap<SpyderByteAPI.Models.Users.PatchUser, SpyderByteServices.Models.Users.PatchUser>();
+            CreateMap<SpyderByteAPI.Models.Users.V1.PatchUser, SpyderByteServices.Models.Users.PatchUser>();
+            CreateMap<SpyderByteAPI.Models.Users.V1_4.PatchUser, SpyderByteServices.Models.Users.PatchUser>();
 
             CreateMap<SpyderByteServices.Models.Leaderboards.Leaderboard, SpyderByteAPI.Models.Leaderboards.Leaderboard>()
                 .ForMember(

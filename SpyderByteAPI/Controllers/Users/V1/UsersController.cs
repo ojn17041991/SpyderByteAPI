@@ -1,7 +1,9 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.Models.Users;
+using SpyderByteAPI.Models.Users.V1;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
@@ -10,6 +12,7 @@ using SpyderByteServices.Services.Users.Abstract;
 namespace SpyderByteAPI.Controllers.Users.V1
 {
     [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1")]
     [Authorize]
     [ApiController]
     public class UsersController(IUsersService usersService, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase

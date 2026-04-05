@@ -1,7 +1,9 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpyderByteAPI.Models.Users;
+using SpyderByteAPI.Models.Users.V1_4;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Flags;
@@ -10,6 +12,7 @@ using SpyderByteServices.Services.Users.Abstract;
 namespace SpyderByteAPI.Controllers.Users.V1_4
 {
     [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.4")]
     [Authorize]
     [ApiController]
     public class UserController(
@@ -72,11 +75,13 @@ namespace SpyderByteAPI.Controllers.Users.V1_4
             }
         }
 
-        [HttpPatch]
+        [HttpPatch("{id}")]
         [Authorize(PolicyType.WriteUsers)]
-        public async Task<IActionResult> Patch(PatchUser user)
+        public async Task<IActionResult> Patch([FromBody] PatchUser user, [FromRoute] Guid id)
         {
-            var response = await usersService.PatchAsync(mapper.Map<SpyderByteServices.Models.Users.PatchUser>(user));
+            var dto = mapper.Map<SpyderByteServices.Models.Users.PatchUser>(user) with { Id = id };
+
+            var response = await usersService.PatchAsync(dto);
 
             if (response.Result == ModelResult.OK)
             {

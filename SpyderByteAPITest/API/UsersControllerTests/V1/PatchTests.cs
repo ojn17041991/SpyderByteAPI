@@ -19,7 +19,7 @@ namespace SpyderByteTest.API.UsersControllerTests.V1
         public async Task Can_Receive_Ok_Response_From_Patch_User_Request()
         {
             // Arrange
-            var patchUser = helper.GeneratePatchUser();
+            var patchUser = helper.GeneratePatchUserV1();
             helper.SetCurrentModelResult(ModelResult.OK);
 
             // Act
@@ -33,7 +33,7 @@ namespace SpyderByteTest.API.UsersControllerTests.V1
         public async Task Can_Receive_Not_Found_Response_From_Patch_User_Request()
         {
             // Arrange
-            var patchUser = helper.GeneratePatchUser();
+            var patchUser = helper.GeneratePatchUserV1();
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
@@ -47,7 +47,7 @@ namespace SpyderByteTest.API.UsersControllerTests.V1
         public async Task Can_Receive_Request_Invalid_Response_From_Patch_User_Request()
         {
             // Arrange
-            var patchUser = helper.GeneratePatchUser();
+            var patchUser = helper.GeneratePatchUserV1();
             helper.SetCurrentModelResult(ModelResult.RequestInvalid);
 
             // Act
@@ -61,7 +61,7 @@ namespace SpyderByteTest.API.UsersControllerTests.V1
         public async Task Can_Receive_Error_Response_From_Patch_User_Request()
         {
             // Arrange
-            var patchUser = helper.GeneratePatchUser();
+            var patchUser = helper.GeneratePatchUserV1();
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act

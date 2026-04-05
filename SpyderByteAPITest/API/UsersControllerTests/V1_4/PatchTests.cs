@@ -19,11 +19,11 @@ namespace SpyderByteTest.API.UsersControllerTests.V1_4
         public async Task Can_Receive_Ok_Response_From_Patch_User_Request()
         {
             // Arrange
-            var patchUser = helper.GeneratePatchUser();
+            var patchUser = helper.GeneratePatchUserV1_4();
             helper.SetCurrentModelResult(ModelResult.OK);
 
             // Act
-            var response = await helper.ControllerV1_4.Patch(patchUser);
+            var response = await helper.ControllerV1_4.Patch(patchUser.Dto, patchUser.Id);
 
             // Assert
             response.Should().BeOfType<OkObjectResult>();
@@ -33,11 +33,11 @@ namespace SpyderByteTest.API.UsersControllerTests.V1_4
         public async Task Can_Receive_Not_Found_Response_From_Patch_User_Request()
         {
             // Arrange
-            var patchUser = helper.GeneratePatchUser();
+            var patchUser = helper.GeneratePatchUserV1_4();
             helper.SetCurrentModelResult(ModelResult.NotFound);
 
             // Act
-            var response = await helper.ControllerV1_4.Patch(patchUser);
+            var response = await helper.ControllerV1_4.Patch(patchUser.Dto, patchUser.Id);
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
@@ -47,11 +47,11 @@ namespace SpyderByteTest.API.UsersControllerTests.V1_4
         public async Task Can_Receive_Request_Invalid_Response_From_Patch_User_Request()
         {
             // Arrange
-            var patchUser = helper.GeneratePatchUser();
+            var patchUser = helper.GeneratePatchUserV1_4();
             helper.SetCurrentModelResult(ModelResult.RequestInvalid);
 
             // Act
-            var response = await helper.ControllerV1_4.Patch(patchUser);
+            var response = await helper.ControllerV1_4.Patch(patchUser.Dto, patchUser.Id);
 
             // Assert
             response.Should().BeOfType<BadRequestObjectResult>();
@@ -61,11 +61,11 @@ namespace SpyderByteTest.API.UsersControllerTests.V1_4
         public async Task Can_Receive_Error_Response_From_Patch_User_Request()
         {
             // Arrange
-            var patchUser = helper.GeneratePatchUser();
+            var patchUser = helper.GeneratePatchUserV1_4();
             helper.SetCurrentModelResult(ModelResult.Error);
 
             // Act
-            var response = await helper.ControllerV1_4.Patch(patchUser);
+            var response = await helper.ControllerV1_4.Patch(patchUser.Dto, patchUser.Id);
 
             // Assert
             var statusCodeResult = (StatusCodeResult)response;

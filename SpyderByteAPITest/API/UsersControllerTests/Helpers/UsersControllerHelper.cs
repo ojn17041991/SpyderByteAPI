@@ -110,9 +110,18 @@ namespace SpyderByteTest.API.UsersControllerTests.Helpers
             return fixture.Create<PostUser>();
         }
 
-        public PatchUser GeneratePatchUser()
+        public SpyderByteAPI.Models.Users.V1.PatchUser GeneratePatchUserV1()
         {
-            return fixture.Create<PatchUser>();
+            return fixture.Create<SpyderByteAPI.Models.Users.V1.PatchUser>();
+        }
+
+        public (SpyderByteAPI.Models.Users.V1_4.PatchUser Dto, Guid Id) GeneratePatchUserV1_4()
+        {
+            return
+            (
+                fixture.Create<SpyderByteAPI.Models.Users.V1_4.PatchUser>(),
+                Guid.NewGuid()
+            );
         }
     }
 }
