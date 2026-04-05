@@ -1,11 +1,8 @@
-﻿using SpyderByteAPI.Models.Leaderboards;
-using SpyderByteAPI.Models.Users;
-using SpyderByteResources.Enums;
-using System.Text.Json.Serialization;
+﻿using SpyderByteResources.Enums;
 
 namespace SpyderByteAPI.Models.Games
 {
-    public class Game
+    public record Game
     {
         public Guid Id { get; set; }
 

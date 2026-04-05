@@ -2,7 +2,7 @@
 
 namespace SpyderByteAPI.Models.Users
 {
-    public class User
+    public record User
     {
         public Guid Id { get; set; }
 

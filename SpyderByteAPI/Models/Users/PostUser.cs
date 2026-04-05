@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SpyderByteAPI.Models.Users
 {
-    public class PostUser
+    public record PostUser
     {
         [Required]
         [RegularExpression(@"[^<>\\\/\r\n]{1,50}", ErrorMessage = "UserName does not meet validation requirements.")]

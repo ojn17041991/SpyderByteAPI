@@ -1,6 +1,6 @@
 ﻿namespace SpyderByteAPI.Models.Leaderboards
 {
-    public class Leaderboard
+    public record Leaderboard
     {
         public Guid Id { get; set; }
 

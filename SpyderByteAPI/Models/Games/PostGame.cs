@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SpyderByteAPI.Models.Games
 {
-    public class PostGame
+    public record PostGame
     {
         [Required]
         [RegularExpression(@"[^<>\\\/\r\n]{1,50}", ErrorMessage = "Name does not meet validation requirements.")]

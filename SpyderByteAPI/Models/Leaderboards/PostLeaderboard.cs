@@ -2,7 +2,7 @@
 
 namespace SpyderByteAPI.Models.Leaderboards
 {
-    public class PostLeaderboard
+    public record PostLeaderboard
     {
         [Required]
         public Guid GameId { get; set; }
