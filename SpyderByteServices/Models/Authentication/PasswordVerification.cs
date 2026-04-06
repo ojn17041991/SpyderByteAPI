@@ -1,11 +1,11 @@
 ﻿namespace SpyderByteServices.Models.Authentication
 {
-    public class PasswordVerification
+    public record PasswordVerification
     {
-        public string Password { get; set; } = string.Empty;
+        public string Password { get; init; } = string.Empty;
 
-        public string Hash { get; set; } = string.Empty;
+        public string Hash { get; init; } = string.Empty;
 
-        public string Salt { get; set; } = string.Empty;
+        public string Salt { get; init; } = string.Empty;
     }
 }

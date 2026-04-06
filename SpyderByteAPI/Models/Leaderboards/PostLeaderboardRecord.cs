@@ -2,18 +2,18 @@
 
 namespace SpyderByteAPI.Models.Leaderboards
 {
-    public class PostLeaderboardRecord
+    public record PostLeaderboardRecord
     {
         [Required]
-        public Guid LeaderboardId { get; set; }
+        public Guid LeaderboardId { get; init; }
 
         [Required]
         [RegularExpression(@"[^<>\\\/\r\n]{1,50}", ErrorMessage = "Player does not meet validation requirements.")]
-        public string Player { get; set; } = string.Empty;
+        public string Player { get; init; } = string.Empty;
 
         [Required]
-        public long Score { get; set; }
+        public long Score { get; init; }
 
-        public DateTime? Timestamp { get; set; }
+        public DateTime? Timestamp { get; init; }
     }
 }

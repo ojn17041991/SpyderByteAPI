@@ -1,6 +1,6 @@
 ﻿namespace SpyderByteServices.Models.Users
 {
-    public class PatchUser
+    public record PatchUser
     {
         public Guid Id { get; set; }
 

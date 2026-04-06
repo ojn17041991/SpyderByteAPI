@@ -2,16 +2,16 @@
 
 namespace SpyderByteServices.Models.Users
 {
-    public class UserGame
+    public record UserGame
     {
-        public int Id { get; set; }
+        public int Id { get; init; }
 
-        public Guid UserId { get; set; }
+        public Guid UserId { get; init; }
 
-        public User User { get; set; } = null!;
+        public User User { get; init; } = null!;
 
-        public Guid GameId { get; set; }
+        public Guid GameId { get; init; }
 
-        public Game Game { get; set; } = null!;
+        public Game Game { get; init; } = null!;
     }
 }

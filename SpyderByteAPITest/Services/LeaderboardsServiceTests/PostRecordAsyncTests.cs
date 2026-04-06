@@ -18,8 +18,7 @@ namespace SpyderByteTest.Services.LeaderboardsServiceTests
         {
             // Arrange
             var storedLeaderboard = _helper.AddLeaderboard();
-            var postLeaderboardRecord = _helper.GeneratePostLeaderboardRecord();
-            postLeaderboardRecord.LeaderboardId = storedLeaderboard.Id;
+            var postLeaderboardRecord = _helper.GeneratePostLeaderboardRecord() with { LeaderboardId = storedLeaderboard.Id };
 
             // Act
             var returnedLeaderboard = await _helper.Service.PostRecordAsync(postLeaderboardRecord);

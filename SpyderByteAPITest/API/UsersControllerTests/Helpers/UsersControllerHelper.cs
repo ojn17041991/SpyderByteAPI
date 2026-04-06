@@ -2,7 +2,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using SpyderByteAPI.Controllers;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
 using SpyderByteResources.Models.Responses.Abstract;
@@ -14,7 +13,8 @@ namespace SpyderByteTest.API.UsersControllerTests.Helpers
 {
     public class UsersControllerHelper
     {
-        public UsersController Controller;
+        public SpyderByteAPI.Controllers.Users.V1.UsersController ControllerV1;
+        public SpyderByteAPI.Controllers.Users.V1_4.UserController ControllerV1_4;
 
         private readonly Fixture fixture;
 
@@ -96,7 +96,8 @@ namespace SpyderByteTest.API.UsersControllerTests.Helpers
             var mapperConfiguration = new MapperConfiguration(config => config.AddProfile<SpyderByteAPI.Mappers.MapperProfile>());
             var mapper = new Mapper(mapperConfiguration);
 
-            Controller = new UsersController(usersService.Object, mapper, modelResources.Object);
+            ControllerV1 = new SpyderByteAPI.Controllers.Users.V1.UsersController(usersService.Object, mapper, modelResources.Object);
+            ControllerV1_4 = new SpyderByteAPI.Controllers.Users.V1_4.UserController(usersService.Object, mapper, modelResources.Object);
         }
 
         public void SetCurrentModelResult(ModelResult currentModelResult)
@@ -109,9 +110,18 @@ namespace SpyderByteTest.API.UsersControllerTests.Helpers
             return fixture.Create<PostUser>();
         }
 
-        public PatchUser GeneratePatchUser()
+        public SpyderByteAPI.Models.Users.V1.PatchUser GeneratePatchUserV1()
         {
-            return fixture.Create<PatchUser>();
+            return fixture.Create<SpyderByteAPI.Models.Users.V1.PatchUser>();
+        }
+
+        public (SpyderByteAPI.Models.Users.V1_4.PatchUser Dto, Guid Id) GeneratePatchUserV1_4()
+        {
+            return
+            (
+                fixture.Create<SpyderByteAPI.Models.Users.V1_4.PatchUser>(),
+                Guid.NewGuid()
+            );
         }
     }
 }

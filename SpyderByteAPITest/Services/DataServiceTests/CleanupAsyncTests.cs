@@ -22,8 +22,11 @@ namespace SpyderByteTest.Services.DataServiceTests
             int retentionPeriod = 1;
             _helper.SetRetentionPeriod(retentionPeriod);
 
-            StorageFile file = _helper.GenerateStorageFile();
-            file.CreatedDate = DateTime.UtcNow.AddHours(-retentionPeriod * 2);
+            StorageFile file = _helper.GenerateStorageFile() with
+            {
+                CreatedDate = DateTime.UtcNow.AddHours(-retentionPeriod * 2)
+            };
+
             _helper.AddFileToStorage(file);
 
             // Act
@@ -45,8 +48,11 @@ namespace SpyderByteTest.Services.DataServiceTests
             int retentionPeriod = 1;
             _helper.SetRetentionPeriod(retentionPeriod);
 
-            StorageFile file = _helper.GenerateStorageFile();
-            file.CreatedDate = DateTime.UtcNow.AddHours(-retentionPeriod * 0.5);
+            StorageFile file = _helper.GenerateStorageFile() with
+            {
+                CreatedDate = DateTime.UtcNow.AddHours(-retentionPeriod * 0.5)
+            };
+
             _helper.AddFileToStorage(file);
 
             // Act
@@ -87,8 +93,11 @@ namespace SpyderByteTest.Services.DataServiceTests
             int retentionPeriod = 1;
             _helper.SetRetentionPeriod(retentionPeriod);
 
-            StorageFile file = _helper.GenerateStorageFile();
-            file.CreatedDate = DateTime.UtcNow.AddHours(-retentionPeriod * 2);
+            StorageFile file = _helper.GenerateStorageFile() with
+            {
+                CreatedDate = DateTime.UtcNow.AddHours(-retentionPeriod * 2)
+            };
+
             _helper.AddFileToStorage(file);
 
             _helper.SetStorageServiceResponse(DataFunction.DeleteAsync, false);

@@ -1,11 +1,11 @@
 ﻿namespace SpyderByteServices.Models.Authentication
 {
-    public class HashData
+    public record HashData
     {
-        public string Hash { get; set; } = string.Empty;
+        public string Hash { get; init; } = string.Empty;
 
-        public string Salt { get; set; } = string.Empty;
+        public string Salt { get; init; } = string.Empty;
 
-        public char Pepper { get; set; }
+        public char Pepper { get; init; }
     }
 }

@@ -19,6 +19,7 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
     {
         public SpyderByteAPI.Controllers.Games.V1.GamesController ControllerV1;
         public SpyderByteAPI.Controllers.Games.V1_3.GamesController ControllerV1_3;
+        public SpyderByteAPI.Controllers.Games.V1_4.GameController ControllerV1_4;
 
         private readonly Fixture fixture;
 
@@ -150,6 +151,7 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
 
             ControllerV1 = new(gamesService.Object, featureManager.Object, mapper, modelResources.Object);
             ControllerV1_3 = new(gamesService.Object, mapper);
+            ControllerV1_4 = new(gamesService.Object, featureManager.Object, mapper, modelResources.Object);
         }
 
         public void SetCurrentModelResult(ModelResult currentModelResult)
@@ -162,10 +164,20 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
             return fixture.Create<PostGame>();
         }
 
-        public PatchGame GeneratePatchGame()
+        public SpyderByteAPI.Models.Games.V1.PatchGame GeneratePatchGameV1()
         {
-            return fixture.Create<PatchGame>();
+            return fixture.Create<SpyderByteAPI.Models.Games.V1.PatchGame>();
         }
+
+        public (SpyderByteAPI.Models.Games.V1_4.PatchGame Dto, Guid Id) GeneratePatchGameV1_4()
+        {
+            return
+            (
+                fixture.Create<SpyderByteAPI.Models.Games.V1_4.PatchGame>(),
+                Guid.NewGuid()
+            );
+        }
+
         public void SetAllowUseOfNonPaginatedEndpoints(bool allowUseOfNonPaginatedEndpoints)
         {
             this.allowUseOfNonPaginatedEndpoints = allowUseOfNonPaginatedEndpoints;

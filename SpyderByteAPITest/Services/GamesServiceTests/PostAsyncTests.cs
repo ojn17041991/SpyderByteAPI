@@ -33,8 +33,7 @@ namespace SpyderByteTest.Services.GamesServiceTests
         public async Task Can_Not_Post_Game_In_Service_If_Image_Is_Not_Included()
         {
             // Arrange
-            var postGame = _helper.GeneratePostGame();
-            postGame.Image = null!;
+            var postGame = _helper.GeneratePostGame() with { Image = null! };
 
             // Act
             var returnedGame = await _helper.Service.PostAsync(postGame);
@@ -50,8 +49,7 @@ namespace SpyderByteTest.Services.GamesServiceTests
         {
             // Arrange
             var storedGame = _helper.AddGame();
-            var postGame = _helper.GeneratePostGame();
-            postGame.Name = storedGame.Name;
+            var postGame = _helper.GeneratePostGame() with { Name = storedGame.Name };
 
             // Act
             var returnedGame = await _helper.Service.PostAsync(postGame);

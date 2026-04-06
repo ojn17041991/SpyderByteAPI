@@ -1,9 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SpyderByteServices.Models.Leaderboards
+﻿namespace SpyderByteServices.Models.Leaderboards
 {
-    public class PostLeaderboard
+    public record PostLeaderboard
     {
-        public Guid GameId { get; set; }
+        public Guid GameId { get; init; }
     }
 }

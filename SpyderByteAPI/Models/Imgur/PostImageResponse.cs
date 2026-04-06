@@ -1,9 +1,9 @@
 ﻿namespace SpyderByteAPI.Models.Imgur
 {
-    public class PostImageResponse
+    public record PostImageResponse
     {
-        public string Url { get; set; } = string.Empty;
+        public string Url { get; init; } = string.Empty;
 
-        public string ImageId { get; set; } = string.Empty;
+        public string ImageId { get; init; } = string.Empty;
     }
 }

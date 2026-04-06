@@ -24,7 +24,8 @@ namespace SpyderByteAPI.Mappers
                     )
                 );
             CreateMap<SpyderByteAPI.Models.Games.PostGame, SpyderByteServices.Models.Games.PostGame>();
-            CreateMap<SpyderByteAPI.Models.Games.PatchGame, SpyderByteServices.Models.Games.PatchGame>();
+            CreateMap<SpyderByteAPI.Models.Games.V1.PatchGame, SpyderByteServices.Models.Games.PatchGame>();
+            CreateMap<SpyderByteAPI.Models.Games.V1_4.PatchGame, SpyderByteServices.Models.Games.PatchGame>();
 
             CreateMap<SpyderByteServices.Models.Users.User, SpyderByteAPI.Models.Users.User>()
                 .ForMember(
@@ -34,7 +35,8 @@ namespace SpyderByteAPI.Mappers
                     )
                 );
             CreateMap<SpyderByteAPI.Models.Users.PostUser, SpyderByteServices.Models.Users.PostUser>();
-            CreateMap<SpyderByteAPI.Models.Users.PatchUser, SpyderByteServices.Models.Users.PatchUser>();
+            CreateMap<SpyderByteAPI.Models.Users.V1.PatchUser, SpyderByteServices.Models.Users.PatchUser>();
+            CreateMap<SpyderByteAPI.Models.Users.V1_4.PatchUser, SpyderByteServices.Models.Users.PatchUser>();
 
             CreateMap<SpyderByteServices.Models.Leaderboards.Leaderboard, SpyderByteAPI.Models.Leaderboards.Leaderboard>()
                 .ForMember(
@@ -46,7 +48,8 @@ namespace SpyderByteAPI.Mappers
             CreateMap<SpyderByteServices.Models.Leaderboards.LeaderboardRecord, SpyderByteAPI.Models.Leaderboards.LeaderboardRecord>();
             CreateMap<SpyderByteAPI.Models.Leaderboards.PostLeaderboard, SpyderByteServices.Models.Leaderboards.PostLeaderboard>();
             CreateMap<SpyderByteAPI.Models.Leaderboards.PostLeaderboardRecord, SpyderByteServices.Models.Leaderboards.PostLeaderboardRecord>();
-            CreateMap<SpyderByteAPI.Models.Leaderboards.PatchLeaderboard, SpyderByteServices.Models.Leaderboards.PatchLeaderboard>();
+            CreateMap<SpyderByteAPI.Models.Leaderboards.V1.PatchLeaderboard, SpyderByteServices.Models.Leaderboards.PatchLeaderboard>();
+            CreateMap<SpyderByteAPI.Models.Leaderboards.V1_4.PatchLeaderboard, SpyderByteServices.Models.Leaderboards.PatchLeaderboard>();
         }
     }
 }
