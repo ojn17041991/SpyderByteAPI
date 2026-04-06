@@ -10,10 +10,15 @@ using SpyderByteServices.Services.Authentication.Abstract;
 
 namespace SpyderByteAPI.Controllers.Authentication.V1
 {
+    [Route("[controller]")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1")]
     [ApiController]
-    public class AuthenticationController(IAuthenticationService authenticationService, IMapper mapper, IFeatureManager featureManager) : ControllerBase
+    public class AuthenticationController(
+        IAuthenticationService authenticationService,
+        IMapper mapper,
+        IFeatureManager featureManager
+    ) : ControllerBase
     {
         private readonly IAuthenticationService authenticationService = authenticationService;
         private readonly IMapper mapper = mapper;

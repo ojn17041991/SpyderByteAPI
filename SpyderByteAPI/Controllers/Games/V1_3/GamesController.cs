@@ -10,7 +10,10 @@ namespace SpyderByteAPI.Controllers.Games.V1_3
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.3")]
     [ApiController]
-    public class GamesController(IGamesService gamesService, IMapper mapper) : ControllerBase
+    public class GamesController(
+        IGamesService gamesService,
+        IMapper mapper
+    ) : ControllerBase
     {
         private readonly IGamesService gamesService = gamesService;
         private readonly IMapper mapper = mapper;
