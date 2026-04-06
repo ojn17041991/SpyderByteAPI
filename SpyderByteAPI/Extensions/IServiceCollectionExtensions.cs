@@ -86,14 +86,15 @@ namespace SpyderByteResources.Extensions
             );
         }
 
-        public static void AddProjectCors(this IServiceCollection services)
+        public static void AddProjectCors(this IServiceCollection services, ConfigurationManager configuration)
         {
+            string[] allowableOrigins = configuration["Cors:AllowableOrigins"]?.Split(',') ?? [];
+
             services.AddCors(options =>
                 options.AddPolicy("SpyderByteAPIOrigins", builder =>
                 {
                     builder
-                        .WithOrigins("https://spyderbytestudios.itch.io",
-                                     "https://www.spyderbyte.co.uk")
+                        .WithOrigins(allowableOrigins)
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 })

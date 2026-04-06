@@ -8,7 +8,7 @@ builder.Services.AddProjectVersioning(builder.Configuration);
 builder.Services.AddProjectDependencies();
 builder.Services.AddProjectDatabase(builder.Configuration);
 builder.Services.AddHttpClient();
-builder.Services.AddProjectCors();
+builder.Services.AddProjectCors(builder.Configuration);
 builder.Services.AddProjectAzureServices(builder.Configuration);
 builder.Services.AddMemoryCache();
 builder.Services.AddProjectRateLimiting();
