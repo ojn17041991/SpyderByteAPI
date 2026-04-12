@@ -36,7 +36,7 @@ namespace SpyderByteTest.Services.StorageServiceTests
             // Assert
             deleteResponse.Should().NotBeNull();
             deleteResponse.Result.Should().Be(ModelResult.OK);
-            deleteResponse.Data.Should().BeTrue();
+            deleteResponse.Data.Should().NotBeNull();
 
             var blobs = helper.GetBlobs();
             blobs.Should().HaveCount(1);
@@ -59,7 +59,7 @@ namespace SpyderByteTest.Services.StorageServiceTests
             // Assert
             deleteResponse.Should().NotBeNull();
             deleteResponse.Result.Should().Be(ModelResult.NotFound);
-            deleteResponse.Data.Should().BeFalse();
+            deleteResponse.Data.Should().BeNull();
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace SpyderByteTest.Services.StorageServiceTests
             // Assert
             deleteResponse.Should().NotBeNull();
             deleteResponse.Result.Should().Be(ModelResult.NotFound);
-            deleteResponse.Data.Should().BeFalse();
+            deleteResponse.Data.Should().BeNull();
         }
 
         [Fact]
@@ -97,7 +97,7 @@ namespace SpyderByteTest.Services.StorageServiceTests
             // Assert
             deleteResponse.Should().NotBeNull();
             deleteResponse.Result.Should().Be(ModelResult.Error);
-            deleteResponse.Data.Should().BeFalse();
+            deleteResponse.Data.Should().BeNull();
         }
     }
 }

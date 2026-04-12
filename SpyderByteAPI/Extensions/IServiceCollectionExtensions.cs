@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.OpenApi.Models;
 using SpyderByteAPI.Middleware; // Required for release.
 using Azure.Identity; // Required for release.
 using SpyderByteDataAccess.Accessors.Games.Abstract;
@@ -19,8 +18,6 @@ using SpyderByteServices.Services.Data;
 using SpyderByteServices.Services.Authentication;
 using SpyderByteServices.Services.Users.Abstract;
 using SpyderByteServices.Services.Users;
-using SpyderByteServices.Services.Storage.Abstract;
-using SpyderByteServices.Services.Storage;
 using SpyderByteServices.Services.Imgur;
 using SpyderByteServices.Services.Imgur.Abstract;
 using SpyderByteAPI.Text.Abstract;
@@ -46,6 +43,12 @@ using SpyderByteDataAccess.Transactions.Factories.Abstract;
 using SpyderByteDataAccess.Transactions.Factories;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using SpyderByteIAuthorizationService = SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService;
+using SpyderByteAuthorizationService = SpyderByteServices.Services.Authorization.AuthorizationService;
+using SpyderByteServices.Services.Storage.Database;
+using SpyderByteServices.Services.Storage.Image;
+using SpyderByteServices.Services.Storage.Database.Abstract;
+using SpyderByteServices.Services.Storage.Image.Abstract;
 
 namespace SpyderByteResources.Extensions
 {
@@ -60,12 +63,13 @@ namespace SpyderByteResources.Extensions
             services.AddScoped<IPagedListFactory, PagedListFactory>();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService, SpyderByteServices.Services.Authorization.AuthorizationService>();
+            services.AddScoped<SpyderByteIAuthorizationService, SpyderByteAuthorizationService>();
             services.AddScoped<IDataService, DataService>();
             services.AddScoped<IGamesService, GamesService>();
             services.AddScoped<ILeaderboardsService, LeaderboardsService>();
             services.AddScoped<IUsersService, UsersService>();
-            services.AddSingleton<IStorageService, StorageService>();
+            services.AddSingleton<BaseDatabaseStorageService, DatabaseStorageService>();
+            services.AddSingleton<BaseImageStorageService, ImageStorageService>();
             services.AddSingleton<IImgurService, ImgurService>();
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<IEncodingService, EncodingService>();

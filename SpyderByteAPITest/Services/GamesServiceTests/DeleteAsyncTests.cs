@@ -40,15 +40,21 @@ namespace SpyderByteTest.Services.GamesServiceTests
             var storedGame = _helper.AddGame();
             _helper.RemoveGameUserRelationship(storedGame.Id);
             _helper.RemoveGameLeaderboardRelationship(storedGame.Id);
-            _helper.IncludeBadImgurId(storedGame.Id);
+            _helper.SetFailOnImageRequest(true);
 
             // Act
             var returnedGame = await _helper.Service.DeleteAsync(storedGame.Id);
 
             // Assert
             returnedGame.Should().NotBeNull();
-            returnedGame.Result.Should().Be(ModelResult.Error);
-            returnedGame.Data.Should().BeNull();
+            returnedGame.Result.Should().Be(ModelResult.ImageDeletionFailed);
+            returnedGame.Data.Should().NotBeNull();
+            returnedGame.Data!.Should().BeEquivalentTo(storedGame, options =>
+                options.Excluding(g => g.LeaderboardGame)
+                    .Excluding(g => g.UserGame));
+
+            // Cleanup
+            _helper.SetFailOnImageRequest(false);
         }
     }
 }
