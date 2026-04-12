@@ -11,11 +11,16 @@ using SpyderByteServices.Services.Users.Abstract;
 
 namespace SpyderByteAPI.Controllers.Users.V1
 {
+    [Route("[controller]")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1")]
     [Authorize]
     [ApiController]
-    public class UsersController(IUsersService usersService, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
+    public class UsersController(
+        IUsersService usersService,
+        IMapper mapper,
+        IStringLookup<ModelResult> modelResources
+    ) : ControllerBase
     {
         private readonly IUsersService usersService = usersService;
         private readonly IMapper mapper = mapper;

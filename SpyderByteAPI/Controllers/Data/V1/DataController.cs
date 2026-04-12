@@ -9,10 +9,15 @@ using SpyderByteServices.Services.Data.Abstract;
 
 namespace SpyderByteAPI.Controllers.Data.V1
 {
+    [Route("[controller]")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1")]
     [ApiController]
-    public class DataController(IDataService dataService, IFeatureManager featureManager, IStringLookup<ModelResult> modelResources) : ControllerBase
+    public class DataController(
+        IDataService dataService,
+        IFeatureManager featureManager,
+        IStringLookup<ModelResult> modelResources
+    ) : ControllerBase
     {
         private readonly IDataService dataService = dataService;
         private readonly IFeatureManager featureManager = featureManager;

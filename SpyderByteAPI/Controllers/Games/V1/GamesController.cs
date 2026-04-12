@@ -16,7 +16,12 @@ namespace SpyderByteAPI.Controllers.Games.V1
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1")]
     [ApiController]
-    public class GamesController(IGamesService gamesService, IFeatureManager featureManager, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
+    public class GamesController(
+        IGamesService gamesService,
+        IFeatureManager featureManager,
+        IMapper mapper,
+        IStringLookup<ModelResult> modelResources
+    ) : ControllerBase
     {
         private readonly IGamesService gamesService = gamesService;
         private readonly IFeatureManager featureManager = featureManager;

@@ -12,10 +12,16 @@ using Asp.Versioning;
 
 namespace SpyderByteAPI.Controllers.Leaderboards.V1
 {
+    [Route("[controller]")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1")]
     [ApiController]
-    public class LeaderboardsController(ILeaderboardsService leaderboardsService, SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService, IMapper mapper, IStringLookup<ModelResult> modelResources) : ControllerBase
+    public class LeaderboardsController(
+        ILeaderboardsService leaderboardsService,
+        SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService,
+        IMapper mapper,
+        IStringLookup<ModelResult> modelResources
+    ) : ControllerBase
     {
         private readonly ILeaderboardsService leaderboardsService = leaderboardsService;
         private readonly SpyderByteServices.Services.Authorization.Abstract.IAuthorizationService authorizationService = authorizationService;
