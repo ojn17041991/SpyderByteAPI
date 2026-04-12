@@ -8,13 +8,15 @@
         Unauthorized,
         Forbidden,
 
-        Error,
         NotImplemented,
         NotFound,
         AlreadyExists,
         RequestDataIncomplete,
         RequestInvalid,
         RelationshipViolation,
-        FilterInvalid
+        FilterInvalid,
+
+        Error,
+        ImageDeletionFailed
     }
 }

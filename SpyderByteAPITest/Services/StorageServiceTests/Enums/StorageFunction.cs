@@ -4,6 +4,7 @@
     {
         UploadAsync = 0,
         DeleteAsync = 1,
-        ExistsAsync = 2
+        ExistsAsync = 2,
+        GetPropertiesAsync = 3
     }
 }

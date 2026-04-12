@@ -1,7 +1,9 @@
 ﻿using AutoFixture;
 using AutoMapper;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,8 +14,10 @@ using SpyderByteResources.Models.Paging;
 using SpyderByteResources.Models.Paging.Abstract;
 using SpyderByteResources.Models.Responses;
 using SpyderByteResources.Models.Responses.Abstract;
+using SpyderByteServices.Models.Data;
 using SpyderByteServices.Services.Games;
-using SpyderByteServices.Services.Imgur.Abstract;
+using SpyderByteServices.Services.Storage.Abstract;
+using SpyderByteServices.Services.Storage.Image.Abstract;
 
 namespace SpyderByteTest.Services.GamesServiceTests.Helpers
 {
@@ -21,7 +25,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
     {
         public GamesService Service;
 
-        private const string BAD_IMGUR_ID = "BAD_IMGUR_ID";
+        private bool _failOnImageRequest = false;
 
         private readonly Fixture _fixture;
         private readonly IMapper _mapper;
@@ -32,6 +36,15 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
             _fixture = new Fixture();
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
             _fixture.Customize<IFormFile>(f => f.FromFactory(() => new Mock<IFormFile>().Object));
+
+            var mapperConfiguration = new MapperConfiguration(
+                config =>
+                {
+                    config.AddProfile<SpyderByteResources.Mappers.MapperProfile>();
+                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
+                }
+            );
+            _mapper = new Mapper(mapperConfiguration);
 
             _games = new List<SpyderByteDataAccess.Models.Games.Game>();
 
@@ -168,44 +181,53 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 );
             });
 
-            var imgurService = new Mock<IImgurService>();
-            imgurService.Setup(s =>
-                s.PostImageAsync(
-                    It.IsAny<IFormFile>(),
-                    It.IsAny<string>(),
+            var storageServiceBlobServiceClient = new Mock<BlobServiceClient>();
+
+            var storageServiceClientFactory = new Mock<IAzureClientFactory<BlobServiceClient>>();
+            storageServiceClientFactory.Setup(x =>
+                x.CreateClient(
                     It.IsAny<string>()
-            )).Returns((IFormFile image, string albumHash, string title) =>
-                Task.FromResult(
-                    new DataResponse<SpyderByteServices.Models.Imgur.PostImageResponse>(
-                        _fixture.Create<SpyderByteServices.Models.Imgur.PostImageResponse>(),
-                        ModelResult.Created
-                    )
-                    as IDataResponse<SpyderByteServices.Models.Imgur.PostImageResponse>
                 )
-            );
-            imgurService.Setup(s =>
-                s.DeleteImageAsync(
-                    It.IsAny<string>()
-            )).Returns((string imageId) =>
+            ).Returns((string clientName) =>
             {
-                var result = imageId != BAD_IMGUR_ID;
-                return Task.FromResult(
-                    new DataResponse<bool>(
-                        result,
-                        result ? ModelResult.OK : ModelResult.Error
-                    )
-                    as IDataResponse<bool>
-                );
+                return storageServiceBlobServiceClient.Object;
             });
 
-            var mapperConfiguration = new MapperConfiguration(
-                config =>
-                {
-                    config.AddProfile<SpyderByteResources.Mappers.MapperProfile>();
-                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
-                }
+            var storageServiceConfiguration = new Mock<IConfiguration>();
+            var storageServiceLogger = new Mock<ILogger<BaseStorageService>>();
+
+            var imageStorageService = new Mock<BaseImageStorageService>(
+                storageServiceClientFactory.Object,
+                storageServiceConfiguration.Object,
+                _mapper,
+                storageServiceLogger.Object
             );
-            _mapper = new Mapper(mapperConfiguration);
+            imageStorageService.Setup(s =>
+                s.UploadAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<Stream>()
+            )).Returns((string fileName, Stream stream) =>
+                Task.FromResult(
+                    new DataResponse<StorageFile>(
+                        _fixture.Create<StorageFile>(),
+                        _failOnImageRequest ? ModelResult.Error : ModelResult.Created
+                    )
+                    as IDataResponse<StorageFile?>
+                )
+            );
+            imageStorageService.Setup(s =>
+                s.DeleteAsync(
+                    It.IsAny<string>()
+            )).Returns((string fileName) =>
+            {
+                return Task.FromResult(
+                    new DataResponse<StorageFile>(
+                        _fixture.Create<StorageFile>(),
+                        _failOnImageRequest ? ModelResult.Error : ModelResult.OK
+                    )
+                    as IDataResponse<StorageFile?>
+                );
+            });
 
             var logger = new Mock<ILogger<GamesService>>();
 
@@ -217,7 +239,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
             Service = new GamesService(
                 transactionFactory.Object,
                 gamesAccessor.Object,
-                imgurService.Object,
+                imageStorageService.Object,
                 _mapper,
                 logger.Object,
                 configuration
@@ -261,11 +283,9 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
             }
         }
 
-        public void IncludeBadImgurId(Guid id)
+        public void SetFailOnImageRequest(bool failOnImageRequest)
         {
-            var game = _games.Single(g => g.Id == id);
-
-            game.ImgurImageId = BAD_IMGUR_ID;
+            _failOnImageRequest = failOnImageRequest;
         }
     }
 }

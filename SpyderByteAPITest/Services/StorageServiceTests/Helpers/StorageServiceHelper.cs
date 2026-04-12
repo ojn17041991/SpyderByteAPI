@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AutoFixture;
+using AutoMapper;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -7,19 +8,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SpyderByteServices.Models.Data;
-using SpyderByteServices.Services.Storage;
+using SpyderByteServices.Services.Storage.Abstract;
 using SpyderByteTest.Services.StorageServiceTests.Enums;
+using SpyderByteTest.Services.StorageServiceTests.Mocks;
 
 namespace SpyderByteTest.Services.StorageServiceTests.Helpers
 {
     public class StorageServiceHelper
     {
-        public StorageService Service;
+        public BaseStorageService Service;
 
-        private Mock<ILogger<StorageService>> logger;
+        private Fixture fixture;
+        private Mock<IAzureClientFactory<BlobServiceClient>> azureClientFactory;
         private Mock<IConfiguration> configuration;
         private IMapper mapper;
-        private Mock<IAzureClientFactory<BlobServiceClient>> azureClientFactory;
+        private Mock<ILogger<BaseStorageService>> logger;
 
         private IDictionary<StorageFunction, bool> azureSuccessFlags = new Dictionary<StorageFunction, bool>();
         private bool containerExists = true;
@@ -30,17 +33,7 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
 
         public StorageServiceHelper()
         {
-            logger = new Mock<ILogger<StorageService>>();
-
-            configuration = new Mock<IConfiguration>();
-
-            var mapperConfiguration = new MapperConfiguration(
-                config =>
-                {
-                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
-                }
-            );
-            mapper = new Mapper(mapperConfiguration);
+            fixture = new Fixture();
 
             var uploadResponse = new Mock<Response>();
             uploadResponse.Setup(x =>
@@ -62,6 +55,14 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
             ).Returns(() =>
             {
                 return azureSuccessFlags[StorageFunction.ExistsAsync];
+            });
+
+            var getPropertiesResponse = new Mock<Response>();
+            getPropertiesResponse.Setup(x =>
+                x.IsError
+            ).Returns(() =>
+            {
+                return azureSuccessFlags[StorageFunction.GetPropertiesAsync];
             });
 
             var blobClient = new Mock<BlobClient>();
@@ -95,6 +96,15 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
             ).Returns((CancellationToken cancellationToken) =>
             {
                 return Task.FromResult(Response.FromValue<bool>(blobExists, existsResponse.Object));
+            });
+            blobClient.Setup(x =>
+                x.GetPropertiesAsync(
+                    It.IsAny<BlobRequestConditions>(),
+                    It.IsAny<CancellationToken>()
+                )
+            ).Returns((BlobRequestConditions blobRequestConditions, CancellationToken cancellationToken) =>
+            {
+                return Task.FromResult(Response.FromValue<BlobProperties>(fixture.Create<BlobProperties>(), getPropertiesResponse.Object));
             });
 
             var blobContainerClient = new Mock<BlobContainerClient>();
@@ -152,7 +162,19 @@ namespace SpyderByteTest.Services.StorageServiceTests.Helpers
                 return blobServiceClient.Object;
             });
 
-            Service = new StorageService(logger.Object, configuration.Object, mapper, azureClientFactory.Object);
+            configuration = new Mock<IConfiguration>();
+
+            var mapperConfiguration = new MapperConfiguration(
+                config =>
+                {
+                    config.AddProfile<SpyderByteServices.Mappers.MapperProfile>();
+                }
+            );
+            mapper = new Mapper(mapperConfiguration);
+
+            logger = new Mock<ILogger<BaseStorageService>>();
+
+            Service = new MockStorageService(azureClientFactory.Object, configuration.Object, mapper, logger.Object);
         }
 
         public void SetContainerExists(bool exists)

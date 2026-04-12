@@ -29,8 +29,8 @@ namespace SpyderByteTest.Services.StorageServiceTests
 
             // Assert
             uploadResponse.Should().NotBeNull();
-            uploadResponse.Result.Should().Be(ModelResult.OK);
-            uploadResponse.Data.Should().BeTrue();
+            uploadResponse.Result.Should().Be(ModelResult.Created);
+            uploadResponse.Data.Should().NotBeNull();
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace SpyderByteTest.Services.StorageServiceTests
             // Assert
             uploadResponse.Should().NotBeNull();
             uploadResponse.Result.Should().Be(ModelResult.NotFound);
-            uploadResponse.Data.Should().BeFalse();
+            uploadResponse.Data.Should().BeNull();
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace SpyderByteTest.Services.StorageServiceTests
             // Assert
             uploadResponse.Should().NotBeNull();
             uploadResponse.Result.Should().Be(ModelResult.Error);
-            uploadResponse.Data.Should().BeFalse();
+            uploadResponse.Data.Should().BeNull();
         }
     }
 }

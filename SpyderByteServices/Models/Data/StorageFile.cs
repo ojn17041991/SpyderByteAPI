@@ -4,6 +4,6 @@
     {
         public string FileName { get; init; } = string.Empty;
 
-        public DateTime CreatedDate { get; init; }
+        public DateTimeOffset CreatedDate { get; init; }
     }
 }

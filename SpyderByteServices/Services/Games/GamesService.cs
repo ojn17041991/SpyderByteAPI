@@ -4,20 +4,28 @@ using Microsoft.Extensions.Logging;
 using SpyderByteDataAccess.Accessors.Games.Abstract;
 using SpyderByteDataAccess.Transactions.Factories.Abstract;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Extensions;
 using SpyderByteResources.Models.Paging.Abstract;
 using SpyderByteResources.Models.Responses;
 using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Models.Games;
 using SpyderByteServices.Services.Games.Abstract;
-using SpyderByteServices.Services.Imgur.Abstract;
+using SpyderByteServices.Services.Storage.Image.Abstract;
 
 namespace SpyderByteServices.Services.Games
 {
-    public class GamesService(ITransactionFactory transactionFactory, IGamesAccessor gamesAccessor, IImgurService imgurService, IMapper mapper, ILogger<GamesService> logger, IConfiguration configuration) : IGamesService
+    public class GamesService(
+        ITransactionFactory transactionFactory,
+        IGamesAccessor gamesAccessor,
+        BaseImageStorageService imageStorageService,
+        IMapper mapper,
+        ILogger<GamesService> logger,
+        IConfiguration configuration
+    ) : IGamesService
     {
         private readonly ITransactionFactory transactionFactory = transactionFactory;
         private readonly IGamesAccessor gamesAccessor = gamesAccessor;
-        private readonly IImgurService imgurService = imgurService;
+        private readonly BaseImageStorageService imageStorageService = imageStorageService;
         private readonly IMapper mapper = mapper;
         private readonly ILogger<GamesService> logger = logger;
         private readonly IConfiguration configuration = configuration;
@@ -53,17 +61,17 @@ namespace SpyderByteServices.Services.Games
                 logger.LogInformation($"Unable to post game. Game of name {game.Name} already exists.");
                 return new DataResponse<Game?>(mapper.Map<SpyderByteServices.Models.Games.Game>(duplicateGameResponse.Data), ModelResult.AlreadyExists);
             }
-
-            var imgurResponse = await imgurService.PostImageAsync(game.Image, configuration["Imgur:GamesAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(game.Image.FileName));
-            if (imgurResponse.Result != ModelResult.Created)
+            
+            var storageResponse = await imageStorageService.UploadAsync(game.Image.FileName, await game.Image.GetStream());
+            if (storageResponse.Result != ModelResult.Created)
             {
-                logger.LogInformation("Unable to post game. Failed to upload image to Imgur.");
-                return new DataResponse<Game?>(null, imgurResponse.Result);
+                logger.LogInformation("Unable to post game. Failed to upload image to Storage.");
+                return new DataResponse<Game?>(null, storageResponse.Result);
             }
 
             var dataAccessPostGame = mapper.Map<SpyderByteDataAccess.Models.Games.PostGame>(game);
-            dataAccessPostGame.ImgurUrl = imgurResponse.Data!.Url;
-            dataAccessPostGame.ImgurImageId = imgurResponse.Data!.ImageId;
+            dataAccessPostGame.ImgurUrl = storageResponse.Data!.FileName; // OJN: This should be renamed to ImageUrl.
+            dataAccessPostGame.ImgurImageId = string.Empty; // OJN: This is not needed any more.
 
             using (var transaction = await transactionFactory.CreateAsync())
             {
@@ -111,25 +119,30 @@ namespace SpyderByteServices.Services.Games
             var storedGame = gameResponse.Data!;
             var dataAccessPatchGame = mapper.Map<SpyderByteDataAccess.Models.Games.PatchGame>(game);
 
+            // Track whether image deletion failed.
+            bool imageDeletionFailed = false;
+
             if (game.Image != null)
             {
-                // Delete the old image from Imgur.
-                var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(storedGame.ImgurImageId);
-                if (!imgurDeleteSuccessful.Data)
+                // Delete the original image from storage.
+                var fileName = Path.GetFileName(storedGame.ImgurUrl);
+                var storageDeletionResponse = await imageStorageService.DeleteAsync(fileName);
+                if (storageDeletionResponse.Result != ModelResult.OK)
                 {
-                    logger.LogInformation($"Failed to delete image from Imgur during game patch. Continuing to database update.");
+                    imageDeletionFailed = true;
+                    logger.LogInformation($"Failed to delete image from Storage during game patch. Continuing to database update.");
                 }
 
-                // Post the new image.
-                var imgurResponse = await imgurService.PostImageAsync(game.Image, configuration["Imgur:GamesAlbumHash"] ?? string.Empty, Path.GetFileNameWithoutExtension(game.Image.FileName));
-                if (imgurResponse.Result != ModelResult.Created)
+                // Upload the new image to storage.
+                var storageUploadResponse = await imageStorageService.UploadAsync(game.Image.FileName, await game.Image.GetStream());
+                if (storageUploadResponse.Result != ModelResult.Created)
                 {
-                    logger.LogInformation($"Unable to patch game. Failed to add image to Imgur.");
-                    return new DataResponse<Game?>(null, imgurResponse.Result);
+                    logger.LogInformation("Unable to patch game. Failed to upload image to Storage.");
+                    return new DataResponse<Game?>(null, storageUploadResponse.Result);
                 }
 
-                dataAccessPatchGame.ImgurUrl = imgurResponse.Data!.Url;
-                dataAccessPatchGame.ImgurImageId = imgurResponse.Data!.ImageId;
+                dataAccessPatchGame.ImgurUrl = storageUploadResponse.Data!.FileName; // OJN: This should be renamed to ImageUrl.
+                dataAccessPatchGame.ImgurImageId = string.Empty; // OJN: This is not needed any more.
             }
 
             using (var transaction = await transactionFactory.CreateAsync())
@@ -138,7 +151,17 @@ namespace SpyderByteServices.Services.Games
                 if (response.Result == ModelResult.OK)
                 {
                     await transaction.CommitAsync();
-                    return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
+
+                    var mappedGame = mapper.Map<SpyderByteServices.Models.Games.Game?>(response.Data);
+
+                    if (imageDeletionFailed == true)
+                    {
+                        return new DataResponse<SpyderByteServices.Models.Games.Game?>(mappedGame, ModelResult.ImageDeletionFailed);
+                    }
+                    else
+                    {
+                        return new DataResponse<SpyderByteServices.Models.Games.Game?>(mappedGame, ModelResult.OK);
+                    }
                 }
                 else
                 {
@@ -157,11 +180,15 @@ namespace SpyderByteServices.Services.Games
                 {
                     await transaction.CommitAsync();
 
-                    var imgurDeleteSuccessful = await imgurService.DeleteImageAsync(response.Data!.ImgurImageId);
-                    if (!imgurDeleteSuccessful.Data)
+                    var fileName = Path.GetFileName(response.Data!.ImgurUrl);
+                    var storageDeletionResponse = await imageStorageService.DeleteAsync(fileName);
+                    if (storageDeletionResponse.Result != ModelResult.OK)
                     {
-                        logger.LogInformation($"Failed to delete image from Imgur during game delete.");
-                        return new DataResponse<Game?>(null, ModelResult.Error);
+                        logger.LogInformation($"Unable to delete game. Image deletion failed.");
+                        return new DataResponse<Game?>(
+                            mapper.Map<SpyderByteServices.Models.Games.Game?>(response.Data),
+                            ModelResult.ImageDeletionFailed
+                        );
                     }
 
                     return mapper.Map<DataResponse<SpyderByteServices.Models.Games.Game?>>(response);
