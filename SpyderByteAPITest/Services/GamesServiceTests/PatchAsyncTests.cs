@@ -71,5 +71,26 @@ namespace SpyderByteTest.Services.GamesServiceTests
             returnedGame.Data.Should().NotBeNull();
             returnedGame.Data!.Should().BeEquivalentTo(storedGame2);
         }
+
+        [Fact]
+        public async Task Can_Not_Patch_Game_In_Service_If_Image_Deletion_Fails()
+        {
+            // Arrange
+            var storedGame = _helper.AddGame();
+            var patchGame = _helper.GeneratePatchGame();
+            patchGame.Id = storedGame.Id;
+            _helper.SetFailOnImageDeleteRequest(true);
+
+            // Act
+            var returnedGame = await _helper.Service.PatchAsync(patchGame);
+
+            // Assert
+            returnedGame.Should().NotBeNull();
+            returnedGame.Result.Should().Be(ModelResult.ImageDeletionFailed);
+            returnedGame.Data.Should().NotBeNull();
+
+            // Cleanup
+            _helper.SetFailOnImageDeleteRequest(false);
+        }
     }
 }

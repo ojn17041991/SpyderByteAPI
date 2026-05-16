@@ -40,7 +40,7 @@ namespace SpyderByteTest.Services.GamesServiceTests
             var storedGame = _helper.AddGame();
             _helper.RemoveGameUserRelationship(storedGame.Id);
             _helper.RemoveGameLeaderboardRelationship(storedGame.Id);
-            _helper.SetFailOnImageRequest(true);
+            _helper.SetFailOnImageDeleteRequest(true);
 
             // Act
             var returnedGame = await _helper.Service.DeleteAsync(storedGame.Id);
@@ -54,7 +54,7 @@ namespace SpyderByteTest.Services.GamesServiceTests
                     .Excluding(g => g.UserGame));
 
             // Cleanup
-            _helper.SetFailOnImageRequest(false);
+            _helper.SetFailOnImageDeleteRequest(false);
         }
     }
 }
