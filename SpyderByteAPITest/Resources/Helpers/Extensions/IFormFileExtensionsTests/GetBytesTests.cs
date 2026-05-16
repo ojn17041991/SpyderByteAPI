@@ -26,7 +26,7 @@ namespace SpyderByteTest.Resources.Helpers.Extensions.IFormFileExtensionsTests
         public async Task Can_Get_Bytes_When_Form_File_Is_Empty()
         {
             // Arrange
-            var stream = new MemoryStream(new byte[0]);
+            var stream = new MemoryStream(Array.Empty<byte>());
             IFormFile file = new FormFile(stream, 0, 0, "test", "test.txt");
 
             // Act
