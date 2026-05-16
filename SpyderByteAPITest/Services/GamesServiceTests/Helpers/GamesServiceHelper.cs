@@ -132,8 +132,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                     Name = postGame.Name,
                     Type = postGame.Type,
                     Url = postGame.Url,
-                    ImgurUrl = postGame.ImgurUrl,
-                    ImgurImageId = postGame.ImgurImageId,
+                    ImageUrl = postGame.ImageUrl,
                     PublishDate = postGame.PublishDate
                 };
                 _games.Add(game);
@@ -154,8 +153,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 game.Name = patchGame.Name!;
                 game.Type = patchGame.Type!.Value;
                 game.Url = patchGame.Url!;
-                game.ImgurUrl = patchGame.ImgurUrl!;
-                game.ImgurImageId = patchGame.ImgurImageId!;
+                game.ImageUrl = patchGame.ImageUrl!;
                 game.PublishDate = patchGame.PublishDate!.Value;
                 return Task.FromResult(
                     new DataResponse<SpyderByteDataAccess.Models.Games.Game?>(

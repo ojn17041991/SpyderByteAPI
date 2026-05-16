@@ -14,9 +14,7 @@ namespace SpyderByteServices.Models.Games
 
         public string Url { get; init; } = string.Empty;
 
-        public string ImgurUrl { get; init; } = string.Empty;
-
-        public string ImgurImageId { get; init; } = string.Empty;
+        public string ImageUrl { get; init; } = string.Empty;
 
         public DateTime PublishDate { get; init; } = DateTime.MinValue;
 

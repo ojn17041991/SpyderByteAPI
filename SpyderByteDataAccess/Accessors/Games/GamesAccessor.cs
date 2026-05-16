@@ -115,8 +115,7 @@ namespace SpyderByteDataAccess.Accessors.Games
                 {
                     Name = game.Name,
                     Type = game.Type,
-                    ImgurUrl = game.ImgurUrl,
-                    ImgurImageId = game.ImgurImageId,
+                    ImageUrl = game.ImageUrl,
                     Url = game.Url,
                     PublishDate = game.PublishDate
                 };
@@ -144,14 +143,9 @@ namespace SpyderByteDataAccess.Accessors.Games
                     return new DataResponse<Game?>(null, ModelResult.NotFound);
                 }
 
-                if (patchedGame.ImgurUrl.IsNullOrEmpty() == false)
+                if (patchedGame.ImageUrl.IsNullOrEmpty() == false)
                 {
-                    storedGame.ImgurUrl = patchedGame.ImgurUrl!;
-                }
-
-                if (patchedGame.ImgurImageId.IsNullOrEmpty() == false)
-                {
-                    storedGame.ImgurImageId = patchedGame.ImgurImageId!;
+                    storedGame.ImageUrl = patchedGame.ImageUrl!;
                 }
 
                 if (patchedGame.Name.IsNullOrEmpty() == false)
