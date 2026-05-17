@@ -14,7 +14,6 @@
         RequestDataIncomplete,
         RequestInvalid,
         RelationshipViolation,
-        FilterInvalid,
 
         Error,
         ImageDeletionFailed
