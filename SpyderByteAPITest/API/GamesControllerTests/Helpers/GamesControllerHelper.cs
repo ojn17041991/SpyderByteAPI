@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
 using Moq;
 using SpyderByteAPI.Models.Games;
@@ -151,7 +152,13 @@ namespace SpyderByteTest.API.GamesControllerTests.Helpers
 
             ControllerV1 = new(gamesService.Object, featureManager.Object, mapper, modelResources.Object);
             ControllerV1_3 = new(gamesService.Object, mapper);
-            ControllerV1_4 = new(gamesService.Object, featureManager.Object, mapper, modelResources.Object);
+            ControllerV1_4 = new(gamesService.Object, featureManager.Object, mapper, modelResources.Object)
+            {
+                ControllerContext = new ControllerContext
+                {
+                    HttpContext = new DefaultHttpContext()
+                }
+            };
         }
 
         public void SetCurrentModelResult(ModelResult currentModelResult)
