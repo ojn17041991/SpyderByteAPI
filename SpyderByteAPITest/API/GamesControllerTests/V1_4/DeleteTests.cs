@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Extensions;
 using SpyderByteTest.API.GamesControllerTests.Helpers;
 using System.Net;
 
@@ -52,6 +53,20 @@ namespace SpyderByteTest.API.GamesControllerTests.V1_4
 
             // Assert
             response.Should().BeOfType<NotFoundObjectResult>();
+        }
+
+        [Fact]
+        public async Task Can_Receive_Image_Deletion_Failed_Response_From_Patch_Game_Request()
+        {
+            // Arrange
+            helper.SetCurrentModelResult(ModelResult.ImageDeletionFailed);
+
+            // Act
+            var response = await helper.ControllerV1_4.Delete(Guid.NewGuid());
+
+            // Assert
+            response.Should().BeOfType<OkObjectResult>();
+            helper.ControllerV1_4.Response.Headers.Should().ContainKey(ApiResponseHeader.X_SBS_Warning.ToDescription());
         }
 
         [Fact]

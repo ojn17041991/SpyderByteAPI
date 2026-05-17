@@ -173,7 +173,7 @@ namespace SpyderByteAPI.Controllers.Games.V1_4
             }
             else if (response.Result == ModelResult.ImageDeletionFailed)
             {
-                Response.Headers.Append("X-SBS-Warning", modelResources.GetResource(ModelResult.ImageDeletionFailed));
+                HttpContext.Response.Headers[ApiResponseHeader.X_SBS_Warning.ToDescription()] = modelResources.GetResource(ModelResult.ImageDeletionFailed);
 
                 var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
                 return Ok(data);
