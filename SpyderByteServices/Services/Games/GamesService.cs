@@ -70,7 +70,7 @@ namespace SpyderByteServices.Services.Games
             }
 
             var dataAccessPostGame = mapper.Map<SpyderByteDataAccess.Models.Games.PostGame>(game);
-            dataAccessPostGame.ImageUrl = storageResponse.Data!.FileName; // OJN: This should be renamed to ImageUrl.
+            dataAccessPostGame.ImageUrl = storageResponse.Data!.FileName;
 
             using (var transaction = await transactionFactory.CreateAsync())
             {
@@ -140,7 +140,7 @@ namespace SpyderByteServices.Services.Games
                     return new DataResponse<Game?>(null, storageUploadResponse.Result);
                 }
 
-                dataAccessPatchGame.ImageUrl = storageUploadResponse.Data!.FileName; // OJN: This should be renamed to ImageUrl.
+                dataAccessPatchGame.ImageUrl = storageUploadResponse.Data!.FileName;
             }
 
             using (var transaction = await transactionFactory.CreateAsync())

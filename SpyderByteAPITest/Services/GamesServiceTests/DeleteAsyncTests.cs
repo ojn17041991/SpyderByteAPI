@@ -34,7 +34,7 @@ namespace SpyderByteTest.Services.GamesServiceTests
         }
 
         [Fact]
-        public async Task Can_Delete_Game_From_Service_With_Error_If_Imgur_Delete_Fails()
+        public async Task Can_Delete_Game_From_Service_With_Error_If_Image_Deletion_Fails()
         {
             // Arrange
             var storedGame = _helper.AddGame();
