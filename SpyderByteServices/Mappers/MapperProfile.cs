@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Storage.Blobs.Models;
 
 namespace SpyderByteServices.Mappers
 {
@@ -29,16 +30,32 @@ namespace SpyderByteServices.Mappers
 
             CreateMap<Azure.Storage.Blobs.Models.BlobItem, SpyderByteServices.Models.Data.StorageFile>()
                 .ForMember(
-                    d => d.FileName,
-                    o => o.MapFrom(
-                        s => s.Name
+                    destination => destination.FileName,
+                    options => options.MapFrom(
+                        source => source.Name
                     )
                 )
                 .ForMember(
-                    d => d.CreatedDate,
-                    o => o.MapFrom(
-                        s => s.Properties.CreatedOn!.Value.DateTime
+                    destination => destination.CreatedDate,
+                    options => options.MapFrom(
+                        source => source.Properties.CreatedOn!.Value
                     )
+                );
+
+            CreateMap<Azure.Storage.Blobs.BlobClient, SpyderByteServices.Models.Data.StorageFile>()
+                .ForMember(
+                    destination => destination.FileName,
+                    options => options.MapFrom(
+                        source => source.Uri.ToString()
+                    )
+                )
+                .ForMember(
+                    destination => destination.CreatedDate,
+                    options => options.MapFrom((source, destination, member, context) =>
+                    {
+                        var properties = context.Items["properties"] as BlobProperties;
+                        return properties!.CreatedOn;
+                    })
                 );
         }
     }

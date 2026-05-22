@@ -6,7 +6,7 @@ using SpyderByteResources.Helpers.Encoding;
 using SpyderByteResources.Models.Responses;
 using SpyderByteResources.Models.Responses.Abstract;
 using SpyderByteServices.Services.Data.Abstract;
-using SpyderByteServices.Services.Storage.Abstract;
+using SpyderByteServices.Services.Storage.Database.Abstract;
 using System.IO.Compression;
 
 namespace SpyderByteServices.Services.Data
@@ -17,7 +17,7 @@ namespace SpyderByteServices.Services.Data
 
         private readonly ILogger<DataService> logger;
         private readonly IConfiguration configuration;
-        private readonly IStorageService storageService;
+        private readonly BaseDatabaseStorageService storageService;
 
         string backupFileExtension;
         int numberOfHoursToRetainBackup;
@@ -25,7 +25,7 @@ namespace SpyderByteServices.Services.Data
         public DataService(
             ILogger<DataService> logger,
             IConfiguration configuration,
-            IStorageService storageService)
+            BaseDatabaseStorageService storageService)
         {
             this.logger = logger;
             this.configuration = configuration;
@@ -92,7 +92,7 @@ namespace SpyderByteServices.Services.Data
 
                     // Upload the ZIP to storage.
                     var response = await storageService.UploadAsync($"{DateTime.UtcNow:yyyy-MM-ddThh:mm:ss.fffZ}.zip", memoryStream);
-                    if (response.Result != ModelResult.OK)
+                    if (response.Result != ModelResult.Created)
                     {
                         logger.LogError($"Failed to upload ZIP file.");
                         return new DataResponse<bool>(false, response.Result);

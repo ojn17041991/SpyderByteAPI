@@ -23,7 +23,7 @@ namespace SpyderByteAPI.Controllers.Data.V1
         private readonly IFeatureManager featureManager = featureManager;
         private readonly IStringLookup<ModelResult> modelResources = modelResources;
 
-        [HttpPost("Backup")]
+        [HttpPost("backup")]
         [Authorize]
         [Authorize(PolicyType.DataBackup)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -53,7 +53,7 @@ namespace SpyderByteAPI.Controllers.Data.V1
             }
         }
 
-        [HttpDelete("Cleanup")]
+        [HttpPost("cleanup")]
         [Authorize]
         [Authorize(PolicyType.DataCleanup)]
         [ProducesResponseType(StatusCodes.Status200OK)]

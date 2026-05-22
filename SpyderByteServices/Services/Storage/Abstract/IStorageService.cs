@@ -5,10 +5,16 @@ namespace SpyderByteServices.Services.Storage.Abstract
 {
     public interface IStorageService
     {
-        Task<IDataResponse<IList<StorageFile>?>> GetFilesAsync();
+        public string ClientPath { get; }
+        
+        public string ContainerPath { get; }
 
-        Task<IDataResponse<bool>> UploadAsync(string fileName, Stream stream);
+        public Task<IDataResponse<IList<StorageFile>?>> GetFilesAsync();
 
-        Task<IDataResponse<bool>> DeleteAsync(StorageFile file);
+        public Task<IDataResponse<StorageFile?>> UploadAsync(string fileName, Stream stream);
+
+        public Task<IDataResponse<StorageFile?>> DeleteAsync(string fileName);
+
+        public Task<IDataResponse<StorageFile?>> DeleteAsync(StorageFile file);
     }
 }

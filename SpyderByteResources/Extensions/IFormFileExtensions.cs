@@ -12,5 +12,12 @@ namespace SpyderByteResources.Extensions
                 return memoryStream.ToArray();
             }
         }
+
+        public static async Task<Stream> GetStream(this IFormFile formFile)
+        {
+            var memoryStream = new MemoryStream();
+            await formFile.CopyToAsync(memoryStream);
+            return memoryStream;
+        }
     }
 }

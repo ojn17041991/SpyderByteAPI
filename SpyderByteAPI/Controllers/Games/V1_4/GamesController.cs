@@ -7,6 +7,7 @@ using SpyderByteAPI.Models.Games;
 using SpyderByteAPI.Models.Games.V1_4;
 using SpyderByteAPI.Text.Abstract;
 using SpyderByteResources.Enums;
+using SpyderByteResources.Extensions;
 using SpyderByteResources.Flags;
 using SpyderByteResources.Models.Paging.Abstract;
 using SpyderByteServices.Services.Games.Abstract;
@@ -125,6 +126,13 @@ namespace SpyderByteAPI.Controllers.Games.V1_4
                 var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
                 return Ok(data);
             }
+            else if (response.Result == ModelResult.ImageDeletionFailed)
+            {
+                HttpContext.Response.Headers[ApiResponseHeader.X_SBS_Warning.ToDescription()] = modelResources.GetResource(ModelResult.ImageDeletionFailed);
+
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                return Ok(data);
+            }
             else if (response.Result == ModelResult.NotFound)
             {
                 return NotFound(modelResources.GetResource(ModelResult.NotFound));
@@ -162,6 +170,13 @@ namespace SpyderByteAPI.Controllers.Games.V1_4
             else if (response.Result == ModelResult.NotFound)
             {
                 return NotFound(modelResources.GetResource(ModelResult.NotFound));
+            }
+            else if (response.Result == ModelResult.ImageDeletionFailed)
+            {
+                HttpContext.Response.Headers[ApiResponseHeader.X_SBS_Warning.ToDescription()] = modelResources.GetResource(ModelResult.ImageDeletionFailed);
+
+                var data = mapper.Map<SpyderByteAPI.Models.Games.Game>(response.Data);
+                return Ok(data);
             }
             else
             {
