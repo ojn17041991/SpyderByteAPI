@@ -70,8 +70,7 @@ namespace SpyderByteServices.Services.Games
             }
 
             var dataAccessPostGame = mapper.Map<SpyderByteDataAccess.Models.Games.PostGame>(game);
-            dataAccessPostGame.ImgurUrl = storageResponse.Data!.FileName; // OJN: This should be renamed to ImageUrl.
-            dataAccessPostGame.ImgurImageId = string.Empty; // OJN: This is not needed any more.
+            dataAccessPostGame.ImageUrl = storageResponse.Data!.FileName;
 
             using (var transaction = await transactionFactory.CreateAsync())
             {
@@ -125,7 +124,7 @@ namespace SpyderByteServices.Services.Games
             if (game.Image != null)
             {
                 // Delete the original image from storage.
-                var fileName = Path.GetFileName(storedGame.ImgurUrl);
+                var fileName = Path.GetFileName(storedGame.ImageUrl);
                 var storageDeletionResponse = await imageStorageService.DeleteAsync(fileName);
                 if (storageDeletionResponse.Result != ModelResult.OK)
                 {
@@ -141,8 +140,7 @@ namespace SpyderByteServices.Services.Games
                     return new DataResponse<Game?>(null, storageUploadResponse.Result);
                 }
 
-                dataAccessPatchGame.ImgurUrl = storageUploadResponse.Data!.FileName; // OJN: This should be renamed to ImageUrl.
-                dataAccessPatchGame.ImgurImageId = string.Empty; // OJN: This is not needed any more.
+                dataAccessPatchGame.ImageUrl = storageUploadResponse.Data!.FileName;
             }
 
             using (var transaction = await transactionFactory.CreateAsync())
@@ -180,7 +178,7 @@ namespace SpyderByteServices.Services.Games
                 {
                     await transaction.CommitAsync();
 
-                    var fileName = Path.GetFileName(response.Data!.ImgurUrl);
+                    var fileName = Path.GetFileName(response.Data!.ImageUrl);
                     var storageDeletionResponse = await imageStorageService.DeleteAsync(fileName);
                     if (storageDeletionResponse.Result != ModelResult.OK)
                     {

@@ -10,9 +10,7 @@ namespace SpyderByteDataAccess.Models.Games
 
         public string Url { get; set; } = string.Empty;
 
-        public string ImgurUrl { get; set; } = string.Empty;
-
-        public string ImgurImageId { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
 
         public DateTime PublishDate { get; set; } = DateTime.UtcNow;
     }

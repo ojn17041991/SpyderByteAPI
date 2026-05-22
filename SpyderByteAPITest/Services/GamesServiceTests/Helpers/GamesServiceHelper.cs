@@ -25,7 +25,8 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
     {
         public GamesService Service;
 
-        private bool _failOnImageRequest = false;
+        private bool _failOnImageUploadRequest = false;
+        private bool _failOnImageDeleteRequest = false;
 
         private readonly Fixture _fixture;
         private readonly IMapper _mapper;
@@ -132,8 +133,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                     Name = postGame.Name,
                     Type = postGame.Type,
                     Url = postGame.Url,
-                    ImgurUrl = postGame.ImgurUrl,
-                    ImgurImageId = postGame.ImgurImageId,
+                    ImageUrl = postGame.ImageUrl,
                     PublishDate = postGame.PublishDate
                 };
                 _games.Add(game);
@@ -154,8 +154,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 game.Name = patchGame.Name!;
                 game.Type = patchGame.Type!.Value;
                 game.Url = patchGame.Url!;
-                game.ImgurUrl = patchGame.ImgurUrl!;
-                game.ImgurImageId = patchGame.ImgurImageId!;
+                game.ImageUrl = patchGame.ImageUrl!;
                 game.PublishDate = patchGame.PublishDate!.Value;
                 return Task.FromResult(
                     new DataResponse<SpyderByteDataAccess.Models.Games.Game?>(
@@ -210,7 +209,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 Task.FromResult(
                     new DataResponse<StorageFile>(
                         _fixture.Create<StorageFile>(),
-                        _failOnImageRequest ? ModelResult.Error : ModelResult.Created
+                        _failOnImageUploadRequest ? ModelResult.Error : ModelResult.Created
                     )
                     as IDataResponse<StorageFile?>
                 )
@@ -223,7 +222,7 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
                 return Task.FromResult(
                     new DataResponse<StorageFile>(
                         _fixture.Create<StorageFile>(),
-                        _failOnImageRequest ? ModelResult.Error : ModelResult.OK
+                        _failOnImageDeleteRequest ? ModelResult.Error : ModelResult.OK
                     )
                     as IDataResponse<StorageFile?>
                 );
@@ -283,9 +282,14 @@ namespace SpyderByteTest.Services.GamesServiceTests.Helpers
             }
         }
 
-        public void SetFailOnImageRequest(bool failOnImageRequest)
+        public void SetFailOnImageUploadRequest(bool failOnImageUploadRequest)
         {
-            _failOnImageRequest = failOnImageRequest;
+            _failOnImageUploadRequest = failOnImageUploadRequest;
+        }
+
+        public void SetFailOnImageDeleteRequest(bool failOnImageDeleteRequest)
+        {
+            _failOnImageDeleteRequest = failOnImageDeleteRequest;
         }
     }
 }

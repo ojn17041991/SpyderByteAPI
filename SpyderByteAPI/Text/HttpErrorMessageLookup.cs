@@ -7,12 +7,18 @@ namespace SpyderByteResources.Resources
     {
         private IDictionary<ModelResult, string> resources = new Dictionary<ModelResult, string>()
         {
-            { ModelResult.NotImplemented, "This endpoint is no longer supported." },
-            { ModelResult.NotFound, "Failed to locate resource." },
             { ModelResult.AlreadyExists, "This resource already exists." },
+            { ModelResult.Created, "The resource was created." },
+            { ModelResult.Error, "An unexpected error occurred." },
+            { ModelResult.Forbidden, "Unauthorized access." },
+            { ModelResult.ImageDeletionFailed, "The image was not deleted." },
+            { ModelResult.NotFound, "Failed to locate resource." },
+            { ModelResult.NotImplemented, "This endpoint is no longer supported." },
+            { ModelResult.OK, "The request was successful." },
+            { ModelResult.RelationshipViolation, "The request would break a relationship." },
             { ModelResult.RequestDataIncomplete, "The request data is incomplete." },
             { ModelResult.RequestInvalid, "The request is invalid." },
-            { ModelResult.RelationshipViolation, "The request would break a relationship." }
+            { ModelResult.Unauthorized, "Unauthenticated user." },
         };
 
         public string GetResource(ModelResult modelResult)
