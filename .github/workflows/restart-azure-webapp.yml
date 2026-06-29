@@ -15,9 +15,8 @@ jobs:
 
     - name: Restart Azure web app to unlock resources.
       shell: pwsh
-      run:
-        inlineScript: |
-          az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
+      run: |
+        az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
 
     - name: Give the Azure Web App time to wake up.
       shell: pwsh
