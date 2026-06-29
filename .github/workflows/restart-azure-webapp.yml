@@ -14,11 +14,11 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Restart Azure web app to unlock resources.
-      uses: azure/cli@v2
+      shell: pwsh
       with:
         inlineScript: |
           az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
 
     - name: Give the Azure Web App time to wake up.
-      run: Start-Sleep -Seconds 10
       shell: pwsh
+      run: Start-Sleep -Seconds 10
