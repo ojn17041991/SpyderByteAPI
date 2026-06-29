@@ -1,20 +1,10 @@
 name: Restart Azure Web App
 
 on:
-  push:
-    branches: [ "prod" ]
   workflow_dispatch:
-
-env:
-  AZURE_WEBAPP_NAME: SpyderByteAPI-AppService
-  AZURE_WEBAPP_PACKAGE_PATH: '.'
-  DOTNET_VERSION: '8.x'
-
-permissions:
-  contents: read
     
 jobs:
-  web-deploy:
+  restart:
     runs-on: windows-latest
     
     steps:
@@ -26,10 +16,9 @@ jobs:
     - name: Restart Azure web app to unlock resources.
       uses: azure/cli@v2
       with:
-        azcliversion: latest
         inlineScript: |
           az webapp restart --resource-group SpyderByteAPI-ResourceGroup --name SpyderByteAPI-AppService
 
     - name: Give the Azure Web App time to wake up.
-      run: sleep 10s
-      shell: bash
+      run: Start-Sleep -Seconds 10
+      shell: pwsh
