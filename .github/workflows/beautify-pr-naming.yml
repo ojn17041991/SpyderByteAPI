@@ -1,0 +1,35 @@
+name: Beautify Pull Request Naming
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  normalize-title:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate and update PR title
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BRANCH_NAME: ${{ github.head_ref }}
+          BASE_BRANCH: ${{ github.base_ref }}
+        run: |
+          # Remove the branch type prefix
+          TITLE="${BRANCH_NAME#*/}"
+
+          # Replace hyphens and underscores with spaces
+          TITLE="${TITLE//-/ }"
+          TITLE="${TITLE//_/ }"
+
+          # Capitalise the first letter of each word
+          TITLE=$(echo "$TITLE" | sed 's/\b\(.\)/\u\1/g')
+
+          # Generate final title
+          TITLE="Merge $TITLE into ${BASE_BRANCH^}"
+
+          gh pr edit "$PR_NUMBER" --title "$TITLE"
