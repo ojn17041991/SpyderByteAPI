@@ -1,0 +1,21 @@
+name: Validate Production Source Branch
+
+on:
+  pull_request:
+    branches: ["prod"]
+
+jobs:
+  validate-source:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check source branch
+        run: |
+          echo "Source branch: ${{ github.event.pull_request.head.ref }}"
+
+          if [ "${{ github.event.pull_request.head.ref }}" != "main" ]; then
+            echo "Production can only be deployed from main."
+            exit 1
+          fi
+
+          echo "Production promotion approved."
