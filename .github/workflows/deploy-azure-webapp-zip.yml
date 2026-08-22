@@ -18,12 +18,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ensure PR comes from main branch.
-        if: github.head_ref != 'main'
+      - name: Ensure PR comes from main
         run: |
-          echo "Production can only be deployed from main."
-          echo "Source branch: ${{ github.head_ref }}"
-          exit 1
+          echo "Source branch: ${{ github.event.pull_request.head.ref }}"
+
+          if [ "${{ github.event.pull_request.head.ref }}" != "main" ]; then
+            echo "Production can only be deployed from main."
+            exit 1
           
   build:
     runs-on: ubuntu-latest
