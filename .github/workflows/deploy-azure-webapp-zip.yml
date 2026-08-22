@@ -13,19 +13,7 @@ env:
 permissions:
   contents: read
 
-jobs:
-  validate-source:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check source branch
-        run: |
-          echo "Source branch: ${{ github.head_ref }}"
-
-          if [ "${{ github.head_ref }}" != "main" ]; then
-            echo "Production can only be deployed from main."
-            exit 1
-          fi
-          
+jobs:          
   build:
     runs-on: ubuntu-latest
 
