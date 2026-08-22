@@ -16,15 +16,15 @@ permissions:
 jobs:
   validate-source:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Ensure PR comes from main
+      - name: Check source branch
         run: |
-          echo "Source branch: ${{ github.event.pull_request.head.ref }}"
+          echo "Source branch: ${{ github.head_ref }}"
 
-          if [ "${{ github.event.pull_request.head.ref }}" != "main" ]; then
+          if [ "${{ github.head_ref }}" != "main" ]; then
             echo "Production can only be deployed from main."
             exit 1
+          fi
           
   build:
     runs-on: ubuntu-latest
