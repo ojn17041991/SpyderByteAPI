@@ -1,0 +1,93 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  DOTNET_VERSION: '8.x'
+  PUBLISH_PATH: '${{ github.workspace }}/publish'
+  ARTIFACT_NAME: 'SpyderByteAPI'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Validate tag
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+
+          if ($tag -match '^v[0-9]+$' -or
+              $tag -match '^v[0-9]+\.[0-9]+$' -or
+              $tag -match '^v[0-9]+\.[0-9]+\.[0-9]+$') {
+              Write-Host "Valid release tag: $tag"
+          }
+          else {
+              Write-Error "Tag '$tag' is not a valid release version."
+              exit 1
+          }
+
+      - name: Check for existing release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ github.ref_name }}"
+
+          gh release view $tag *> $null
+
+          if ($LASTEXITCODE -eq 0) {
+              Write-Error "A GitHub Release already exists for '$tag'."
+              exit 1
+          }
+
+          Write-Host "No existing release found for '$tag'."
+
+      - name: Checkout the git repo
+        uses: actions/checkout@v7
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Create the build
+        run: dotnet build --target:SpyderByteAPI --configuration Release --no-restore
+
+      - name: Create the publish output
+        run: dotnet publish -c Release --property:PublishDir=${{ env.PUBLISH_PATH }} --no-restore
+
+      - name: Create release package
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path "${{ env.PUBLISH_PATH }}\*" `
+            -DestinationPath "${{ github.workspace }}\${{ env.ARTIFACT_NAME }}-${{ github.ref_name }}.zip"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}-${{ github.ref_name }}
+          path: ${{ github.workspace }}\${{ env.ARTIFACT_NAME }}-${{ github.ref_name }}.zip
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $package = "${{ github.workspace }}\${{ env.ARTIFACT_NAME }}-$tag.zip"
+
+          gh release create $tag `
+            --title $tag `
+            --generate-notes `
+            $package
