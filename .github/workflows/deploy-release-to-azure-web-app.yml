@@ -1,0 +1,70 @@
+name: Deploy Release to Azure Web App
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to deploy'
+        required: true
+        type: string
+
+env:
+  ARTIFACT_NAME: SpyderByteAPI
+  AZURE_WEBAPP_NAME: SpyderByteAPI-AppService
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Find release artifact
+        id: find-artifact
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ inputs.tag }}"
+          $artifactName = "${{ env.ARTIFACT_NAME }}-$tag"
+
+          $artifact = gh api `
+            --paginate `
+            "/repos/${{ github.repository }}/actions/artifacts" `
+            --jq ".artifacts[] | select(.name == `"$artifactName`" and .expired == false)" `
+            | ConvertFrom-Json
+
+          if (-not $artifact) {
+              Write-Error "No valid artifact found with the name '$artifactName'."
+              exit 1
+          }
+
+          Write-Host "Found artifact '$artifactName'."
+          "artifact_id=$($artifact.id)" >> $env:GITHUB_OUTPUT
+
+      - name: Download release artifact
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $artifactId = "${{ steps.find-artifact.outputs.artifact_id }}"
+
+          gh api `
+            "/repos/${{ github.repository }}/actions/artifacts/$artifactId/zip" `
+            > artifact.zip
+
+          Expand-Archive -Path artifact.zip -DestinationPath ./artifact
+
+      - name: Deploy ZIP to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./artifact/${{ env.ARTIFACT_NAME }}-${{ inputs.tag }}.zip
